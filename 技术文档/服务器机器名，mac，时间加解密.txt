@@ -1,0 +1,57 @@
+
+
+1.º”√‹ 
+
+import uuid,time,socket,base64
+
+
+mymac=uuid.UUID(int = uuid.getnode()).hex[-12:]
+
+    #myname = socket.getfqdn(socket.gethostname())
+    sys = os.name
+    if sys == 'nt':
+        myname = os.getenv('computername')
+    elif sys == 'posix':
+        try:
+            host = os.popen('echo $HOSTNAME')
+            myname = host.read()
+        except:
+            pass
+
+    #nameMac = myname + mymac
+    a = '2025-10-28 10:30:30'
+    cdkey_time = int(time.mktime(time.strptime(a,'%Y-%m-%d %H:%M:%S')))
+
+    #nameMacTime = nameMac[:10] + str(mytime) + nameMac[10:]
+    nameMacTime = myname + mymac + str(cdkey_time)
+    CDKEY= base64.encodestring(nameMacTime)
+
+
+2.Ω‚√‹
+
+mymac=uuid.UUID(int = uuid.getnode()).hex[-12:]
+        #myname = socket.getfqdn(socket.gethostname())
+	sys = os.name
+        if sys == 'nt':
+            myname = os.getenv('computername')
+        elif sys == 'posix':
+            try:
+                host = os.popen('echo $HOSTNAME')
+                myname = host.read()
+            except:
+                pass
+
+        path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+        ss = open(path+os.sep+"cdkey.txt").read()
+        CDKEYDECODE = base64.decodestring(ss)
+
+        checkMac = CDKEYDECODE.find(mymac+myname)
+        checkHostname = CDKEYDECODE.find(myname)
+
+        if checkMac < 0 or checkHostname < 0:
+            return HttpResponseRedirect('/usecdkey/')
+        useTime = CDKEYDECODE[len(CDKEYDECODE)-10:]
+
+        if int(useTime) < int(time.time()):
+            return HttpResponseRedirect('/cdkry_past_dut/')

@@ -1,0 +1,40 @@
+
+											centos 6.5 grub.conf 修改grub的启动顺序
+
+1.已root身份操作
+
+2.查找grub.conf的位置
+
+	命令：whereis grub.conf
+
+	结果：grub: /sbin/grub /etc/grub.conf /usr/share/grub /usr/share/man/man8/grub.8.gz
+
+
+
+3.打开grub.conf文件：vim /etc/grub.conf
+
+	解释：
+
+	其中，红色部分是我们安装的两个系统，他们均已“title”开头，我们修改默认启动的操作系统，只需要将“default”的值改为对应的系统索引编号值(笔者自己起的名字)即可，这个索引编号值类似于数组的索引值，第一个为0，依次类推，我们在这，默认启动第二个操作系统，只需要经“default”的值改为1，其中，“timeout”是指我们每次引导操作系统的等待时间，即等待用户按下任意键的时间，单位是秒，其中内容：
+
+	title：引导时显示的标题，我们可以修改为任意有意义的名称。
+
+	root：指定应该从哪个硬盘分区进行引导，这里是第一个硬盘的第一个主分区。
+
+	kernel：指定了内核文件的位置。
+
+	命令：
+
+	（1）进入insert模式下。
+
+	（2）将“default”值改为1。
+
+	（3）进入命令模式下，执行：wq，保存退出。
+
+
+
+4.重启
+
+	命名：reboot（root身份）
+
+	解释：重新启动。

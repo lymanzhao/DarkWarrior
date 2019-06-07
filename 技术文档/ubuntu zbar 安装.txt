@@ -1,0 +1,6 @@
+	
+	sudo apt-get install python-gtk2-dev 
+	apt install zbar-tools
+
+สนำรฃบ
+	zbarimg barcode.png

@@ -1,0 +1,26 @@
+
+
+1：创建一个普通用户doiido并加入相应的组
+注意：这里必须要新建一个用户，否则将会造成无法远程通过ssh登录服务器
+# groupadd doiido
+# useradd -g doiido doiido
+更改用户 doiido 的密码
+# passwd doiido
+
+2：修改sshd_config文件
+# sed -i 's/#PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
+
+生产机器禁止ROOT远程SSH登录：
+#vi /etc/ssh/sshd_config
+ 
+把
+	PermitRootLogin yes
+改为
+	PermitRootLogin no
+
+重启sshd服务
+#service sshd restart
+
+
+3：重启ssh服务
+# service sshd restart

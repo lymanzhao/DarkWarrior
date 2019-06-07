@@ -1,0 +1,8 @@
+
+
+ffmpeg -ss 0:09  -i oceans.mp4 -vframes 1 jpg/tt.jpg       
+
+
+-i   指定输入文件
+
+-vframes  设置要编码多少帧

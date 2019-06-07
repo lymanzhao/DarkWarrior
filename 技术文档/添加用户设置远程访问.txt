@@ -1,0 +1,15 @@
+增加MySQL用户
+	格式：grant select on 数据库.* to 用户名@登录主机 identified by "密码"
+	      grant select,insert,update,delete on *.* to user_1@'%' Identified by '123';
+	      grant all on *.* to user_1@'localhost' Identified by '123';
+远程访问
+
+　　其一：
+　　GRANT ALL PRIVILEGES ON *.* TO xoops_root@'%' IDENTIFIED BY '654321';
+　　允许xoops_root用户可以从任意机器上登入MySQL。
+
+　　其二：
+　　编辑 /etc/mysql/my.cnf
+　　>skip-networking => # skip-networking
+　　这样就可以允许其他机器访问MySQL了。
+   grant all on *.* to 'root'@'ip' identified by 'password'; 

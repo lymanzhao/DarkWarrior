@@ -1,0 +1,39 @@
+
+
+/etc/init.d/iptables stop  linux关闭防火墙
+
+chkconfig iptables off linux关闭开机自起防火墙
+
+whereris yum 查找yum
+
+安装开发包 ： yum groupinstall "Development Tools"
+
+	      
+
+安装兼容包：yum -y install make apr* autoconf kernel-devel automake curl-devel gcc gcc-c++ zlib-devel openssl openssl-devel pcre-devel gd kernel keyutils patch perl kernel-headers compat* mpfr cpp glibc libgomp libstdc++-devel ppl cloog-ppl keyutils-libs-devel libcom_err-devel libsepol-devel libselinux-devel krb5-devel zlib-devel libXpm* freetype libjpeg* libpng* php-common php-gd ncurses* libtool* libxml2 libxml2-devel patch --skip-broken
+
+	     yum install gcc gcc-c++ gcc-g77 flex bison autoconf automake bzip2-devel zlib-devel ncurses-devel libjpeg-devel libpng-devel libtiff-devel freetype-devel pam-devel openssl-devel libxml2-devel gettext-devel pcre-devel
+
+安装兼容包：yum -y install pango pango-devel freetype freetype-devel libpng libpng-devel gettext gettext-devel libjpeg libjpeg-devel gd gd-devel libxml2 libxml2-devel libiconv libiconv-devel qpixman qpixman-devel glib glib-devel cairo cairo-devel libart*
+
+同步当前时间：ln -sf  /usr/share/zoneinfo/posix/Asia/Shanghai  /etc/localtime
+
+同步时间：ntpdate cn.pool.ntp.org
+
+指定路径编译：./configure --prefix=/XXXXXX    安装：make && make install 
+
+
+安装pip：
+
+第一步：安装 setuptools 
+
+第二步：wget http://pypi.python.org/packages/source/d/distribute/distribute-0.6.28.tar.gz  下载pip兼容包
+
+第三步：tar zxvf distribute-0.6.28.tar.gz  减压安装包
+
+第四步：cd distribute-0.6.28 进入目录里
+
+第五步：python distribute_setup.py 安装兼容包
+
+第六步：python setup.py build  python setup.py install 安装pip
+

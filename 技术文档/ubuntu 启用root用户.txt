@@ -1,0 +1,18 @@
+
+
+1. sudo vim /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
+
+    在里面添加 greeter-show-manual-login=true
+
+2. sudo passwd root
+
+   设置root密码
+
+3. vim /root/.profile
+
+   找到.profile文件中的mesg n
+
+   将其替换成tty -s && mesg n
+
+4. 重启系统，然后使用root登录
+

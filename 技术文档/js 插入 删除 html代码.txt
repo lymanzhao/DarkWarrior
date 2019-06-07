@@ -1,0 +1,10 @@
+
+
+
+
+$('#file_type_name').children().remove(); //É¾³ý remove()
+
+
+for (var i in object){
+	$('#file_type_name').append('<option value="'+object[i].type_id+'">'+object[i].type_name+'</option>'); //Ìí¼Ó append()
+}

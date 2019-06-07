@@ -1,0 +1,52 @@
+
+
+
+在python中获取ip地址和在php中有很大不同，在php中往往比较简单。那再python中怎么做呢？
+我们先来看一下python 获得本机MAC地址：
+
+1.获取mac
+
+	import uuid
+	def get_mac_address(): 
+    		mac=uuid.UUID(int = uuid.getnode()).hex[-12:] 
+    		return ":".join([mac[e:e+2] for e in range(0,11,2)])
+
+
+
+
+
+2.获取本机电脑名
+
+	sys = os.name
+        if sys == 'nt':
+            myname = os.getenv('computername')
+        elif sys == 'posix':
+            try:
+                host = os.popen('echo $HOSTNAME')
+                myname = host.read()
+            except:
+                pass
+
+
+
+3.windows获取本机ip
+	myname = socket.getfqdn(socket.gethostname(  ))
+	myaddr = socket.gethostbyname(myname)
+
+
+
+	但是注意这里获取的IP是内网IP
+
+
+4.linux 获取本地ip
+
+import socket
+import fcntl
+import struct
+  
+def get_ip_address(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    ifname = 'eth0'
+    myaddr=socket.inet_ntoa(fcntl.ioctl(s.fileno(),0x8915,struct.pack('256s', ifname[:15]))[20:24])
+
+  

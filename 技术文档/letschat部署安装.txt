@@ -1,0 +1,70 @@
+安装MongoDB
+1、下载MongoDB（64位）
+http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-2.6.3.tgz
+2、安装MongoDB（安装到/usr/local）（可以直接复制到/usr/local目录下）
+tar zxvf mongodb-linux-x86_64-2.6.3.tgz
+mv mongodb-linux-x86_64-2.6.3 mongodb
+cd mongodb
+mkdir data/db
+mkdir logs
+cd bin
+vi mongodb.conf 
+dbpath=/usr/local/mongodb/data/db
+logpath=/usr/local/mongodb/logs/mongodb.log
+port=27017 
+fork=true 
+nohttpinterface=true
+#3、重新绑定mongodb的配置文件地址和访问IP
+/usr/local/mongodb/bin/mongod --bind_ip localhost -f /usr/local/mongodb/bin/mongodb.conf
+4、开机自动启动mongodb
+vi /etc/rc.d/rc.local 
+/usr/local/mongodb/bin/mongod --config /usr/local/mongodb/bin/mongodb.conf
+chmod +x /etc/rc.d/rc.local   # 一定要执行这句不然无法开机启动
+
+5、重启一下系统测试下能不能自启
+#进入mongodb的shell模式 
+/usr/local/mongodb/bin/mongo --port 27017
+#查看数据库列表
+show dbs
+#当前db版本
+db.version();
+
+node编译好的安装
+
+netstat -netplu 查看进程
+
+npm install forever -g  //forever start 后台运行代替npm start
+配置环境变量
+vim /etc/profile
+export PATH=$PATH:/var/opt/node-v4.6.0/lib/node_modules/forever/bin
+wq!
+source /etc/profile
+
+lets-chat官网
+http://sdelements.github.io/lets-chat/
+
+进入lets-chart,开启服务
+forever start app.js
+
+配置apache部署nodejs项目，apache代理
+vim /etc/httpd/conf/httpd.conf
+Listen 8080
+ <VirtualHost *:8080>
+      ServerName node.js
+      ServerAlias www.node.js
+
+      ProxyRequests off
+
+      <Proxy *>
+        Order deny,allow
+        Allow from all
+      </Proxy>
+
+      <Location />
+        ProxyPass http://localhost:5000/
+        ProxyPassReverse http://localhost:5000/
+      </Location>
+    </VirtualHost>
+ProxyPreserveHost on
+
+

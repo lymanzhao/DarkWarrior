@@ -1,0 +1,9 @@
+
+
+
+rpm -qa|grep httpd #查看apache包，找到名字（例如httpd-2.2.15-15.el6_2.1.x86_64）后用下面命令删除
+rpm -e httpd-2.2.15-15.el6_2.1.x86_64 #不过要先把依赖apache的包删除
+
+或者
+yum list|grep httpd #查看apache包名，例如httpd.x86_64
+yum erase httpd.x86_64         #相关依赖包自动会被删除

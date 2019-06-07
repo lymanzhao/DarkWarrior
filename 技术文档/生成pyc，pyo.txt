@@ -1,0 +1,17 @@
+生成单个pyc文件
+python提供了内置的类库来实现把py文件编译为pyc文件，这个模块就是py_compile模块。使用方法如下：
+
+	[root@server-1 test]# python -m py_compile test.py
+	[root@server-1 test]# python -O -m py_compile test.py
+
+-O 优化成字节码（pyo）
+-m 表示把后面的模块当成脚本运行 
+-OO 表示优化的同时删除文档字符串
+python的编译是通过使用py_compile的compile()方法来实现的。
+compile函数原型：
+
+
+批量生成pyc文件
+一般来说，我们的工程都是在一个目录下的，一般不会说仅仅编译一个py文件而已，而是需要把整个文件夹下的py文件都编译为pyc文件，python又为了我们提供了另一个模块：compileall。使用方法如下：
+
+	[root@server-1 test]# python -m compileall .

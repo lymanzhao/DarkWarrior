@@ -1,0 +1,45 @@
+1、从版本库中签出文件：svn co svn://182.92.96.40/CGWL-DEV
+2、从一个文件夹当中导入文件到库：
+   svn import -m "提交说明" 文件名 svn://182.92.96.40/CGWL-DEV
+   从库中导出：svn export
+3、本地添加文件：svn add file
+4、提交到项目仓库：svn commit -m "提交说明"
+5、本地仓库更新 svn update
+
+
+6、获得文件状态 svn status filename
+7、文件在版本库与本地的区别：svn diff filename
+8、查看日志 svn log file
+9、查看签出来源 svn info file
+10、拷贝，文件重命名或移动：svn copy oldfile newfile，svn move oldfile newfile
+11、删除：svn delete file
+12、列出仓库目录：svn list
+13、创建版本库新目录：svn mkdir
+
+14、查看某个文件每行版本和作者：svn blame file,-r指定版本
+15、撤销修改；svn revert
+     改动在commit之前，撤销改动：svn revert file  -->svn merge -r 版本号 file--->svn commit
+  16、移除冲突：svn resolved
+
+
+一、解决冲突：
+
+svn add -->svn commit(发现冲突)-->svn update -->(解决)--> svn resolved file-->svn commit
+
+二、忽略某些文件：
+
+项目中有库为timelib,忽略库中的一些文件：
+使用svn propedit svn:ignore timelib，编辑内容，输入要忽略的文件
+
+
+三、创建、发布分支：
+
+创建分支：svn mkdir -m "提交信息" svn://ip/项目/branches/分支名
+切换到分支：svn swith svn://ip/项目/分支名
+
+
+
+
+
+
+

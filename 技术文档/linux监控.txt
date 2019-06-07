@@ -1,0 +1,66 @@
+1. nagios 开源监控软件
+2. limp 
+3. service iptables stop 关闭linux防火墙
+4. ifconfig 查看linux的ip地址
+5. cd /etc/sysconfig/network-scripts/ 网络配置文件存放位置
+6. ssh + root@192.168.0.108  跳转登录其他机器
+7. scp + 文件名 +  root@192.168.0.108:  从本机往指定机器拷贝文件
+
+8.查看进程 netstat -ntlpu      
+			| grep tcp 查看tcp
+			| grep -v tcp 查看除去tcp的
+			| awk -F ' ''{print NF}'  以空间隔 print打印 NF指最后
+
+9.df -h 查看 进程
+			df -h |awk -F ' ' '{print $NF}' 查看最后一列  $几 就是获取第几列
+			
+			df -h|grep 21|awk -F ' ' '{print int($5)}' 查询Use下第一个数字
+			
+10.	ifconfig eth0|grep 'inet addr'|awk -F ' ' '{print $2}'|awk -F ':' '{print $2}' 查询ip地址
+			ifconfig|grep Bcast|awk -F ':' '{print $2}'|awk -F ' ' '{print $1}' 同上
+			
+11. 	sed -i s'/abc/def/g' 456.txt  -i全局替换
+
+12.		service httpd start 启动apache
+
+13.		cd /var/www/html httpd放html的目录
+
+14.  	find /etc/ -name "httpd.conf" 查找文件
+
+15.		DocumentRoot "/var/www/html"		httpd配置文件配置放html的路径
+
+16.		/etc/httpd/conf/httpd.conf 			httpd路径
+
+17.    echo "nameserver 8.8.8.8" >>/etc/resolv.conf 在resolv.conf里追加内容
+
+18.    service httpd stop  关闭httpd
+
+		rpm -qa | grep http查看本机是否安装过apache
+		rpm -qa | grep http 以后会出来2个或者多个包 全部用yum -y remove +包名 删除
+		/usr/local/apache2/bin/apachectl restart 启动apache
+		/usr/local/apache/bin/apachectl restart  apache重启
+		
+19.		crontab -e  设置计划任务	
+		
+		*/1****(分时日月周)
+		service crond restart	  重启restart
+
+20.	/etc/init.d/iptables stop 关闭防火墙，也可以关闭其他服务
+
+21.	rpm -qa | grep http查看系统是否有rpm安装的apache 
+
+22.	yum -y remove + (rpm -qa | grep http收索出来的包)
+
+23.	http://125.39.35.131/files/31120000069FCF35/nchc.dl.sourceforge.net/project/pcre/pcre/8.30/pcre-8.30.tar.gz
+
+24.	ln -s +路径 +路径  指定系统默认软连接
+
+
+25.	source /etc/profile 刷新环境变量配置文件立刻生效
+
+26. 	进入mysql user库 update user set password=Password('123456')where user='root'; 修改mysql密码
+
+ 
+
+
+

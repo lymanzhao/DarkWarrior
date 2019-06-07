@@ -1,0 +1,23 @@
+1、在 /etc/yum.repos.d/ 下建立 MariaDB.repo,内容如下: 
+[azureuser@mono etc]$ vim /etc/yum.repos.d/MariaDB.repo
+
+
+# MariaDB 10.0 CentOS repository list - created 2013-08-23 13:08 UTC 
+# http://mariadb.org/mariadb/repositories/ 
+[mariadb] 
+name = MariaDB 
+baseurl = http://yum.mariadb.org/10.0/centos6-amd64 
+gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB 
+gpgcheck=1
+
+如果是其他的操作系统，可以在这里找到相关信息。
+
+2、使用YUM安装MariaDB 
+[azureuser@mono yum.repos.d]$ sudo yum -y install MariaDB-client MariaDB-server MariaDB-devel
+
+3、启动数据库 
+[azureuser@mono yum.repos.d]$ sudo service mysql start 
+
+4、修改Root的密码
+
+[azureuser@mono yum.repos.d]$ mysqladmin -u root password  'passwd'

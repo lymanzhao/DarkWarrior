@@ -1,0 +1,189 @@
+
+
+一、创建证书
+
+	证书(Cerificate)的基本作用是将一个公钥和安全个体(个人、公司、组织等)的名字绑定在一起。
+
+ 
+
+	一般情况下，制作证书要经过几个步骤，如上图所示。首先用openssl genrsa生成一个私钥，然后用openssl req生成一个签署请求，最后把请求交给CA，CA签署后就成为该CA认证的证书了。如果在第二步请求时加上-x509参数，那么就直接生成一个self-signed的证书，即自己充当CA认证自己。
+
+	除了这种方式外，在Debian或者Ubuntu系统中有更加简便的方法制作self-signed证书使用make-ssl-cert命令。该命令在ssl-cert的包里，一般会伴随着Apache的安装而安装，可能单独安装也可以。
+
+	如果您只是想做一张测试用的电子证书或不想花钱去找个 CA 签署，您可以造一张自签 (Self-signed) 的电子证书。当然这类电子证书没有任何保证，大部份软件偶到这证书会发出警告，甚至不接收这类证书。 使用自签名(self-signed)的证书，它的主要目的不是防伪，而是使用户和系统之间能够进行SSL通信，保证密码等个人信息传输时的安全。
+
+	这里先说下证书相关的几个名词：
+
+		RSA私钥能解密用证书公钥加密后的信息。通常以.key为后缀，表示私钥也称作密钥。是需要管理员小心保管，不能泄露的。
+
+		CSR(Certificate Signing Request)包含了公钥和名字信息。通常以.csr为后缀，是网站向CA发起认证请求的文件，是中间文件。
+
+		证书通常以.crt为后缀，表示证书文件。
+
+		CA(Certifying Authority)表示证书权威机构，它的职责是证明公钥属于个人、公司或其他的组织。
+
+		
+	1、制作自签名证书
+
+		通过make-ssl-cert创建自签名证书
+
+		如果没安装这个工具，先用以下命令安装。
+
+
+		apt-get install ssl-cert
+		make-ssl-cert生成证书的方法有两种，一种是根据生成按工具默认的方式生成，一种是按模板文件生成。
+
+
+		#默认的方式生成
+		make-ssl-cert generate-default-snakeoil
+		注：默认方式生成的公钥(证书)在/etc/ssl/certs/ssl-cert-snakeoil.pem，私钥在/etc/ssl/private/ssl-cert-snakeoil.key。
+
+
+		#按模板文件生成
+		make-ssl-cert /usr/share/ssl-cert/ssleay.cnf /etc/ssl/private/apache2.pem
+		这里生成的证书采用pem格式，这个pem格式档案中包含了私钥和公钥(证书)两部分内容。
+
+		注：在要求输入Common Name(eg, YOUR name)时，输入你的主机名。Common Name必须和httpd.conf中server name必须一致，否则apache不能启动。启动apache时错误提示为：RSA server certificate CommonName (CN) `Koda’ does NOT match server name!? 。 
+		make-ssl-cert是只能由root执行的命令。
+
+		通过openssl命令行创建自签名证书
+
+		这里生成的证书也采用pem格式，这个pem格式档案中包含了私钥和公钥(证书)两部分内容。如果你将keyout和out分别采用不同的文件名，那keyout和out所对应的文件就会分别存放私钥和公钥(证书)。
+
+
+		openssl req -x509 -newkey rsa:1024 -keyout /etc/ssl/private/apache.pem -out /etc/ssl/private/apache.pem -nodes -days 999
+
+			writing new private key to '/etc/ssl/private/apache.pem'
+			-----
+			You are about to be asked to enter information that will be incorporated
+			into your certificate request.
+			What you are about to enter is what is called a Distinguished Name or a DN.
+			There are quite a few fields but you can leave some blank
+			For some fields there will be a default value,
+			If you enter '.', the field will be left blank.
+			-----
+			Country Name (2 letter code) [AU]:CN　←输入国家代码
+			State or Province Name (full name) [Some-State]:CHONGQING　← 输入省名
+			Locality Name (eg, city) []:CHONGQING　←输入城市名
+			Organization Name (eg, company) [Internet Widgits Pty Ltd]:MIKE　← 输入公司名
+			Organizational Unit Name (eg, section) []:MIKE　← 输入组织单位名
+			Common Name (eg, YOUR name) []:www.mike.me　← 输入主机名
+			Email Address []:easylife206@gmail.com　←输入电子邮箱地址
+			注：在要求输入Common Name(eg, YOUR name)时，输入你的主机名。Common Name必须和httpd.conf中server name必须一致。
+		
+
+	2、制作需CA(Certificate Authority)签署证书
+
+		步骤1、生成私钥：
+		
+			openssl genrsa -des3 1024 >server.key
+			注：采用DES3加密新产生的私钥server.key文件，每次要使用这个私钥时都要用输入密码。如果您的电子证书是用在apache等服务器中，您每次启动服务器时都要输入密码一次。
+
+			openssl genrsa 1024 >server.key
+			注：采用128位rsa算法生成密钥server.key文件，这种方法产生的证书在apache等服务器中启动服务器时不会要求输入密码，同时也不会把私钥加密。
+
+		步骤2: 生成证书请求文件(Certificate Signing Request)
+
+			openssl req -new -key server.key > server.csr
+			注：这是用步骤1的密钥生成证书请求文件server.csr, 这一步输入内容和创建自签名证书的内容类似，按要求输入就可以了。
+
+			
+		步骤3: 签署生成证书
+
+			您只要把server.csr这个档案给第三方CA(Certificate Authority)机构签署生成证书就可以了。
+
+二、配置Apache
+
+	1、开启SSL模块
+
+		a2enmod ssl
+		
+	2、启用SSL站点
+
+		a2ensite default-ssl
+		
+	3、加入监听端口
+
+		vi /etc/apache2/ports.conf 
+
+			#编辑Apache端口配置，加入443端口
+			Listen 443
+			注：Ubuntu启用SSL站点后，缺省已经加入了
+
+	4、配置虚拟主机
+
+		编辑default-ssl文件，加入证书对应的主机头。
+
+
+		vi /etc/apache2/sites-enabled/default-ssl
+
+			ServerName www.mike.me
+		
+	5、配置SSL证书
+
+		编辑配置文件，修改如下几行：
+
+		如果是自签名证书，按如下配置：
+
+
+		vi /etc/apache2/sites-enabled/default-ssl
+
+			SSLEngine on
+			SSLCertificateFile    /etc/ssl/private/apache2.pem
+			#SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+			注：如果SSLCertificateFile中指定的证书已包含相应私钥，SSLCertificateKeyFile这一行就可以注释掉。前面用make-ssl-cert生成的证书就是同时包含公钥和私钥的，所以这里注释掉了。
+
+		
+		
+		如果是第三方签署的CA证书，按如下配置：
+
+
+			SSLEngine on
+			SSLCertificateFile    /etc/ssl/certs/ssl-cert-snakeoil.pem
+			SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+			SSLCertificateChainFile /etc/ssl/certs/server-ca.crt
+			各指令含义：
+
+			SSLEngine ：这个指令用于开启或关闭SSL/TLS协议引擎。
+
+			SSLCertificateFile：该指令用于指定服务器持有的X.509证书(PEM编码)，其中还可以包含对应的RSA或DSA私钥。如果其中包含的私钥已经使用密语加密，那么在Apache启动的时候将会提示输入密语。
+
+			SSLCertificateKeyFile：指定了服务器私钥文件(PEM编码)的位置。如果SSLCertificateFile指定的服务器证书文件中不包含相应的私钥，那么就必须使用该指令，否则就不需要使用。
+
+			SSLCertificateChainFile：这个指令指定了一个多合一的CA证书，用于明确的创建服务器的证书链。这个证书链将被与服务器证书一起发送给客户端，由直接签发服务器证书的CA证书开始，按证书链顺序回溯，一直到根CA的证书结束，这一系列的CA证书(PEM格式)就构成了服务器的证书链。这有利于避免在执行客户端认证时多个CA证书之间出现混淆或冲突。
+
+	6、测试Apache HTTPS
+
+		重启Apache
+			/etc/init.d/apache2 restart
+			
+		使用curl来验证
+			curl https://localhost/ -k 
+			-k参数的意思是允许不验证访问SSL站点，因为如果要验证，就不能使用localhost做测试，而只能用生成证书时明确指定的域名。
+
+		使用浏览器
+
+			访问服务器时输入https://域名(或IP)，浏览器会弹出安装服务器证明书的窗口。说明服务器已经支持SSL了。
+
+	7、其它知识点
+
+	在上面SSL站点配置文件中所使用的是”_default_”(默认虚拟主机)，下面说下相关的知识点。
+
+	”_default_”(默认虚拟主机)虚拟主机可以捕获所有指向没指定的IP地址和端口的请求。比如：一个没被任何虚拟主机使用的地址/端口对。
+
+	仅当没有其他虚拟主机符合客户端请求的IP地址和端口号时，”_default_”虚拟主机才会捕获这个请求。并且仅当”_default_”虚拟主机的端口号(默认值由您的Listen指定)与客户端发送请求的目的端口号相符时，这个请求才会被捕获。也可以使用通配符(例如：”_default_:*”)来捕获任何端口号的请求。
+
+	服务器配置示例：
+		DocumentRoot /www/default
+
+	这段配置内容的意思是所有访问这个WEB服务器的443端口的请求会被这个默认虚拟主机处理。
+
+	另外仅当客户端连接的目的IP地址和端口号没有指定而且不与任何一个虚拟主机(包括”_default_”虚拟主机)匹配的时候，才会用主服务器来伺服请求。换句话说，主服务器仅捕获没有指定IP地址和端口的请求。
+
+	
+三、参考文档
+
+	http://www.goolge.com 
+	http://www.berlinix.com/apache_https.html 
+	http://berryfl.wordpress.com/2011/07/11/self-singed-cert/ 
+	http://wiki.debian.org.hk/w/Generate_SSL_cert#.E4.BD.BF.E7.94.A8_openssl

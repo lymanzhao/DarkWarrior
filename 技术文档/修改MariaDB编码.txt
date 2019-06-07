@@ -1,0 +1,20 @@
+	
+		ÐÞ¸Ä/etc/mysql/my.cnf
+		On MySQL 5.5 I have in my.cnf
+
+[mysqld] 
+init_connect='SET collation_connection = utf8_unicode_ci' 
+init_connect='SET NAMES utf8' 
+character-set-server=utf8 
+collation-server=utf8_unicode_ci 
+skip-character-set-client-handshake
+
+[client]
+default-character-set=utf8
+
+[mysql]
+default-character-set=utf8
+ 
+Result is
+
+mysql> show variables like "%character%";show variables like "%collation%";

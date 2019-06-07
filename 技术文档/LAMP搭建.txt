@@ -1,0 +1,169 @@
+1.安装CentOS 6 ,可以选择最小安装，也可以安装桌面
+
+2.升级系统
+
+yum update
+3.安装mysql,并设置mysql开机自启动，同时启动mysql
+
+yum install mysql
+yum install mysql-server
+chkconfig --levels 35 mysqld on
+service mysqld start
+4.配置mysql的root密码
+
+mysql_secure_installation
+
+Enter current password for root (enter for none): ( 回车)
+OK, successfully used password, moving on...
+
+Setting the root password ensures that nobody can log into the MySQL
+root user without the proper authorisation.
+
+Set root password? [Y/n] (Y)
+
+New password: (123456)
+Re-enter new password: (123456)
+Password updated successfully!
+Reloading privilege tables..
+ ... Success!
+
+By default, a MySQL installation has an anonymous user, allowing anyone
+to log into MySQL without having to have a user account created for
+them.  This is intended only for testing, and to make the installation
+go a bit smoother.  You should remove them before moving into a
+production environment.
+
+Remove anonymous users? [Y/n]
+
+(是否移出数据库的默认帐户，如果移出，那么在终端中直接输入mysql是会提示连接错误的)Y
+
+Normally, root should only be allowed to connect from 'localhost'.  This
+ensures that someone cannot guess at the root password from the network.
+
+Disallow root login remotely? [Y/n]
+
+(是否禁止root的远程登录)Y
+By default, MySQL comes with a database named 'test' that anyone can
+access.  This is also intended only for testing, and should be removed
+before moving into a production environment.
+
+Remove test database and access to it? [Y/n] Y
+Reload privilege tables now? [Y/n] Y
+
+5.安装apache,并设置开机启动
+
+yum install httpd
+chkconfig --levels 35 httpd on
+service httpd start
+这时候可以测试apache是否正常工作
+
+直接浏览器访问localhost应该没问题，但是如果别的机子访问不了的话，是因为防火墙的关系，配置防火墙
+
+（后面的ssl还会有这个问题的）
+
+6.安装php
+
+yum install php
+ 
+yum install php-mysql php-gd php-imap php-ldap php-odbc php-pear php-xml php-xmlrpc
+这个时候php就安装完成拉，写个脚本测试一下
+
+vi /var/www/html/info.php
+输入
+
+<?php
+phpinfo();?>
+访问localhost/info.php即可～
+
+7.安装phpMyAdmin
+
+rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+rpm -ivh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+
+yum install phpmyadmin
+
+安装完成后还需要配置一下访问权限，使得出了本机外，其他机子也能访问phpMyAdmin
+
+vi /etc/httpd/conf.d/phpMyAdmin.conf
+找到两个directory的权限设置，Allow from 改成All
+
+<Directory /usr/share/phpMyAdmin/>
+   Order Deny,Allow
+   Deny from All
+   Allow from 127.0.0.1
+   Allow from All
+</Directory>
+<Directory /usr/share/phpMyAdmin/setup/>
+   Order Deny,Allow
+   Deny from All
+   Allow from 127.0.0.1
+   Allow from All
+</Directory>
+
+重启服务器
+
+service httpd restart
+测试localhost/phpMyAdmin
+
+用户名密码:root 123456
+
+OK～ LAMP搭建完毕,
+
+8.搭建SSL,让apache支持https
+
+yum install mod_ssl
+其实安装完这个模块后，重启完apache 就可以用https://localhost测试了，因为他创建了默认的证书
+
+在/etc/pki/tls下
+
+当然我们也可以用openssl创建自己的证书
+
+yum install openssl
+生成证书文件
+创建一个rsa私钥,文件名为server.key
+
+openssl genrsa -out server.key 1024
+
+Generating RSA private key, 1024 bit long modulus
+............++++++
+............++++++
+e is 65537 (0x10001)
+
+
+用 server.key 生成证书签署请求 CSR
+
+openssl req -new -key server.key -out server.csr
+Country Name:两个字母的国家代号
+State or Province Name:省份名称
+Locality Name:城市名称
+Organization Name:公司名称
+Organizational Unit Name:部门名称
+Common Name:你的姓名
+Email Address:地址
+至于 'extra' attributes 不用输入.直接回车
+
+生成证书CRT文件server.crt。
+
+openssl x509 -days 365 -req -in server.csr -signkey server.key -out server.crt
+修改ssl.conf指定我们自己生成的证书
+
+vi /etc/httpd/conf.d/ssl.conf
+找到如下位置，修改路径
+
+#   Server Certificate:
+# Point SSLCertificateFile at a PEM encoded certificate.  If
+# the certificate is encrypted, then you will be prompted for a
+# pass phrase.  Note that a kill -HUP will prompt again.  A new
+# certificate can be generated using the genkey(1) command.
+SSLCertificateFile /etc/pki/tls/certs/localhost.crt
+
+#   Server Private Key:
+#   If the key is not combined with the certificate, use this
+#   directive to point at the key file.  Keep in mind that if
+#   you've both a RSA and a DSA private key you can configure
+#   both in parallel (to also allow the use of DSA ciphers, etc.)
+SSLCertificateKeyFile /etc/pki/tls/private/localhost.key
+
+OK
+
+service httpd restart

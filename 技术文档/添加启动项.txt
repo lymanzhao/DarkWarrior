@@ -1,0 +1,2 @@
+sudo vi /etc/rc.local
+	svnserve -d -r /var/www/svn

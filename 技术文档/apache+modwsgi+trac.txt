@@ -1,0 +1,105 @@
+
+安装 mod_wsgi
+
+创建 wsgi脚本
+
+1.单项目
+
+import os
+
+os.environ['TRAC_ENV'] = '/var/www/projects/test' 
+os.environ['PYTHON_EGG_CACHE'] = '/var/www/projects/test/plugins'
+
+import trac.web.main
+application = trac.web.main.dispatch_request
+
+
+2.多项目
+
+import os
+
+os.environ['TRAC_ENV_PARENT_DIR'] = '/var/www/projects'
+os.environ['PYTHON_EGG_CACHE'] = '/var/www/projects/test/plugins'
+
+import trac.web.main
+application = trac.web.main.dispatch_request
+
+
+
+配置httpd.conf
+1.单项目
+
+LoadModule wsgi_module modules/mod_wsgi.so
+
+
+WSGIScriptAlias / /var/www/projects/test/trac.wsgi
+#WSGIPythonPath /var/www/projects/test
+
+<Directory /var/www/projects/test>
+    WSGIApplicationGroup %{GLOBAL}
+    # For Apache 2.2
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Allow from all
+    </IfModule>
+    # For Apache 2.4
+   # <IfModule mod_authz_core.c>
+   #     Require all granted
+   # </IfModule>
+</Directory>
+
+
+多项目
+
+WSGIScriptAlias / /var/www/projects/trac.wsgi
+#WSGIPythonPath /var/www/projects/test
+
+<Directory /var/www/projects>
+    WSGIApplicationGroup %{GLOBAL}
+    # For Apache 2.2
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Allow from all
+    </IfModule>
+    # For Apache 2.4
+   # <IfModule mod_authz_core.c>
+   #     Require all granted
+   # </IfModule>
+</Directory>
+
+<Location "/login">
+  AuthType Basic
+  AuthName "Trac"
+  AuthUserFile /var/www/projects/test/trac.htpasswd
+  Require valid-user
+</Location>
+
+
+
+
+
+给apache 读取权限
+1.单项目
+chown -R apache:apache /var/www/projects/test
+
+2.多项目
+chown -R apache:apache /var/www/projects
+
+设置trac登录 apache配置 httpd.conf
+1.单项目
+
+<Location "/login">
+  AuthType Basic
+  AuthName "Trac"
+  AuthUserFile /var/www/projects/test/trac.htpasswd
+  Require valid-user
+</Location>
+
+2.多项目
+
+<Location "/[^/]+/login">
+  AuthType Basic
+  AuthName "Trac"
+  AuthUserFile /var/www/projects/trac.htpasswd
+  Require valid-user
+</Location>

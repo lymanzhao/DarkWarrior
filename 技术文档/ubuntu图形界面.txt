@@ -1,0 +1,5 @@
+
+方法一：关闭桌面显示管理器（中文版本关闭后出现中文乱码）
+	systemctl disable lightdm.service
+
+	开启：systemctl enable lightdm.service

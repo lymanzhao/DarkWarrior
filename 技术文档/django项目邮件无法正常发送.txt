@@ -1,0 +1,6 @@
+
+进入selinux 把SELINUX设置成 permissive
+
+vim /etc/sysconfig/selinux 
+
+	SELINUX=permissive	

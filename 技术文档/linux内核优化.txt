@@ -1,0 +1,10 @@
+
+vim /etc/sysctl.conf 
+
+×îºóÌí¼Ó£º
+
+kernel.msgmni = 1024
+kernel.sem = 250 256000 32 2048
+
+
+

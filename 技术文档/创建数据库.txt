@@ -1,0 +1,10 @@
+mysql> CREATE DATABASE trac DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+	或者：	mysql> CREATE DATABASE trac DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+		
+		mysql> USE trac;
+		mysql> SHOW VARIABLES WHERE variable_name IN ('character_set_database', 'collation_database');  #查看是否成功有utf8
+
+创建mysql 用户
+
+		mysql> GRANT ALL ON trac.* TO tracuser@localhost IDENTIFIED BY 'password'; 
+		       #GRANT ALL ON trac.* TO trac@localhost IDENTIFIED BY 'trac';

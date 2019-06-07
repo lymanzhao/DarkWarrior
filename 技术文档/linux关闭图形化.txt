@@ -1,0 +1,5 @@
+
+
+	vim /etc/inittab 
+
+	把最下面的 id:5:initdefault: 中的5 修改为3

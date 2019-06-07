@@ -1,0 +1,32 @@
+
+ServerRoot      指apache根路径
+
+Listen          指监听端口 例如：12.23.56.78:80 或 80（指所以端口） 
+
+LoadModule      加载动态模块
+
+User            指定使用apache的使用人
+
+ServerAdmin     指定apache报错时给发送报错信息的邮箱地址
+
+ServerName      机器名或IP
+
+<directory>     设置接入权限
+
+DocumentRoot    apache默认识别路径
+
+DirectoryIndex   默认首页（按顺序查找）
+
+<Files>            设置单个文件权限
+
+ErrorLog         指定错误日志路径（相对路径:从serverroot下开始）
+
+Include           加载其他配置文件
+
+<IfModule>         设置条件权限
+
+
+
+
+
+

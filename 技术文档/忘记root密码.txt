@@ -1,0 +1,13 @@
+vim /etc/my.cnf
+
+	在mysqld里面添加：
+		skip-grant-tables
+
+
+重启mysql
+
+直接mysql就进去了
+
+	update user set password=password("cgworld") where user='root';
+	flush privileges; #刷新命令
+		

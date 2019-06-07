@@ -1,0 +1,16 @@
+
+
+<select id="pid" onchange="gradeChange()" >
+	<option value="a">选项一</option>
+
+	<option value="b">选项二</option>
+</select>
+
+
+<script type="text/javascript">
+	   function gradeChange(){
+		var objS = document.getElementById("pid");
+		var grade = objS.options[objS.selectedIndex].value;
+		alert(grade);
+	   }
+</script>

@@ -1,0 +1,16 @@
+操作方法：
+    1、杀掉原来进行着的mysql：
+       rcmysqld stop
+       或者：
+       service mysqld stop
+       或者：
+       kill -TERM mysqld
+    2、以命令行参数启动mysql：
+       /usr/bin/mysqld_safe --skip-grant-tables &
+    3、修改管理员密码：
+       use mysql;
+       update user set password=password('yournewpasswordhere') where user='root';
+       flush privileges;
+       exit;
+    4、杀死mysql，重启mysql
+

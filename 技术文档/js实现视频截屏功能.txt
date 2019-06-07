@@ -1,0 +1,77 @@
+﻿ {% for attachment_video in attachment_videos %}
+     <div id="main" style="position:absolute;top:50px;left:50px;">
+        <div id="video_player" style="width:320px;height:240px;background-color:black;">
+            <div id="media_layer">
+                <video autoplay id="media_element" width="320" height="240">
+
+                    <source src="/media/{{ attachment_video.url }}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"' >
+                </video>
+            </div>
+            <div id="canvas_layer" style="position:absolute;top:0px;left:0px;">
+                <canvas id="canvasOne" width="960" height="400">
+                    Your browser does not support HTML5 Canvas.
+                </canvas>
+            </div>
+        </div>
+        <div style="display:none;">
+            <canvas id="snapshotCanvas" width="960" height="400"></canvas>
+        </div>
+    </div>
+    {% endfor %}
+
+
+
+<script>
+    /* long version
+     window.addEventListener("load", eventWindowLoaded, false);
+     function eventWindowLoaded(){
+     canvasApp();
+     }
+     */
+    $(document).ready(function() {
+        canvasApp();
+    });
+
+    function canvasSupport(){
+        return Modernizr.canvas;
+    }
+
+    function canvasApp(){
+        if(!canvasSupport()){
+            return false;
+        }
+
+        var theVideo = document.getElementById('media_element');
+        //alert(theVideo.videoWidth)
+        //alert(theVideo.videoHeight)
+
+        var vidOverlayCanvas = document.getElementById('canvasOne');
+        var vidOverlayContext = vidOverlayCanvas.getContext('2d');
+        vidOverlayCanvas.addEventListener("mousedown", getPosition, false);//当鼠标指针移动到元素上方，并按下鼠标按键时，会发生 mousedown 事件,执行getPosition函数，可选。布尔值，指定事件是否在捕获或冒泡阶段执行。
+
+        var snapshotCanvas = document.getElementById('snapshotCanvas');
+        var snapshotContext = snapshotCanvas.getContext('2d');
+
+
+        function getPosition(event){
+
+            //var x = event.x;
+            //var y = event.y;
+
+            // -= vidOverlayCanvas.offsetLeft;
+            //y -= vidOverlayCanvas.offsetTop;
+
+            //console.log("x:" + x + " y:" + y);
+
+            //snapshotContext.drawImage(theVideo, x-75, y-75, 640, 360, 0, 0, 640, 360);
+            theVideo.width=theVideo.videoWidth;
+            theVideo.height=theVideo.videoHeight;
+
+            snapshotContext.drawImage(theVideo, 0,0);
+            //window.open(snapshotCanvas.toDataURL('image/png'));
+            $('#main').append('<img src="'+snapshotCanvas.toDataURL('image/png')+'" />');
+
+        }
+
+    }
+</script>

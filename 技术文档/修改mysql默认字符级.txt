@@ -1,0 +1,29 @@
+
+		修改默认字符集  
+
+
+ 1、 最简单的修改方法，就是修改mysql的my.ini文件中的字符集键值，  
+	如 ：
+	default-character-set = utf8  
+	character_set_server = utf8   
+	修改完后，重启mysql的服务，service mysql restart 
+  
+使用 mysql> SHOW VARIABLES LIKE 'character%';查看，发现数据库编码均已改成utf8  +--------------------------+---------------------------------+  | Variable_name | Value |   +--------------------------+---------------------------------+  | character_set_client | utf8 |   | character_set_connection | utf8 |  | character_set_database | utf8 |  | character_set_filesystem | binary |  | character_set_results | utf8 |  | character_set_server | utf8 |  | character_set_system | utf8 |   | character_sets_dir | D:"mysql-5.0.37"share"charsets" |  +--------------------------+---------------------------------+   
+ 
+2、还有一种修改字符集的方法，就是使用mysql的命令 
+ 
+    mysql> SET character_set_client = utf8    
+    mysql> SET character_set_connection = utf8 
+    mysql> SET character_set_database = utf8 
+    mysql> SET character_set_results = utf8 
+    mysql> SET character_set_server = utf8 
+    mysql> SET collation_connection = utf8  
+    mysql> SET collation_database = utf8 
+    mysql> SET collation_server = utf8  
+  
+ 3、一般就算设置了表的默认字符集为utf8并且通过UTF-8编码发送查询，你会发现存入数据库的仍然是乱码。问题就出在这个connection连接层上。解决方法是在发送查询前执行一下下面这句：   
+	 SET NAMES 'utf8';   
+ 它相当于下面的三句指令：
+  SET character_set_client = utf8; 
+ SET character_set_results = utf8; 
+ SET character_set_connection = utf8; 

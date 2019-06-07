@@ -1,0 +1,139 @@
+1.安装apache
+
+	yum install httpd
+
+-------------------------------------------------------------------
+
+
+2.安装python2.7.10
+
+	tar -xvf Python-2.7.tar.bz2
+  	cd Python-2.7
+  	./configure  --enable-shared       这里一定要注意，解压完之后要设置enable-shared
+
+ 
+	make
+
+ 
+	make install
+
+	一般安装到的路径是： /usr/local/lib/python2.7
+
+	mv /usr/bin/python /usr/bin/python-2.6.6
+	
+	ln -s /usr/local/bin/python /usr/bin/python
+	
+	vim /usr/bin/yum
+		/usr/bin/python-2.6.6
+
+------------------------------------------------------------------------------------
+
+	错误：
+
+ 
+		/usr/local/lib/python2.7/config/libpython2.7.a:  could not read symbols: Bad value
+  		collect2: ld returned 1 exit status
+  		apxs:Error: Command failed with rc=65536
+
+ 
+ 
+
+ 
+		这是因为安装python的时候，没有   ./configure  --enable-shared
+
+ 
+ 
+
+ 
+		加上后重新编译，然后运行python，
+
+ 
+ 
+
+ 
+	遇到错误：
+
+ 
+		python: error while loading shared  libraries: libpython2.7.so.1.0: 
+  		cannot open shared object file: No such file or
+
+   
+	解决方案： 
+
+	新建下面文件
+
+  		vim /etc/ld.so.conf.d/python2.7.conf
+  		加入内容：
+  		/usr/local/lib
+  		保存退出后运行：
+  			ldconfig
+
+  
+	再次执行 python，问题成功解决。
+
+
+3.安装mod_wsgi
+	
+	安装 mod_wsgi 之前先安装apache的apxs扩展：
+		
+		yum install httpd-devel
+
+	./configure --with-python=/usr/local/bin/python2.7
+
+	make
+
+	make install 
+
+
+
+4.vim /etc/httpd/conf/httpd.conf   配置apache配置文件
+	
+	添加：
+		LoadModule  wsgi_module modules/mod_wsgi.so
+
+	WSGIScriptAlias  / "/var/www/cgworldline/cgworldline/wsgi.py"
+	WSGIPythonPath "/var/www/cgworldline"
+
+	<Directory "/var/www/cgworldline/cgworldline">
+	<Files wsgi.py>
+	Order allow,deny
+	Allow from all
+	</Files>
+	</Directory>
+
+
+	<Location "/static/">
+    	SetHandler None
+	</Location>
+
+	Alias /static "/var/www/cgworldline/word/static"
+
+
+	Alias /media "/var/www/cgworldline/word/static"
+	<Directory "/var/www/cgworldline/word/static">
+    	AllowOverride None
+    	Options None
+    	Order allow,deny   
+    	Allow from all   
+	</Directory>
+ 	<Location "/media/">
+    	SetHandler None
+	</Location>
+ 	<LocationMatch "\.(jpg|gif|png|txt|ico|pdf|css|jpeg)$">
+    	SetHandler None
+	</LocationMatch>
+
+
+
+
+2.给apache设置访问权限
+
+	chown apache:apache /var/www/cgworldline
+	chown apache:apache /var/www/cgworldline/db.sqlite3
+	chmod 777 file
+	chmod 777 imge 
+
+3.vim /etc/sysconfig/httpd    设置apache 字符集环境变量
+
+	export LANG='zh_CN.UTF-8'
+	export LC_ALL='zh_CN.UTF-8'
