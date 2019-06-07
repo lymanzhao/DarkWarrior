@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="col-lg-12">
+  
+      <div class="card-box">
+          <h4 class="header-title m-t-0 m-b-30">版本库最近修改</h4>
+       <div class="table-responsive"> 
+       <table class="table">
+        <thead>
+        <tr>
+            <th width="40%">版本号 &nbsp;&nbsp;|&nbsp;&nbsp;作者&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;最后修改时间&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;修改行数</th>
+            <th>提交说明</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for foo in lists %}
+        <tr>
+            <td>{{ foo.info }}</td>
+            <td>{{ foo.commit }}</td>
+           {% empty %}
+           <td>没有记录</td>
+        </tr>
+
+        {% endfor %}
+        </tbody>
+        </table>
+</div>
+  </div>
+</div>
+
+{% endblock %}

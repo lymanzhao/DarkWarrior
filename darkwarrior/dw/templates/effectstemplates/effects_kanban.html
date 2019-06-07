@@ -1,0 +1,635 @@
+{% extends 'base.html' %}
+{% block css %}
+    {{ block.super }}
+    {% load staticfiles %}
+    <!-- Custom box (Modal) css -->
+    <link href="{% static 'assets/plugins/custombox/dist/custombox.min.css' %}" rel="stylesheet">
+    <!-- Dragula (Drag and drop) css -->
+    <link href="{% static 'assets/plugins/dragula/dragula.min.css' %}" rel="stylesheet">
+    <script type="text/javascript" src="{% static 'search/taskcontent_ajaxsearch.js' %}"></script> <!--ajax 搜索功能js    -->
+    <script src="{% static 'jQuery.js' %}"></script>
+
+
+    <style>
+        .新功能{background-color: #188ae2;}
+        .用户体验{background-color: #10c469;}
+        .bug修复{background-color: #35b8e0;}
+        .测试问题{background-color: #ff5b5b;}
+        .用户界面{background-color: #5b69bc;}
+        .col-md-3{
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+        .card-box{
+            padding: 8px;
+            margin-bottom: 8px;
+        }
+        .text-primary{
+            color: #000000 !important;
+        }
+        *{padding: 0;margin: 0;}
+        .sort_ul li:hover{background-color: #e3e3e3;color:#00a8ff;}
+        label{cursor: pointer;}
+    </style>
+{% endblock %}
+
+
+
+
+{% block content %}
+
+    <div>
+        <div style="position: fixed;right:5%;top:90px;z-index:999;" id="search_div" >
+            {% if username_error %}
+                <div style="font-size:18px;color:#ffffff;margin:0 auto;
+                         position: fixed;left: 50%;top: 50%;z-index: 99;background:#d3d3da;">用户名不存在!</div>
+            {% endif %}
+            {% if sortname_error %}
+                <div style="font-size:18px;color:#ffffff;margin:0 auto;
+                         position: fixed;left: 50%;top: 50%;z-index: 99;background:#d3d3da;">数据异常!</div>
+            {% endif %}
+            <form role="search" class="navbar-left app-search pull-left hidden-xs" >
+                <div style="border:0px solid red;">
+                    <input type="text"     value="{% ifnotequal search_content None%}{{ search_content }}{% endifnotequal %}"
+                           name="search_content" placeholder="关键字" style="border:0px solid gainsboro;line-height: 30px;width: 60%;margin-left: 39%;">
+                    <a onclick="$('#search_kanban').click()" style="cursor:pointer;margin-left: -20px;"><i class="fa fa-search"></i></a>
+                </div>
+                <div style="border:0px solid red;">
+                    {% for sort in sort_list %}
+                        <div class="radio radio-success radio-single" style="padding-left:20px;display: inline-block;">
+                            <input type="radio"   value="{{ sort.name }}" name="sort_name"
+                                   {% ifequal sort_name  sort.name %}checked="checked"{% else %}{% endifequal %} id="{{ sort.name }}" hidden="hidden">
+                        </div>
+                        <label for="{{ sort.name }}">{{ sort.name_cn }}</label>
+
+                    {% endfor %}
+                </div>
+
+                <input type="submit" value="submit" id="search_kanban" hidden="hidden">
+
+                <script>
+                    $(document).ready(function () {
+                        $('label').each(function () {
+                            if($('#'+$(this).attr('for')).attr('checked')=='checked'){
+                                $(this).css('color','#71b6f9');
+                            }
+                        });
+                        $('.radio').click(function () {
+                            $(this).next().css('color','#71b6f9');
+                            $('#search_kanban').click()
+                        })
+                    })
+                </script>
+            </form>
+
+        </div>
+    </div>
+
+
+    <div class="row" >
+
+        <div style="border:0px solid forestgreen;">
+            <div style="margin: 0 auto;" id="cards_div" >
+                {% for kanban in kanbans %}
+                    <div class="col-md-3" style="border:0px solid blue;">
+                        <div class="card-box taskboard-box" style="border:0px solid #ff48ef;">
+
+                            <h4 class="header-title m-t-0 m-b-30 text-primary" style="display: inline-block;">{{ kanban.status }}</h4>
+                            <div  style="color:#959595;font-size: 15px;display: inline-block;border: 0px solid red;position: absolute;z-index: 99;margin-left:10px;" class="sort" >
+                                <i class="fa fa-sort" aria-hidden="true" class_="show_sort"></i>
+                                <ul style="background-color:white;list-style: none;border: 2px solid #e9e9e9;width:100px;display: none;" class="sort_ul" >
+                                    <li class="ID"  judge="along"  class_="{{ kanban.status.id }}" style="cursor: default;">ID<i class="fa fa-sort" aria-hidden="true"></i></li>
+                                    <li class="type" judge="along"  class_="{{ kanban.status.id }}" style="cursor: default;">类型<i class="fa fa-sort" aria-hidden="true"></i></li>
+                                    <li class="priority" judge="along"  class_="{{ kanban.status.id }}" style="cursor: default;">优先级<i class="fa fa-sort" aria-hidden="true"></i></li>
+                                    <li class="time" judge="along"  class_="{{ kanban.status.id }}" style="cursor: default;">日期<i class="fa fa-sort" aria-hidden="true"></i></li>
+                                </ul>
+                            </div>
+                            <ul class="list-unstyled task-list" id="drag-{{ kanban.status.id }}" judge="task_list" status_id="{{ kanban.status.id }}" status_name="{{ kanban.status }}">
+                                {% for task in kanban.task %}
+                                    <li id="{{task.task.id }}"  class="{{ kanban.status.id }}"  type_="{{ task.task.type.value }}"
+                                        priority="{{ task.task.priority.value }}" time="{{ task.task.end_date }}" ID_="{{ task.task.id }}">
+                                        <div class="card-box kanban-box">
+
+                                            <div class="kanban-detail" style="margin-left: 5%;margin-right: 5%;margin-bottom: 5%">
+
+                                                <div class="dropdown pull-right">
+                                                    <a href="#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false">
+                                                        <i class="zmdi zmdi-more-vert"></i>
+                                                    </a>
+                                                    <ul class="dropdown-menu" role="menu">
+                                                        <li>
+                                                            <a href="#" onclick="$('#copy_task{{ task.task.id }}').show()">复制到</a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="#" onclick="$('#move_task{{ task.task.id }}').show()">移动到</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div id="copy_task{{ task.task.id }}" style="background-color: rgba(0,0,0,0.3);z-index:9999;position: fixed;top:0;left:0;width: 100%;height: 100%;" {% if error_change_parent %}{% else %}hidden="hidden"{% endif %}>
+                                                    <div style="width: 500px;height: 320px;background-color:white;border-radius: 4px;position: fixed;left:35%;top:27%;" id="notice_div">
+                                                        <form method="post" action="">
+                                                            <div style="width: 70%;border:0px solid #d1d1d1;margin: auto ;padding-top: 50px;" align="center">
+                                                                <h3>复制任务</h3>
+                                                                <p style="color:red;">{{ error_change_parent }}</p>
+                                                                <input type="number" value="{{ url }}" id="copy_project_id{{ task.task.id }}" hidden="hidden">
+                                                                <input type="text" name="judge" value="copy_task" hidden="hidden">
+                                                                <input type="text" name="task_id" value="{{ task.task.id }}" hidden="hidden">
+                                                                <input type="text" class="form-control" placeholder="请输入项目名称关键字"  value="" id="search_copy_project{{ task.task.id }}" onkeyup="show_copy_project{{ task.task.id }}(this.value)">
+                                                                <div id="project_copy_list{{ task.task.id }}"></div>
+
+                                                            </div>
+
+                                                            <div style="margin-top: 10%">
+                                                                <input type="submit" value="确定！" style="background-color: #249cdb;color: white;border:none;height: 40px;width: 100px;font-size: 15px;margin-left:15%;" name="change">
+                                                                <input type="button" value="取消" style="background-color: #00b900;color: white;border:none;height: 40px;width: 60px;font-size: 15px;rotation-point: right 50%;" onclick="$('#copy_task{{ task.task.id }}').hide()">
+
+                                                            </div>
+                                                        </form>
+
+                                                        <script>
+                                                            function show_copy_project{{ task.task.id }}(str)
+                                                            {
+                                                                var xmlhttp;
+                                                                var project_id = $('#copy_project_id{{ task.task.id }}').val();
+                                                                var flag = false;
+                                                                if(flag){
+                                                                    return false;
+                                                                }
+                                                                if (str.length==0)
+                                                                {
+                                                                    //document.getElementById("txtReporter").innerHTML="";
+                                                                    return false;
+                                                                }
+                                                                if (window.XMLHttpRequest)
+                                                                {// code for IE7+, Firefox, Chrome, Opera, Safari
+                                                                    xmlhttp=new XMLHttpRequest();
+                                                                }
+                                                                else
+                                                                {// code for IE6, IE5
+                                                                    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+                                                                }
+                                                                xmlhttp.onreadystatechange=function()
+                                                                {
+                                                                    if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                                                                    {
+
+                                                                        document.getElementById("project_copy_list{{ task.task.id }}").innerHTML=xmlhttp.responseText;
+                                                                        //document.getElementById('txtReporter').onclick();
+                                                                        //alert(str)
+                                                                        //flag = true;
+                                                                        //return false
+                                                                        //alert(xmlhttp.responseText)
+                                                                        //$('#search_task').after(xmlhttp.responseText)
+
+                                                                    }
+                                                                };
+
+                                                                xmlhttp.open("GET","/"+project_id+"/search_project?q="+str,true);
+                                                                xmlhttp.send();
+                                                                flag = true;
+                                                            }
+                                                        </script>
+                                                    </div>
+                                                </div>
+
+                                                <div id="move_task{{ task.task.id }}" style="background-color: rgba(0,0,0,0.3);z-index:9999;position: fixed;top:0;left:0;width: 100%;height: 100%;" {% if error_change_parent %}{% else %}hidden="hidden"{% endif %}>
+                                                    <div style="width: 500px;height: 320px;background-color:white;border-radius: 4px;position: fixed;left:35%;top:27%;" id="notice_div">
+                                                        <form method="post" action="">
+                                                            <div style="width: 70%;border:0px solid #d1d1d1;margin: auto ;padding-top: 50px;" align="center">
+                                                                <h3>移动任务</h3>
+                                                                <p style="color:red;">{{ error_change_parent }}</p>
+                                                                <input type="number" value="{{ url }}" id="move_project_id{{ task.task.id }}" hidden="hidden">
+                                                                <input type="text" name="judge" value="move_task" hidden="hidden">
+                                                                <input type="text" name="task_id" value="{{ task.task.id }}" hidden="hidden">
+                                                                <input type="text" class="form-control" placeholder="请输入项目名称关键字"  value="" id="search_move_project" onkeyup="show_move_project{{ task.task.id }}(this.value)">
+                                                                <div id="project_move_list{{ task.task.id }}"></div>
+
+                                                            </div>
+
+                                                            <div style="margin-top: 10%">
+                                                                <input type="submit" value="确定！" style="background-color: #249cdb;color: white;border:none;height: 40px;width: 100px;font-size: 15px;margin-left:15%;" name="change">
+                                                                <input type="button" value="取消" style="background-color: #00b900;color: white;border:none;height: 40px;width: 60px;font-size: 15px;rotation-point: right 50%;" onclick="$('#move_task{{ task.task.id }}').hide()">
+
+                                                            </div>
+                                                        </form>
+
+                                                        <script>
+                                                            function show_move_project{{ task.task.id }}(str)
+                                                            {
+                                                                var xmlhttp;
+                                                                var project_id = $('#move_project_id{{ task.task.id }}').val();
+                                                                var flag = false;
+                                                                if(flag){
+                                                                    return false;
+                                                                }
+                                                                if (str.length==0)
+                                                                {
+                                                                    //document.getElementById("txtReporter").innerHTML="";
+                                                                    return false;
+                                                                }
+                                                                if (window.XMLHttpRequest)
+                                                                {// code for IE7+, Firefox, Chrome, Opera, Safari
+                                                                    xmlhttp=new XMLHttpRequest();
+                                                                }
+                                                                else
+                                                                {// code for IE6, IE5
+                                                                    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+                                                                }
+                                                                xmlhttp.onreadystatechange=function()
+                                                                {
+                                                                    if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                                                                    {
+
+                                                                        document.getElementById("project_move_list{{ task.task.id }}").innerHTML=xmlhttp.responseText;
+                                                                        //document.getElementById('txtReporter').onclick();
+                                                                        //alert(str)
+                                                                        //flag = true;
+                                                                        //return false
+                                                                        //alert(xmlhttp.responseText)
+                                                                        //$('#search_task').after(xmlhttp.responseText)
+
+                                                                    }
+                                                                };
+
+                                                                xmlhttp.open("GET","/"+project_id+"/search_project?q="+str,true);
+                                                                xmlhttp.send();
+                                                                flag = true;
+                                                            }
+                                                        </script>
+                                                    </div>
+                                                </div>
+
+                                                <a href="/{{ url }}/effects/task/{{ task.task.id }}">
+                                                    <h5><span style="color: #00a8ff;">#{{ task.task.display_id }}</span> ：<span style="font-size: 13px">{{ task.task.summary }}</span></h5>
+                                                    <p>
+                                                        {% if task.task.owner or task.task.task_team.all%}
+                                                            <span style="font-size: 13px;color:#505458;">{{ task.task.owner }}</span>
+                                                            {% for team in  task.task.task_team.all%}
+                                                                <span style="font-size: 13px;color:#505458;">{{ team.name }}</span>
+                                                            {% endfor %}
+                                                        {% else %}
+                                                            <span style="font-size: 13px;color:#505458;" >暂无属主</span>
+                                                        {% endif %}
+                                                        <span class="pull-right label {{ task.task.priority }} " style="background-color:{% if task.task.priority.color %}#{{ task.task.priority.color }}{% else %}#ff0000{% endif %};color:{% if task.task.priority.textColor %}#{{ task.task.priority.textColor }}{% else %}#ffffff{% endif %}" >{{ task.task.priority }}</span>
+                                                    </p>
+                                                    {% if task.task_image %}
+                                                        <img src="/media/{{ task.task_image }}" style="width: 100%; margin-bottom: 20px;">
+                                                    {% endif %}
+                                                </a>
+                                                <p  class="text-muted" style="font-weight: normal;font-size: 14px;">{{ task.task.milestone }}
+                                                    <span  style="color: #98a6ad;float: right;">{{ task.task.component }}</span>
+                                                </p>
+                                                <div class="progress progress-bar-success-alt progress-sm m-b-5">
+                                                    <div class="progress-bar progress-bar-success {{ task.task.type.name }} progress-animated wow animated animated"
+                                                         role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"
+                                                         style="width: {{ task.now_progress }}%; visibility: visible; animation-name: animationProgress;">
+                                                    </div>
+                                                </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+
+                            </ul>
+                        </div>
+                    </div>
+
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% if more_data %}
+        <div align="center" id="loading_anymore" style="cursor:pointer;" >加载更多</div>
+    {% endif %}
+
+    <!-- end row -->
+
+
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{% block jQuery %}
+
+    {{ block.super }}
+    <!-- drgula (Drag and drop) js -->
+    <script src="{% static 'assets/plugins/dragula/dragula.min.js' %}"></script>
+
+    <!-- Modal-Effect -->
+    <script src="{% static 'assets/plugins/custombox/dist/custombox.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/custombox/dist/legacy.min.js' %}"></script>
+
+
+    <script type="text/javascript">
+
+
+        dragula([{% for status_id in status_id_names %}document.querySelector('#{{ status_id }}'),{% endfor %}], {
+            isContainer: function (el) {
+                return false; // only elements in drake.containers will be taken into account
+            },
+            moves: function (el, source, handle, sibling) {
+                return true; // elements are always draggable by default
+            },
+            accepts: function (el, target, source, sibling) {
+                return true; // elements can be dropped in any of the `containers` by default
+            },
+            invalid: function (el, handle) {
+                return false; // don't prevent any drags from initiating by default
+            },
+            direction: 'vertical',             // Y axis is considered when determining where an element would be dropped
+            copy: false,                       // elements are moved by default, not copied
+            copySortSource: false,             // elements in copy-source containers can be reordered
+            revertOnSpill: false,              // spilling will put the element back where it was dragged from, if this is true
+            removeOnSpill: false,              // spilling will `.remove` the element, if this is true
+            mirrorContainer: document.body,    // set the element that gets mirror elements appended
+            ignoreInputTextSelection: true     // allows users to select input text, see details below
+        });
+    </script>
+    <script>
+
+
+        $('[class_="show_sort"]').click(function(){
+            $(this).next().toggle('fast')
+        });
+        $('.sort').mouseleave(function(){
+            $(this).children('ul').hide();
+        });
+        //ID排序
+        $('.ID').click(function(){
+            var judge =$(this).attr('judge');
+            var class_ = $(this).attr('class_');
+            if(judge=='along'){
+                $(this).attr('judge','inverse');
+                $(function(){
+                    var div = $('.'+class_).toArray().sort(function(a,b){
+                        return parseInt($(a).attr('ID_'))-parseInt($(b).attr('ID_'))
+                    });
+                    $(div).appendTo('#drag-'+class_)
+                });
+
+
+            }
+            else{
+                $(this).attr('judge','along');
+                $(function(){
+                    var div = $('.'+class_).toArray().sort(function(a,b){
+                        return parseInt($(b).attr('ID_'))-parseInt($(a).attr('ID_'))
+                    });
+                    $(div).appendTo('#drag-'+class_)
+                });
+
+            }
+        });
+
+        //类型排序
+        $('.type').click(function(){
+            var judge =$(this).attr('judge');
+            var class_ = $(this).attr('class_');
+            if(judge=='along'){
+                $(this).attr('judge','inverse');
+                $(function(){
+                    var div = $('.'+class_).toArray().sort(function(a,b){
+                        return parseInt($(a).attr('type_'))-parseInt($(b).attr('type_'))
+                    });
+                    $(div).appendTo('#drag-'+class_)
+                });
+
+            }
+            else{
+                $(this).attr('judge','along');
+                $(function(){
+                    var div = $('.'+class_).toArray().sort(function(a,b){
+                        return parseInt($(b).attr('type_'))-parseInt($(a).attr('type_'))
+                    });
+                    $(div).appendTo('#drag-'+class_)
+                });
+            }
+        });
+
+
+        //优先级排序
+        $('.priority').click(function(){
+            var judge =$(this).attr('judge');
+            var class_ = $(this).attr('class_');
+            if(judge=='along'){
+                $(this).attr('judge','inverse');
+                $(function(){
+                    var div = $('.'+class_).toArray().sort(function(a,b){
+                        return parseInt($(a).attr('priority'))-parseInt($(b).attr('priority'))
+                    });
+                    $(div).appendTo('#drag-'+class_)
+                });
+
+
+            }
+            else{
+                $(this).attr('judge','along');
+                $(function(){
+                    var div = $('.'+class_).toArray().sort(function(a,b){
+                        return parseInt($(b).attr('priority'))-parseInt($(a).attr('priority'))
+                    });
+                    $(div).appendTo('#drag-'+class_)
+                });
+            }
+        });
+
+
+        //日期排序
+        $('.time').click(function(){
+            var judge =$(this).attr('judge');
+            var class_ = $(this).attr('class_');
+            if(judge=='along'){
+                $(this).attr('judge','inverse');
+                $(function(){
+                    var div = $('.'+class_).toArray().sort(function(a,b){
+                        return parseInt(new Date($(a).attr('time').replace(/[\u4e00-\u9fa5]/g,'/')).getTime())-
+                                parseInt(new Date($(b).attr('time').replace(/[\u4e00-\u9fa5]/g,'/')).getTime())
+                    });
+                    $(div).appendTo('#drag-'+class_)
+                });
+            }
+            else{
+                $(this).attr('judge','along');
+                $(function(){
+                    var div = $('.'+class_).toArray().sort(function(a,b){
+                        return parseInt(new Date($(b).attr('time').replace(/[\u4e00-\u9fa5]/g,'/')).getTime())-
+                                parseInt(new Date($(a).attr('time').replace(/[\u4e00-\u9fa5]/g,'/')).getTime())
+                    });
+                    $(div).appendTo('#drag-'+class_)
+                });
+            }
+        });
+
+        //任务描述 限制30字
+        /*$(document).ready(function(){
+         var desc = document.getElementsByName('description');
+         var desc_len = desc.length;
+         for(i=0;i<desc_len;i++){
+         if(desc[i].innerText.length>=30){
+         desc[i].innerHTML = desc[i].innerText.substr(0,30)+'....'
+         }
+
+         }
+         })*/
+
+
+    </script>
+    <script>
+        $(document).ready(function(){
+            //kanban loading
+            var flag = false;
+            $(window).scroll(function() {
+                if(flag){
+                    return false;
+                }
+                if ($(document).scrollTop() >= $(document).height() - $(window).height()-5) {
+                    var tasks_id_all='';
+                    $('li').each(function() {
+                        if($(this).attr('ID_')!=undefined){
+                            tasks_id_all+=$(this).attr('ID_')+',';
+                        }
+
+                    });
+                    search_content  = $('[name="search_content"]').val();
+                    sort_name = $(':checked').val();
+
+                    var project_id = '{{ project_archive.id }}';
+                    var xmlhttp;
+
+                    if (window.XMLHttpRequest)
+                    {// code for IE7+, Firefox, Chrome, Opera, Safari
+                        xmlhttp=new XMLHttpRequest();
+                    }
+                    else
+                    {// code for IE6, IE5
+                        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+                    }
+                    xmlhttp.onreadystatechange=function()
+                    {
+                        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                        {
+                            if(xmlhttp.responseText=='False'){
+                                $('#loading_anymore').hide();
+                            }
+                            else{
+                                $('[judge="task_list"]').each(function() {
+                                    var id = $(this).children('li').last().attr('class');
+                                    $(this).children('li').last().after(xmlhttp.responseText);
+                                    $(this).children('li').each(function(){
+                                        if($(this).attr('class')!=id){
+                                            $(this).remove();
+                                        }
+
+                                    })
+                                });
+
+                                flag = false;
+                                $('#loading_anymore').html('加载更多');
+                            }
+                        }
+                    };
+                    xmlhttp.open("GET","/"+project_id+"/effects/loading_kanban/"+tasks_id_all+"/?"+'&search_content='+search_content+'&sort_name='+sort_name,true);
+                    xmlhttp.send();
+                    flag = true;
+                    $('#loading_anymore').html('正在加载数据。。。。');
+
+                }
+            });
+            //kanban loading --end
+
+
+            //kanban style
+            var cards_num = parseInt($('#cards_div').children().length);
+            if(parseInt($('.row').css('width'))>992){
+                if(cards_num<=4){
+                    $('#cards_div').css('width',parseInt($('.row').css('width'))/4*parseInt($('#cards_div').children().length));
+                    $('.col-md-3').css('width',parseInt($('.row').css('width'))/4);
+                }
+                else{
+                    $('#cards_div').css('width',parseInt($('.row').css('width')));
+                    $('.col-md-3').css('width',parseInt($('.row').css('width'))/cards_num);
+                }
+            }
+            else if(parseInt($('.row').css('width'))<=992 && parseInt($('.row').css('width'))>552){
+                $('#cards_div').css('width',parseInt($('.row').css('width'))/3.3*parseInt($('#cards_div').children().length));
+                $('.col-md-3').css('width',parseInt($('.row').css('width'))/3.3);
+            }
+            else{
+                $('#cards_div').css('width',parseInt($('.row').css('width'))/2.7*parseInt($('#cards_div').children().length));
+                $('.col-md-3').css('width',parseInt($('.row').css('width'))/2.7);
+            }
+
+            $(window).resize(function () {
+
+                if(parseInt($('.row').css('width'))>992){
+                    if(cards_num<=4){
+                        $('#cards_div').css('width',parseInt($('.row').css('width'))/4*parseInt($('#cards_div').children().length));
+                        $('.col-md-3').css('width',parseInt($('.row').css('width'))/4);
+                    }
+                    else{
+                        $('#cards_div').css('width',parseInt($('.row').css('width')));
+                        $('.col-md-3').css('width',parseInt($('.row').css('width'))/cards_num);
+                    }
+                }
+                else if(parseInt($('.row').css('width'))<=992 && parseInt($('.row').css('width'))>552){
+                    $('#cards_div').css('width',parseInt($('.row').css('width'))/3.3*parseInt($('#cards_div').children().length));
+                    $('.col-md-3').css('width',parseInt($('.row').css('width'))/3.3);
+                }
+                else{
+                    $('#cards_div').css('width',parseInt($('.row').css('width'))/2.7*parseInt($('#cards_div').children().length));
+                    $('.col-md-3').css('width',parseInt($('.row').css('width'))/2.7);
+                }
+
+
+            });
+            //kanban style --end
+
+
+            //change_task_status
+            $('body').append('<input id="change_task_status" type="number" value="" hidden="hidden" old_status_name="">');
+            $('#change_task_status').click(function () {
+                var sort_name = '{{ sort_name }}';//用于记录 用于状态修改
+                var task_id = $('#change_task_status').val();  //用于状态修改
+                var old_status_name = $('#change_task_status').attr('old_status_name');//用于记录
+                var new_status_id = $('#'+$('#change_task_status').val()).parent().attr('status_id');//用于状态修改
+                var new_status_name = $('#'+$('#change_task_status').val()).parent().attr('status_name');//用于记录
+                $.ajax({
+                    type: 'POST',
+                    url: '/{{ url }}/update_status_kanban/',
+                    data: {sort_name:sort_name,task_id:task_id,old_status_name: old_status_name,new_status_id: new_status_id,new_status_name:new_status_name},
+                    //cache: false,
+                    //dataType: "html",
+                    success: function () {
+                        $('body').append('<div style="font-size:18px;color:#ffffff;margin:0 auto;' +
+                                'position: fixed;left: 50%;top: 50%;z-index: 99;background:#d3d3da;" class="success_point">状态更新成功</div>');
+                        $('.success_point').fadeOut(1000);
+                    }
+                });
+            });
+            //change_task_status --end
+
+        });
+        function update_project(project_id,task_id){
+
+            $.ajax({
+                type: 'POST',
+                url: '/{{ url }}/kanban/UpdateTaskForProject/',
+                data: {
+                    'projectId': project_id,
+                    'taskId': task_id,
+                },
+                //cache: false,
+                //dataType: "html",
+                success: function () {
+                    location.href('/{{ url }}/kanban/');
+                },
+
+            });
+
+        }
+
+    </script>
+
+{% endblock %}

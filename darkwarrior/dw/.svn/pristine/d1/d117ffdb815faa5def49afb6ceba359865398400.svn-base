@@ -1,0 +1,49 @@
+{% extends 'manage/manage_base.html' %}
+{% load staticfiles %}
+
+
+{% block content %}
+
+
+
+    <div class="row" style="margin-bottom: 5%">
+        <div class="col-lg-6">
+            <div class="card-box">
+                {% for error in errors %}
+                    <h5 style="color: red">{{ error }}</h5>
+                {% endfor %}
+                <h4 class="header-title m-t-0 m-b-30">添加任务组件</h4>
+
+                <form class="form-horizontal" role="form" action="" method="post">
+
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">组件名称</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" name="task_component">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">组件描述</label>
+                        <div class="col-md-10">
+                            <textarea class="form-control" rows="6" name="component_description"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row text-right" style="margin-top: 5%">
+                        <div class="col-md-12">
+                            <input type="submit" class="batn btn-purple btn-rounded w-md  " value="提交">
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div><!-- end col -->
+
+
+    </div>
+
+
+{% endblock %}

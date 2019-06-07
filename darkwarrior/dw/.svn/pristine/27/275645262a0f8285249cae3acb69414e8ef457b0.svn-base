@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<select  class="form-control" name="selected_project">
+    {% for project in search_project_list %}
+        <option value="{{ project.id }}">{{ project.project_name}}</option>
+    {% endfor %}
+</select>
+</body>
+</html>

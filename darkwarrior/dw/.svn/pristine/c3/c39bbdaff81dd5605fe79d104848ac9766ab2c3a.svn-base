@@ -1,0 +1,40 @@
+{% extends 'manage/manage_base.html' %}
+{% load staticfiles %}
+{% block content %}
+
+    <div class="row" style="margin-bottom: 5%">
+        <div class="col-lg-6">
+            <div class="card-box">
+            <h4 class="header-title m-t-0 m-b-30">公司名称</h4>
+
+
+                    <h5 style="color: red">{{ error }}</h5>
+
+
+                <form class="form-horizontal" action="" method="post"  >
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">登陆页面标题</label>
+                        <div class="col-md-10">
+                            {% if login_title %}
+                                <div class="col-md-10"><input type="text" value="{{ login_title.title }}" class="form-control" name="login_title"></div>
+                                <div class="col-md-12" style="font-size: 12px;color: #808080;">最近修改时间：{{ login_title.time }} &nbsp;&nbsp;  修改人：{{ login_title.update_user }}</div>
+                            {% else %}
+                                <div class="col-md-10"><input type="text" value="{{ login_title }}" class="form-control" name="login_title"></div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                 <div class="row text-right" style="margin-top: 5%">
+                        <div class="col-md-12">
+                            <input type="submit" class="batn btn-purple btn-rounded w-md" value="提交" is_archive="True">
+                          <!--  <input type="reset" class="batn btn-purple btn-rounded w-md" value="取消" is_archive="True">-->
+                        </div>
+                 </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+
+{% block content %}
+
+                <div class="row">
+
+                            <h2 class="m-b-30"><strong>创建里程碑</strong></h2>
+                            {% for error in errors %}
+                                    <h3 style="color: red">{{ error }}</h3>
+                                {% endfor %}
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <form class="form-horizontal" role="form" action="" method="post">
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">里程碑名称</label>
+                                            <div class="col-md-10">
+                                                <input type="text" class="form-control" placeholder="请输入里程碑名称" name="name" value="{{ name }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label" >预计完成时间</label>
+                                            <div class="col-md-10">
+                                                <input type="date" class="form-control" placeholder="请输入预计完成时间 " name="due_time" value="{{ due_time }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">里程碑描述</label>
+                                            <div class="col-md-10">
+                                               <textarea class="form-control" rows="6" name="description">{{ description }}</textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="row" style="margin-left: 86%;margin-top: 5%">
+                                            <div class="col-sm-4">
+                                                <input type="submit" class="batn btn-purple btn-rounded w-md  " value="提交">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div><!-- end col -->
+                            
+                            </div><!-- end row -->
+                </div>
+                <!-- end row -->
+
+
+
+{% endblock %}
+

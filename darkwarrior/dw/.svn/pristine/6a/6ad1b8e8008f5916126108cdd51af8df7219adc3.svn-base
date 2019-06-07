@@ -1,0 +1,1775 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+{% block head_js  %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'ckeditor/ckeditor.js' %}"></script>
+    <link href="{% static 'jquery-Upload/css/fileinput.css' %}" media="all" rel="stylesheet" type="text/css" /> <!--文件上传 -->
+    <script type="text/javascript" src="{% static 'search/taskcontent_ajaxsearch.js' %}"></script> <!--ajax 搜索功能js    -->
+    <!--图片浏览-->
+    <link href="{% static 'assets/css/fsgallery.css' %}" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'startUI/main1.css' %}"/>
+
+    <!-- video-hotkeys -->
+    <!--<script src="{% static 'videojs-hotkeys/videojs.hotkeys.min.js' %}"></script>-->
+
+    <script src="/static/lly/query_select.js" id="query_select"></script><!-- 单选下拉控件-->
+
+    <!--wpaint-->
+    <link rel="Stylesheet" type="text/css" href="{% static 'wPaint/lib/wColorPicker.min.css' %}" />
+    <link rel="Stylesheet" type="text/css" href="{% static 'wPaint/wPaint.min.css' %}" />
+
+
+    <!--复制到剪贴板-->
+    <script type="text/javascript" src="{% static 'zeroclipboard/ZeroClipboard.js' %}"></script>
+    <style>
+
+        .foldable{border: 1px solid #d1d1d1;background-color:rgba(236, 236, 236, 0.68);height: 40px;cursor:pointer;
+            -moz-border-radius: 3px;-webkit-border-radius: 3px;margin-top: 5px; }
+        .foldable_h4{color: #585a64;font-weight:500;}
+        #selected_div a{line-height: 35px;border:1px solid #f4f4f4;cursor:default;padding: 2px;font-size: 16px;color:#696969;  }
+        #selected_div a:hover{ background-color: #ffd284;}
+        .new_name{background-color: #ddfaff;}
+        .new_name:hover{background-color: gold;}
+        .repo-1{
+            display: none;
+            padding: 20px 15px;
+            border: 1px solid #DDDDDD;
+            border-radius: 3px;
+            width: 100%;
+        }
+        .repo{
+            display: inline-block;
+            margin-right: 30px;
+            margin-bottom: 15px;
+        }
+        .text-muted{
+            color:#7a7a7a !important;
+            font-size: 100%;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="row" style="margin-top: -50px;">
+        <div class="col-md-8" style="float: left">
+            <div class="card-box task-detail">
+
+                <div class="dropdown pull-right">
+                    <a href="#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false">
+                        <i class="zmdi zmdi-more-vert"></i>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a href="#" onclick="$('#copy_task').show()">复制到</a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="$('#move_task').show()">移动到</a>
+                        </li>
+                    </ul>
+                </div>
+                <div id="copy_task" style="background-color: rgba(0,0,0,0.3);z-index:9999;position: fixed;top:0;left:0;width: 100%;height: 100%;" {% if error_change_parent %}{% else %}hidden="hidden"{% endif %}>
+                    <div style="width: 500px;height: 320px;background-color:white;border-radius: 4px;position: fixed;left:35%;top:27%;" id="notice_div">
+                        <form method="post" action="">
+                            <div style="width: 70%;border:0px solid #d1d1d1;margin: auto ;padding-top: 50px;" align="center">
+                                <h3>复制任务</h3>
+                                <p style="color:red;">{{ error_change_parent }}</p>
+                                <input type="number" value="{{ url }}" id="copy_project_id" hidden="hidden">
+                                <input type="text" name="judge" value="copy_task" hidden="hidden">
+                                <input type="text" class="form-control" placeholder="请输入项目名称关键字"  value="" id="search_copy_project" onkeyup="show_copy_project(this.value)">
+                                <div id="project_copy_list"></div>
+
+                            </div>
+
+                            <div style="margin-top: 10%">
+                                <input type="submit" value="确定！" style="background-color: #249cdb;color: white;border:none;height: 40px;width: 100px;font-size: 15px;margin-left:15%;" name="change">
+                                <input type="button" value="取消" style="background-color: #00b900;color: white;border:none;height: 40px;width: 60px;font-size: 15px;rotation-point: right 50%;" onclick="$('#copy_task').hide()">
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="move_task" style="background-color: rgba(0,0,0,0.3);z-index:9999;position: fixed;top:0;left:0;width: 100%;height: 100%;" {% if error_change_parent %}{% else %}hidden="hidden"{% endif %}>
+                    <div style="width: 500px;height: 320px;background-color:white;border-radius: 4px;position: fixed;left:35%;top:27%;" id="notice_div">
+                        <form method="post" action="">
+                            <div style="width: 70%;border:0px solid #d1d1d1;margin: auto ;padding-top: 50px;" align="center">
+                                <h3>移动任务</h3>
+                                <p style="color:red;">{{ error_change_parent }}</p>
+                                <input type="number" value="{{ url }}" id="move_project_id" hidden="hidden">
+                                <input type="text" name="judge" value="move_task" hidden="hidden">
+                                <input type="text" class="form-control" placeholder="请输入项目名称关键字"  value="" id="search_move_project" onkeyup="show_move_project(this.value)">
+                                <div id="project_move_list"></div>
+
+                            </div>
+
+                            <div style="margin-top: 10%">
+                                <input type="submit" value="确定！" style="background-color: #249cdb;color: white;border:none;height: 40px;width: 100px;font-size: 15px;margin-left:15%;" name="change">
+                                <input type="button" value="取消" style="background-color: #00b900;color: white;border:none;height: 40px;width: 60px;font-size: 15px;rotation-point: right 50%;" onclick="$('#move_task').hide()">
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <h4 class="font-600 m-b-20" style="color: #7a7a7a;">{{ task.summary }}{% if manage or task.creator.username == user_now %}<i data-toggle="modal" data-target="#task-title-content" class="fa fa-edit" style="margin-left: 15px;cursor: pointer;color:#c0c0c0;" title="修改任务"></i>{% endif %} </h4>
+
+                <p class="text-muted">
+                    {{ task.description|safe }}
+                </p>
+
+                <div class="modal fade" id="task-title-content" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">修改任务</h4>
+                            </div>
+                            <div class="modal-body" style="min-height: 500px;">
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group" >
+                                        <input type="hidden" value="task_change" name="judge">
+                                        <label class="col-md-2 control-label">任务概述</label>
+                                        <div class="col-md-10" style="margin-bottom: 10px;display: block;">
+                                            <input type="text" class="form-control" placeholder="请输入任务概述" name="summary" value="{{ task.summary }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">任务描述</label>
+                                        <div class="col-md-10" >
+                                            <textarea id="elm1" name="content">{{ task.description }}</textarea>
+                                            <script type="text/javascript">CKEDITOR.replace('content')</script>
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5">
+                                            修改
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+
+
+                <!-- 起始时间 -->
+                <div class="modal fade" id="task-starttime" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">修改任务</h4>
+                            </div>
+                            <div class="modal-body" >
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <input type="hidden" value="task_change" name="judge">
+                                        <label class="col-md-2 control-label" >任务起始时间</label>
+                                        <div class="col-md-10">
+                                            <input type="text" value="" class="form-control" name="start_date" id="datetimepicker"/>
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5">修改</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+                <!-- 起始时间 -->
+                <!-- 结束时间 -->
+                <div class="modal fade" id="task-endtime" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">修改任务</h4>
+                            </div>
+                            <div class="modal-body" >
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <input type="hidden" value="task_change" name="judge">
+                                        <label class="col-md-2 control-label" >任务结束时间</label>
+                                        <div class="col-md-10">
+                                            <input type="text" class="form-control" value="" name="end_date" id="datetimepicker1"/>
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5" >修改</button>
+
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+
+                <!-- 结束时间 -->
+                <!-- 优先级 -->
+                <div class="modal fade" id="task-priority" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">修改任务</h4>
+                            </div>
+                            <div class="modal-body" >
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <input type="hidden" value="task_change" name="judge">
+                                        <label class="col-md-2 control-label">优先级</label>
+                                        <div class="col-md-10">
+                                            <input type="hidden" value="task_change" name="judge">
+                                            <select class="change_sel" name="priority">
+                                                <option  value="{{ task.priority.id }}">{{ task.priority }}</option>
+                                                {% for priority in prioritys %}
+                                                    {% if priority != task.priority %}
+                                                        <option  value="{{ priority.id }}">{{ priority }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5">修改</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+                <!-- 优先级 -->
+
+                <!-- 组件 -->
+                <div class="modal fade" id="task-component" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">修改任务</h4>
+                            </div>
+                            <div class="modal-body" >
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <input type="hidden" value="task_change" name="judge">
+                                        <label class="col-md-2 control-label">组件</label>
+                                        <div class="col-md-10">
+                                            <input type="hidden" value="task_change" name="judge">
+                                            <select class="change_sel" name="component">
+                                                <option  value="{{ task.component.id }}">{{ task.component }}</option>
+                                                {% for component in components %}
+                                                    {% if component != task.component %}
+                                                        <option  value="{{ component.id }}">{{ component }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5">修改</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+                <!-- 组件 -->
+
+                <!-- 里程碑 -->
+                <div class="modal fade" id="task-milestone" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">修改任务</h4>
+                            </div>
+                            <div class="modal-body" >
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <input type="hidden" value="task_change" name="judge">
+                                        <label class="col-md-2 control-label">里程碑</label>
+                                        <div class="col-md-10">
+                                            <select class="change_sel" name="milestone">
+                                                <option  value="{{ task.milestone.id }}">{{ task.milestone }}</option>
+                                                {% for milestone in milestones %}
+                                                    {% if milestone != task.milestone %}
+                                                        <option  value="{{ milestone.id }}">{{ milestone }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5">修改</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+                <!--里程碑 -->
+
+                <!--版本-->
+                <div class="modal fade" id="task-version" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">修改任务</h4>
+                            </div>
+                            <div class="modal-body" >
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <input type="hidden" value="task_change" name="judge">
+                                        <label class="col-md-2 control-label">版本</label>
+                                        <div class="col-md-10">
+                                            <select class="change_sel" name="version">
+                                                <option  value="{{ task.version.id }}">{{ task.version }}</option>
+                                                {% for version in versions %}
+                                                    {% if version != task.version %}
+                                                        <option  value="{{ version.id }}">{{ version }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5">修改</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+                <!--版本-->
+                <!-- 类型 -->
+                <div class="modal fade" id="task-type" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">修改任务</h4>
+                            </div>
+                            <div class="modal-body" >
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <input type="hidden" value="task_change" name="judge">
+                                        <label class="col-md-2 control-label">任务类型</label>
+                                        <div class="col-md-10">
+                                            <select class="change_sel" name="type">
+                                                <option  value="{{ task.type.id }}">{{ task.type }}</option>
+                                                {% for type in types %}
+                                                    {% if type != task.type %}
+                                                        <option  value="{{ type.id }}">{{ type }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5">修改</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+                <!-- 类型 -->
+
+                <!-- 故事点 -->
+                <div class="modal fade" id="task-story" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">修改任务</h4>
+                            </div>
+                            <div class="modal-body" >
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label" >故事点</label>
+                                        <div class="col-md-10">
+                                            <input type="hidden" value="task_change" name="judge">
+                                            <input type="text" placeholder="文本输入框只能输入数字（整数或浮点数）" onkeyup="this.value=this.value.replace(/^\.|^0\d{1,}|\.{2,}|[^.\d]|\..*\./g,'');" onblur="this.value=this.value.replace(/\.$/g,'');" class="form-control" value="{{ task.storypoint }}" name="story_point" />
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5">修改</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+                <!-- 故事点 -->
+
+                <!-- 任务图片 -->
+                <div class="modal fade" id="task-image" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">修改任务</h4>
+                            </div>
+                            <div class="modal-body" >
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label" >任务图片</label>
+                                        <div class="col-md-10">
+                                            <input type="hidden" value="task_change" name="judge">
+                                            <input type="file" class="form-control"  name="task_image_url">
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5">修改</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+                <!-- 任务图片 -->
+
+                <!-- 卷 -->
+                <div class="modal fade" id="task-roll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">修改任务</h4>
+                            </div>
+                            <div class="modal-body" >
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label" >卷</label>
+                                        <div class="col-md-10">
+                                            <input type="hidden" value="task_change" name="judge">
+                                            <input type="text" class="form-control" value="{{ task.roll }}" name="roll" />
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5">修改</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+                <!-- 卷 -->
+                <!-- 场号 -->
+                <div class="modal fade" id="task-scene" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">修改任务</h4>
+                            </div>
+                            <div class="modal-body" >
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label" >场号</label>
+                                        <div class="col-md-10">
+                                            <input type="hidden" value="task_change" name="judge">
+                                            <input type="number" class="form-control" value="{{ task.scene }}" name="scene" />
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5">修改</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+                <!-- 场号 -->
+                <!-- 次数 -->
+                <div class="modal fade" id="task-take" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">修改任务</h4>
+                            </div>
+                            <div class="modal-body" >
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label" >次数</label>
+                                        <div class="col-md-10">
+                                            <input type="hidden" value="task_change" name="judge">
+                                            <input type="number" class="form-control" value="{{ task.take }}" name="take" />
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5">修改</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+                <!-- 次数 -->
+
+                <!-- 等级 -->
+                <div class="modal fade" id="task-grade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">修改等级</h4>
+                            </div>
+                            <div class="modal-body" >
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label" >等级</label>
+                                        <div class="col-md-10">
+                                            <input type="hidden" value="task_change" name="judge">
+                                            <input type="text" class="form-control" value="{{ task.grade }}" name="grade" />
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5">修改</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+                <!-- 等级 -->
+
+                <ul class="list-inline task-dates m-b-0 m-t-30">
+                    <li>
+                        <h5 class="font-600 m-b-5 text-muted">创建时间</h5>
+                        <p><small class="text-muted">{{ task.time }}</small></p>
+                    </li>
+                    <li>
+                        <h5 class="font-600 m-b-5 text-muted">起始时间  {% if manage or task.creator.username == user_now %}<i class="fa fa-edit" data-toggle="modal" data-target="#task-starttime" style="margin-left: 15px;cursor: pointer;color:#c0c0c0;" title="修改任务"></i>{% endif %}</h5>
+                        <p><small class="text-muted">{{ task.start_date}}</small></p>
+                    </li>
+                    <li>
+                        <h5 class="font-600 m-b-5 text-muted">预计所用天数</h5>
+                        <p><small class="text-muted text-muted">{{ task.duration }}</small></p>
+                    </li>
+                    <li>
+                        <h5 class="font-600 m-b-5 text-muted">结束时间 {% if manage or task.creator.username == user_now %}<i class="fa fa-edit" data-toggle="modal" data-target="#task-endtime" style="margin-left: 15px;cursor: pointer;color:#c0c0c0;" title="修改任务"></i>{% endif %}</h5>
+                        <p><small class="text-muted">{{ task.end_date}}</small></p>
+                    </li>
+                    <li>
+                        <h5 class="font-600 m-b-5 text-muted">优先级  {% if manage or task.creator.username == user_now %}<i data-toggle="modal" data-target="#task-priority" class="fa fa-edit" style="margin-left: 15px;cursor: pointer;color:#c0c0c0;" title="修改任务"></i>{% endif %}</h5>
+                        <p><small class="text-muted">{{ task.priority }}</small></p>
+                    </li>
+
+                    <li>
+                        <h5 class="font-600 m-b-5 text-muted">组件 {% if manage or task.creator.username == user_now %}<i data-toggle="modal" data-target="#task-component" class="fa fa-edit" style="margin-left: 15px;cursor: pointer;color:#c0c0c0;" title="修改任务"></i>{% endif %}</h5>
+                        <p><small class="text-muted">{{ task.component }}</small></p>
+                    </li>
+                    <li>
+                        <h5 class="font-600 m-b-5 text-muted">里程碑 {% if manage or task.creator.username == user_now %}<i data-toggle="modal" data-target="#task-milestone" class="fa fa-edit" style="margin-left: 15px;cursor: pointer;color:#c0c0c0;" title="修改任务"></i>{% endif %}</h5>
+                        <p><small class="text-muted">{{ task.milestone }}</small></p>
+                    </li>
+                    <li>
+                        <h5 class="font-600 m-b-5 text-muted">版本 {% if manage or task.creator.username == user_now %}<i data-toggle="modal" data-target="#task-version" class="fa fa-edit" style="margin-left: 15px;cursor: pointer;color:#c0c0c0;" title="修改任务"></i>{% endif %}</h5>
+                        <p><small class="text-muted">{{ task.version }}</small></p>
+                    </li>
+                    <li>
+                        <h5 class="font-600 m-b-5 text-muted">类型 {% if manage or task.creator.username == user_now %}<i data-toggle="modal" data-target="#task-type" class="fa fa-edit" style="margin-left: 15px;cursor: pointer;color:#c0c0c0;" title="修改任务"></i>{% endif %}</h5>
+                        <p><small class="text-muted">{{ task.type }}</small></p>
+                    </li>
+                    <li>
+                        <h5 class="font-600 m-b-5 text-muted">故事点 {% if manage or task.creator.username == user_now %}<i data-toggle="modal" data-target="#task-story" class="fa fa-edit" style="margin-left: 15px;cursor: pointer;color:#c0c0c0;" title="修改任务"></i>{% endif %}</h5>
+                        <p><small class="text-muted">{{ task.storypoint }}</small></p>
+                    </li>
+                    <li>
+                        <h5 class="font-600 m-b-5 text-muted">任务图片 {% if manage or task.creator.username == user_now %}<i data-toggle="modal" data-target="#task-image" class="fa fa-edit" style="margin-left: 15px;cursor: pointer;color:#c0c0c0;" title="修改任务"></i>{% endif %}</h5>
+
+                    </li>
+                    <li>
+                        <h5 class="font-600 m-b-5 text-muted">卷 {% if manage or task.creator.username == user_now %}<i data-toggle="modal" data-target="#task-roll" class="fa fa-edit" style="margin-left: 15px;cursor: pointer;color:#c0c0c0;" title="修改任务"></i>{% endif %}</h5>
+                        <p><small class="text-muted">{{ task.roll }}</small></p>
+                    </li>
+
+                    <li>
+                        <h5 class="font-600 m-b-5 text-muted">场号 {% if manage or task.creator.username == user_now %}<i data-toggle="modal" data-target="#task-scene" class="fa fa-edit" style="margin-left: 15px;cursor: pointer;color:#c0c0c0;" title="修改任务"></i>{% endif %}</h5>
+                        <p><small class="text-muted">{{ task.scene }}</small></p>
+                    </li>
+
+                    <li>
+                        <h5 class="font-600 m-b-5 text-muted">次数 {% if manage or task.creator.username == user_now %}<i data-toggle="modal" data-target="#task-take" class="fa fa-edit" style="margin-left: 15px;cursor: pointer;color:#c0c0c0;" title="修改任务"></i>{% endif %}</h5>
+                        <p><small class="text-muted">{{ task.take }}</small></p>
+                    </li>
+
+                    <li>
+                        <h5 class="font-600 m-b-5 text-muted">父任务 {% if manage or task.creator.username == user_now %}<i onclick="$('#cover_div').show()" class="fa fa-edit" style="margin-left: 5px;cursor: pointer;color:#c0c0c0;" title="修改父任务"></i>{% endif %}</h5>
+                        <p>
+                            <a href="/{{ url }}/effects/task/{{ parent_task.id }}" >
+                                <small class="text-muted">{{ parent_task }}</small>
+                            </a>
+
+                        </p>
+                    </li>
+
+                    <li>
+                        <h5 class="font-600 m-b-5 text-muted">等级 {% if manage or task.creator.username == user_now %}<i data-toggle="modal" data-target="#task-grade" class="fa fa-edit" style="margin-left: 15px;cursor: pointer;color:#c0c0c0;" title="修改等级"></i>{% endif %}</h5>
+                        <p><small class="text-muted">{{ task.grade }}</small></p>
+                    </li>
+                </ul>
+
+
+                <div class="clearfix"></div>
+
+                <div class="assign-team m-t-30">
+                    <h5 class="font-600 m-b-5 text-muted">属主</h5>
+                    <div>
+                        {% for task_owner in task_owners %}
+
+                            {% if task_owner.head_portrait %}
+                                <img class="img-circle thumb-sm" alt="64x64" src="/media/{{ task_owner.head_portrait }}">
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <br>
+                    <small class="text-muted">{{ task.owner }}</small>
+
+                </div>
+
+                <!--附件,子任务,清单 modal-->
+                <div style="height: 40px;margin-top: 30px;margin-bottom: 10px;display:block;">
+                    {% if not repository_set %}<div style="display: inline-block;float: right;margin-left: 20px;cursor: pointer;"> <a href="/{{ url }}/task/{{ id }}/create_repository" target="_blank" style="color: #797979;"><i class="fa fa-archive"></i>资产库</a></div>{% endif %}
+                    <div style="display: inline-block;float: right;margin-left: 20px;cursor: pointer;"data-toggle="modal" data-target="#attach-task"><i class="fa fa-file-o"></i>附件</div>
+                    <div style="display: inline-block;float: right;margin-left: 20px;cursor: pointer;"> <a href="/{{ url }}/effects/newtask/{{ task.id }}" target="_blank" style="color: #797979;"><i class="fa fa-ticket"></i>子任务</a></div>
+                </div>
+
+
+                <!--上传附件-->
+                <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" id="attach-task">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <div class='row'>
+                                {% for error in errors %}
+                                    <h3 style="padding-left:30%; color: red">{{ error }}</h3>
+                                {% endfor %}
+                                <form class="form-horizontal col-md-12" role="form" id="attachment_block" action=""  method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <input id="file-5" class="file" name="file_url" type="file" multiple data-preview-file-type="any" data-upload-url="/{{ url }}/task/{{ id }}/attachment_upload/" data-preview-file-icon="">
+                                    </div>
+
+                                </form>
+                            </div> <!--end upload files -->
+
+                        </div>
+                    </div>
+                </div>
+                <!--上传附件-->
+                <!--附件,子任务,清单 modal-->
+            </div>
+        </div>
+
+
+        <div class="col-md-4" style="float: right;">
+
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-custom panel-border">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">流程</h3>
+                        </div>
+                        <div class="panel-body">
+                            <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+
+                                <input type="hidden" value="change_task" name="judge">
+                                <div class="col-md-12" style="margin-top: 50px">
+                                    {% for error in owner_errors %}
+                                        <h5 style="color: red;margin-left: 20%">{{ error }}</h5>
+                                    {% endfor %}
+                                    <input type="hidden" value="task_update" name="judge">
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">属主</label>
+                                        <div class="col-md-10">
+                                            <div class="tags-default">
+                                                <input type="text" value="{{ task.owner }}" data-role="tagsinput" id="search_text" onkeyup="showHint(this.value)"
+                                                       class="form-control" placeholder="请输入属主姓名" name="owner"/>
+                                            </div>
+                                            <div id="txtOwner" onclick="judge_owner()" ></div>
+                                        </div>
+                                    </div>
+
+                                    <div   id="selected_div" class="form-group">
+                                        <label class="col-md-2 control-label">团队</label>
+                                        <div id_="selected"  class="col-md-10"   style="border:solid 1px #dcdcdc;max-width: 79%;border-radius:3px ; margin-left: 9px;">
+                                            {% for i in task.task_team.all %}
+                                                <a id_="{{ i.id }}" title="{%for j in i.member.all %}{{ j.username }},{% endfor %}" >{{ i.name }}</a>
+                                            {% endfor %}
+                                            <b style="font-size: 5px;float: right;line-height: 35px;cursor:default;border: 0px solid red;" id="selected_lable">▼</b>
+                                        </div>
+                                        <label class="col-md-2 control-label" style="display: none;"></label>
+                                        <div id_="unselected" class="col-md-10" style="display: none;border:solid 1px #dcdcdc;height: 80px;
+                                                                                        max-width: 79%;margin-left: 9px;" >
+                                            {% for i in unselected_team %}
+                                                <a id_="{{ i.id }}" >{{ i.name }}</a>
+                                            {% endfor %}
+
+                                        </div>
+                                        <br>
+                                        <select multiple="multiple"  name="task_team" style="display: none;">
+                                            {% for i in task.task_team.all %}
+                                                <option selected="" value="{{ i.id }}" id="{{ i.id }}">{{ i.name }}</option>
+                                            {% endfor %}
+
+                                            {% for i in unselected_team %}
+                                                <option  value="{{ i.id }}" id="{{ i.id }}">{{ i.name }}</option>
+                                            {% endfor %}
+
+                                        </select>
+                                    </div>
+
+
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">审核人</label>
+                                        <div class="col-md-10">
+                                            <input type="text" class="form-control" placeholder="请输入审核人姓名" name="reporter" value="{{ task.reporter }}"
+                                                   id="search_reporter" onkeyup="showReporter(this.value)">
+                                            <div id="txtReporter" onclick="judge_reporter()"></div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">状态</label>
+                                        <div class="col-md-10">
+                                            <select class="change_sel" name="status">
+                                                <option  value="{{ task.status.id }}">{{ task.status }}</option>
+                                                {% for status in all_statuss %}
+                                                    {% if status != task.status %}
+
+                                                        <option  value="{{ status.id }}">{{ status }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                {% if manage %}
+                                                    {% if task.status != manage_status %}
+                                                        <option  value="{{ manage_status.id }}">{{ manage_status }}</option>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="text-right m-t-30">
+                                            <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5">
+                                                提交
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div><!-- end col -->
+            </div>
+
+            <div class="card-box">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div style="padding-top: 5%">
+                            {% for error in comment_errors %}
+                                <h3 style="padding-left:30%; color: red">{{ error }}</h3>
+                            {% endfor %}
+                            <form action="" method="post" enctype="multipart/form-data">
+                                <div class="media">
+                                    <div class="media-left">
+                                        {% if user_head_portrait %}
+                                            <a href="#">
+                                                <img class="media-object img-circle thumb-sm" alt="64x64" src="/media/{{ user_head_portrait }}">
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                    <div class="media-body">
+                                        <input type="hidden" value="comment" name="judge">
+                                        <div class="col-md-4 col-sm-6" style="width: 100%;">
+                                            <div class="form-group" >
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" placeholder="请输入评论内容" name="comment">
+                                                    <div class="input-group-addon" onclick="$(this).next().click()" style="cursor:pointer;">
+                                                        <span class="glyphicon glyphicon-send"></span>
+                                                    </div>
+                                                    <input type="submit" value="提交" style="color: #ffffff;border:none;background-color: #50b4fa;line-height: 25px;width: 55px;
+                                                                                                box-shadow: 1px 2px 1px #99a2a9;border-radius:2px;" hidden="hidden">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div style="padding-left: 2%;">
+                                            <span id='at_label' style="cursor: pointer"> @</span>
+                                            <div style="position: relative;left: 20px;bottom: 20px;border:0px red solid;">
+                                                <span class="fileupload add-new-pluss" style="cursor: pointer;" onclick="$(this).next().click()"><i class="zmdi-plus  zmdi"></i></span>
+                                                <input type="file" style="cursor: pointer;filter: alpha(opacity=0);font-size: 20px;margin: 0;opacity: 0;
+                                                                              padding: 0;position: absolute;right: 80px;top: 0;display: none;" name="comment_attachment">
+                                            </div>
+                                            <div style='display:none;' id='at_list'>
+                                                <div>
+                                                    人员 :&nbsp;&nbsp;
+                                                    {% for i in at_people_list %}
+                                                        {%ifnotequal i None%} <input type="checkbox" value="{{ i }}" name="at_people"> {{ i }}{%endifnotequal%}
+                                                    {% endfor %}
+                                                </div>
+                                                <div>
+                                                    团队 :&nbsp;&nbsp;
+                                                    {% for i in task.task_team.all %}
+                                                        <input type="checkbox" value="{{ i.id }}" name="at_team"> {{ i }}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            {% for comment in comment_all %}
+
+                                <div class="media m-b-10" >
+                                    <div class="media-left" >
+                                        {% if comment.comment_parent.owner.head_portrait %}
+                                            <a href="#">
+                                                <img class="media-object img-circle thumb-sm" alt="64x64" src="/media/{{ comment.comment_parent.owner.head_portrait }}">
+                                            </a>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="media-body" name='comment_div'>
+                                        <p class="font-10 text-muted m-b-0">
+                                        <h4 class="media-heading">
+                                            <small>
+                                                <a href="" style="color: #337ab7">{{ comment.comment_parent.owner }}</a>
+                                                {% if comment.comment_parent.at_people != user_now %}
+                                                    @ {{comment.comment_parent.at_people}}
+                                                {% endif %}
+                                            </small>
+                                            <small>：{{ comment.comment_parent.content }}</small>
+                                        </h4>
+                                        <div class="col-md-12">
+                                            {% for image in comment.comment_image %}
+                                                <div class="col-md-8" style="text-align: center">
+                                                    <a href="/media/{{ image.url }}">
+                                                        <img src="/media/{{ image.url }}" class="img-thumbnail" style="max-width: 100%" >
+                                                    </a>
+                                                </div>
+                                            {% endfor %}
+
+                                            {% for file in comment.comment_file %}
+                                                <div class="col-md-8" style="text-align: center">
+                                                    <a href="/media/{{ file.url }}">
+                                                        <p class=" m-b-10">{{ file.name }}</p>
+                                                    </a>
+                                                </div>
+                                            {% endfor %}
+
+                                            {% for video in comment.comment_video %}
+
+                                                <div class="col-md-12" style="text-align: center">
+                                                    <video id="example_video_1" class="video-js col-md-12 vjs-default-skin" controls preload="none" poster="http://vjs.zencdn.net/v/oceans.png" data-setup="{}">
+                                                        <source src="/media/{{ video.url }}">
+                                                    </video>
+
+                                                    <div style="height: 21%">
+                                                        <p style="text-align: center"><small style="color: #989898">{{ video.name }}</small></p>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                        <small>{{ comment.comment_parent.time }}</small>
+
+
+                                        <a  style="color: green;cursor: pointer;margin-left:10px;" name="reply_label">
+                                            <i class="fa fa-reply" aria-hidden="true"></i>
+                                        </a>
+                                        {%ifnotequal comment.comment_parent.at_people ''%}
+                                            {% ifequal user_now comment.comment_parent.owner.username %}
+                                                <form   action="" method="post" name="delete_form" style="display: inline;">
+                                                    <i style="cursor: pointer;float: right;" name="delete_label"  point="comment_point" class="show_cover">
+                                                    </i>
+                                                    <div>
+                                                        <div hidden="hidden">本操作将会删除该条评论及相关回复！</div>
+                                                    </div>
+                                                    <input type="number" value="{{ comment.comment_parent.id }}" name="delete_comment" hidden="hidden">
+                                                    <input type="text" value="delete_comment" name="judge" hidden="hidden">
+                                                </form>
+                                            {% else %}
+                                                <i style="cursor: pointer;display: none;" name="delete_label"  point="comment_point"></i>
+                                            {% endifequal %}
+                                        {%else%}
+                                            <i style="cursor: pointer;display: none;" name="delete_label"  point="comment_point"></i>
+                                        {%endifnotequal%}
+
+                                        </p>
+
+
+                                        <form class="form-horizontal" action="" method="post" name="reply_content" style="display: none" >
+                                            <div class="form-group"  >
+                                                <div class="col-md-10">
+                                                    <input type="hidden" value="reply" name="judge">
+                                                    <input type="hidden" value="{{ comment.comment_parent.id }}" name="parent_id">
+                                                    <input type="hidden" value="{{ comment.comment_parent.owner }}" name="reply">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4 col-sm-6" style="width: 100%;">
+                                                <div class="form-group" >
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" placeholder="回复 {{ comment.comment_parent.owner }}：" name="comment">
+                                                        <div class="input-group-addon" onclick="$(this).next().click()" style="cursor:pointer;">
+                                                            <span class="glyphicon glyphicon-send"></span>
+                                                        </div>
+                                                        <input type="submit" value="提交" style="color: #ffffff;border:none;background-color: #50b4fa;line-height: 25px;width: 55px;
+                                                                                                    box-shadow: 1px 2px 1px #99a2a9;border-radius:2px;" hidden="hidden">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <!--
+                                 <form hidden='hidden'  action="" method="post" name="delete_form">
+                                                <input type="number" value="{{ comment.comment_parent.id }}" name="delete_comment">
+                                                 <input type="text" value="delete_comment" name="judge" >
+                                                  <input type="submit" >
+                                                </form>
+                                -->
+                                    </div>
+
+                                    {% for comment_child in comment.comment_child %}
+                                        <div class="media" name='comment_div' style='margin-left:35px;border:0px solid gray;'>
+
+                                            <div class="media-left">
+                                                {% if comment_child.owner.head_portrait %}
+                                                    <a href="#">
+                                                        <img class="media-object img-circle thumb-sm" alt="64x64" src="/media/{{ comment_child.owner.head_portrait }}">
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                            <div class="media-body">
+                                                <p class="font-13 text-muted m-b-0">
+                                                <h4 class="media-heading">
+                                                    <small>
+                                                        <a href="" style="color: #337ab7">{{ comment_child.owner }}</a>
+                                                        <small>回复</small>
+                                                        <a href="" style="color: #337ab7">{{ comment_child.author }}</a>
+                                                    </small>
+                                                    <small>：{{ comment_child.content }}</small>
+                                                </h4>
+                                                <small>{{ comment.comment_parent.time }}</small>
+                                                <a  style="color: green;cursor: pointer;margin-left:10px;" name="reply_label">
+                                                    <i class="fa fa-reply" aria-hidden="true"></i>
+                                                </a>
+                                                {% ifequal user_now  comment_child.owner.username %}
+                                                    <form   action="" method="post" name="delete_form" style="display: inline;">
+                                                        <i style="cursor: pointer;float: right;" name="delete_label" point="reply_point" class="show_cover">
+                                                        </i>
+                                                        <div>
+                                                            <div hidden="hidden">本操作将会删除该条回复！</div>
+                                                        </div>
+                                                        <input type="number" value="{{ comment_child.id }}" name="delete_comment" hidden='hidden'>
+                                                        <input type="text" value="delete_comment" name="judge" hidden='hidden'>
+                                                    </form>
+                                                {% else %}
+
+                                                    <i style="cursor: pointer;display: none;" name="delete_label" point="reply_point"></i>
+                                                {% endifequal %}
+
+
+                                                </p>
+                                                <form class="form-horizontal" action="" method="post" name="reply_content" style="display: none" >
+                                                    <div class="form-group"  >
+                                                        <div class="col-md-10">
+                                                            <input type="hidden" value="reply" name="judge">
+                                                            <input type="hidden" value="{{ comment.comment_parent.id }}" name="parent_id">
+                                                            <input type="hidden" value="{{ comment_child.owner }}" name="reply">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-4 col-sm-6" style="width: 100%;">
+                                                        <div class="form-group" >
+                                                            <div class="input-group">
+                                                                <input type="text" class="form-control" placeholder="回复 {{ comment_child.owner }}：" name="comment">
+                                                                <div class="input-group-addon" onclick="$(this).next().click()" style="cursor:pointer;">
+                                                                    <span class="glyphicon glyphicon-send"></span>
+                                                                </div>
+                                                                <input type="submit" value="提交" style="color: #ffffff;border:none;background-color: #50b4fa;line-height: 25px;width: 55px;
+                                                                                                            box-shadow: 1px 2px 1px #99a2a9;border-radius:2px;" hidden="hidden">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--左侧清单，子任务，资产库-->
+        <div class="col-md-8" style="float: left;">
+
+            {% if lists_task %}
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="panel panel-custom panel-border">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">清单</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div>
+                                    <header class="proj-page-subtitle with-del" >
+                                        <h5 style="color:  #6c7a86">清单进度</h5>
+                                    </header>
+                                    <div class="progress-with-amount progress-compact-style">
+                                        <progress class="progress progress-success" value="{{ num }}" max="100">100%</progress>
+                                        <div class="progress-with-amount-number">{% if lists %}{{ num }}%{% else %}0%{% endif %}</div>
+                                    </div>
+                                    <div class="form-group">
+                                        {% for list in lists %}
+                                            <form method="post">
+                                                <div class="checkbox">
+                                                    <input type="hidden" id="label-{{ list.id }}" value="" name="list_status">
+                                                    <input type="checkbox" id="check-{{ list.id }}" {% if list.status %}disabled checked{% endif %} onclick="document.getElementById('label-{{ list.id }}').value=true">
+                                                    <label for="check-{{ list.id }}" style="width:100%;margin-right: 5px;line-height: 20px;" >{{ list.title }}</label>
+                                                    <div style="display: inline-block;margin-top: 5px;" >
+                                                        <span>开始时间: </span>
+                                                        <input type="text" value="" {% if list.status %}disabled{% endif %} name="list_start_date" id="datetime{{ list.id }}" class='timeinput'style="width: 120px;display: inline-block; border-radius: 3px;border: 1px solid #eee;"/>
+                                                        <span>结束时间: </span>
+                                                        <input type="text" value="" {% if list.status %}disabled{% endif %} name="list_end_date" id="enddate{{ list.id }}" class='timeinput'style="width: 120px;display: inline-block; border-radius: 3px;border: 1px solid #eee;"/>
+                                                    </div>
+                                                    <input type="hidden" value="commit_list" name="judge">
+                                                    <input type="hidden" value="{{ list.id }}" name="list_id">
+                                                    <button type="submit" style="float: right;" class="btn btn-grey"{% if list.status %}disabled{% endif %}>提交</button>
+                                                </div>
+                                            </form>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- end col -->
+                </div>
+            {% endif %}
+
+            {% if child_task %}
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="panel panel-custom panel-border">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">子任务</h3>
+                            </div>
+                            <div class="panel-body">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th style="text-align: center">任务</th>
+                                        <th style="text-align: center">概述</th>
+                                        <th style="text-align: center">状态</th>
+                                        <th style="text-align: center">属主</th>
+                                        <th style="text-align: center">审核人</th>
+                                        <th style="text-align: center">类型</th>
+                                        <th style="text-align: center">优先级</th>
+                                        <th style="text-align: center">里程碑</th>
+                                        <th style="text-align: center">组件</th>
+                                        <th style="text-align: center">版本</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody style="text-align: center">
+                                    {% for child_task in child_tasks %}
+                                        <tr>
+                                            <td><a href="/{{ url }}/effects/task/{{ child_task.id }}" style="list-style-type: none;color: red">{{ child_task.display_id }}</a></td>
+                                            <td>{{ child_task.summary }}</td>
+                                            <td>{{ child_task.status }}</td>
+                                            <td>{{ child_task.owner }}</td>
+                                            <td>{{ child_task.reporter }}</td>
+                                            <td>{{ child_task.type }}</td>
+                                            <td>{{ child_task.priority }}</td>
+                                            <td>{{ child_task.milestone }}</td>
+                                            <td>{{ child_task.component }}</td>
+                                            <td>{{ child_task.version }}</td>
+                                        </tr>
+
+                                    {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div><!-- end col -->
+                </div>
+            {% endif %}
+            {% if repository_set %}
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="panel panel-custom panel-border">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">资产库</h3>
+                            </div>
+                            <div class="panel-body">
+                                <span>{{ errors }}</span>
+
+                                <div class="table-responsive">
+                                    <table  class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>版本库名</th>
+                                            <th>创建者</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for repository in repository_set %}
+                                            <tr>
+                                                <td>{{ repository.name }}</td>
+                                                <td>{{ repository.creator }}</td>
+                                                <td>
+                                                    <a href="/{{ url }}/task/{{ id }}/svn/{{ repository.name }}/" style="margin-right: 10px"class="" >查看</a>
+                                                    <a class="" style="margin-right: 10px" onclick="return confirm('确定删除此版本库')" href="/{{ url }}/task/{{ id }}/delete_repository/{{ repository.name }}/"
+                                                       data-container="body" data-toggle="popover" data-trigger="hover focus  manual click" data-animation="true" data-placement="auto" data-content="删除后将丢失数据，删除请谨慎" is_archive="true" >删除</a>
+                                                    <a class="" style="margin-right: 10px" href="/{{ url }}/task/{{ id }}/svn_log/{{ repository.name }}/">版本日志</a>
+                                                    <a class="" style="margin-right: 10px" href="/{{ url }}/task/{{ id }}/svn_recent_changes/{{ repository.name }}/">最近修改</a>
+                                                    <a class=""  href="/{{ url }}/task/{{ id }}/register_svn/{{ repository.name }}/" is_archive="true">注册用户</a>
+                                                    <a class="" data-clipboard-target="fe_text" id="d_clip_button"style="margin-left: 13px;">复制地址</a>
+                                                    <div style="display: none;" id="fe_text">{{ host_name }}</div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+
+                                    <span style="display: block;margin-left: 15px;margin-top: 30px;">说明：首次提交版本库，请先注册版本库</span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div><!-- end col -->
+                </div>
+            {% endif %}
+
+
+
+        </div>
+
+        <!--附件显示-->
+        {% if attachment_images or attachment_files or attachment_videos or task.task_image %}
+            <div class="col-md-8" style="float: left;">
+                <div class="card-box" id="attachment_box">
+                    {% if task.task_image %}
+                        <div style="width: 100%;" time="{{ task.time }}">
+                            <div class="media-left">
+                                <a href="#">
+                                    {% if task.creator.head_portrait %}
+                                        <img class="media-object img-circle thumb-sm" alt="64x64" src="/media/{{ task.creator.head_portrait }}">
+                                    {% endif %}
+                                </a>
+                            </div>
+                            <div class="media-body" name='comment_div' >
+                                <span style="color: #337ab7"> {{ task.creator }}</span>
+                                <div class="container" style="margin-top: 10px;width:100%;">
+                                    <div class="thumbnails"  style="width:100%;height: auto;">
+                                        <a href="/{{ url }}/task/{{ id }}/{{ task.task_image }}/wpaint/">
+                                            <img src="/media/{{ task.task_image }}" class="img-thumbnail" style="height:auto;width: 100%;" alt="" >
+                                            <button style="float: right;top: 30px" class="btn btn-inverse waves-effect waves-light m-b-5"><i class="zmdi zmdi-picture-in-picture"></i> <span>标注</span> </button>
+                                        </a>
+                                        <span style="margin-top:10px;display: block"><small>{{ task.time }}</small></span>
+                                    </div>
+                                    <div style="height:25px;margin-bottom: 15px;margin-top: 15px;">
+                                        <a href="/download{{ task.task_image.url }}" style="float:left;padding: 1px 4px;" class="btn-info" >下载</a>
+
+                                        {% ifequal task.creator.username user_now %}
+                                            <form action="" method="post" style="float:left;margin-left: 30px;" >
+                                                <input type="hidden" value="attachment_remove" name="judge">
+                                                <input type="hidden" value="{{ task.task_image.url }}" name="task_img_url_delete">
+                                                <input type="submit" value="删除" class="btn-danger" is_archive="true" >
+                                            </form>
+
+                                        {% endifequal %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% for attachment_image in attachment_images %}
+                        <div style="width: 100%;" time="{{ attachment_image.time }}">
+                            <div class="media-left">
+                                <a href="#" >
+                                    {% if attachment_image.author.head_portrait %}
+                                        <img class="media-object img-circle thumb-sm" alt="64x64" src="/media/{{ attachment_image.author.head_portrait }}" >
+                                    {% endif %}
+                                </a>
+                            </div>
+                            <div class="media-body" name='comment_div' >
+                                <span style="color: #337ab7">{{ attachment_image.author }}</span>
+
+                                <div class="container" style="margin-top: 10px;width:100%;">
+                                    <div class="thumbnails"  style="width:100%;height: auto;">
+                                        <!--<a href="/media/{{ attachment_image.url }}">-->
+                                        <a href="/{{ url }}/task/{{ id }}/{{ attachment_image.url }}/wpaint/" id="wpaint">
+                                            <img src="/media/{{ attachment_image.url }}"  style="height:auto;width: 100%;" alt="" >
+                                        </a>
+                                        <p style="text-align: center"><small style="color: #989898">{{ attachment_image.name }}</small></p>
+                                        <span style="margin-top:10px;display: block"><small>{{ attachment_image.time }}</small></span>
+                                        <a style="float: right" href="/{{ url }}/task/{{ id }}/{{ attachment_image.url }}/wpaint/" id="wpaint">
+                                            <button class="btn btn-inverse waves-effect waves-light m-b-5"><i class="zmdi zmdi-picture-in-picture"></i> <span>标注</span> </button>
+                                        </a>
+                                    </div>
+                                    <div style="height:25px;margin-bottom: 15px;margin-top: 15px;">
+                                        <a href="/download/media/{{ attachment_image.url }}" style="float:left;padding: 1px 4px;" class="btn-info" >下载</a>
+                                        {% ifequal attachment_image.author.username user_now %}
+                                            <form action="" method="post"style="float:left;margin-left: 30px;" >
+                                                <input type="hidden" value="attachment_remove" name="judge">
+                                                <input type="hidden" value="{{ attachment_image.url }}" name="img_url_delete">
+                                                <input type="submit" value="删除" style="font-color:red;" class="btn-danger" is_archive="true" >
+                                            </form>
+
+                                        {% endifequal %}
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    {% endfor %}
+
+
+                    {% for attachment_file in attachment_files %}
+                        <div style="width: 100%;" time="{{ attachment_file.time }}">
+                            <div class="media-left">
+                                <a href="#">
+                                    {% if attachment_file.author.head_portrait %}
+                                        <img class="media-object img-circle thumb-sm" alt="64x64" src="/media/{{ attachment_file.author.head_portrait }}">
+                                    {% endif %}
+                                </a>
+                            </div>
+                            <div class="media-body" name='comment_div' >
+                                <span  style="color: #337ab7"> {{ attachment_file.author }}</span>
+                                <div style="height:60px; margin-top:5px;margin-left: 15px;">
+                                    <a href="/media/{{ attachment_file.url }}"><p style=""><small style="color: #989898;">{{ attachment_file.name }}</small></p></a>
+                                    <span style="margin-top:10px;display: block"><small>{{ attachment_file.time }}</small></span>
+                                </div>
+                                <div style="height:25px;margin-bottom: 15px;margin-top: 15px;margin-left: 15px;">
+                                    <a href="/download/media/{{ attachment_file.url }}" style="float:left;padding: 1px 4px;" class="btn-info" >下载</a>
+                                    {% ifequal attachment_file.author.username user_now %}
+                                        <form action="" method="post"style="float:left;margin-left: 30px;" >
+                                            <input type="hidden" value="attachment_remove" name="judge">
+                                            <input type="hidden" value="{{ attachment_file.url }}" name="file_url_delete">
+                                            <input type="submit" value="删除"  class="btn-danger" is_archive="true" >
+                                        </form>
+                                    {% endifequal %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    {% for attachment_video in attachment_videos %}
+                        <div style="width: 100%;" time="{{ attachment_video.time }}">
+                            {% for error in screenshot_errors %}
+                                <h3 style="padding-left:30%; color: red">{{ error }}</h3>
+                            {% endfor %}
+                            <div class="media-left">
+                                <a href="#">
+                                    {% if attachment_video.author.head_portrait %}
+                                        <img class="media-object img-circle thumb-sm" alt="64x64" src="/media/{{ attachment_video.author.head_portrait }}">
+                                    {% endif %}
+                                </a>
+                            </div>
+                            <div class="media-body" name='comment_div' >
+                                <span class="col-md-12" style="color: #337ab7">{{ attachment_video.author }}</span>
+                                <video id="video-{{ attachment_video.id }}" class="video-js col-md-12 vjs-default-skin" controls preload="none" poster="http://vjs.zencdn.net/v/oceans.png" data-setup="{}">
+                                    <source src="/media/{{ attachment_video.url }}">
+                                </video>
+
+                                <div style="height:50px;" class="col-md-12">
+                                    <p style="text-align: center"><small style="color: #989898">{{ attachment_video.name }}</small></p>
+
+
+                                    <!-- 视频截屏-->
+                                    <div style="float: right">
+                                        <!--<button id="screenshot-{{ attachment_video.id }}">截屏</button>-->
+                                        <form action="" method="post">
+                                            <input type="hidden" value="screenshot" name="judge">
+                                            <input type="hidden" value="{{ attachment_video.url }}" name="video_src">
+                                            <!--<input type="text" placeholder="请输入截屏备注名称" name="screenshot_note">-->
+                                            <input type="hidden"  value="" id="display-{{ attachment_video.id }}" name="screenshot_time">
+                                            <button type="submit"><i class="fa fa-camera" aria-hidden="true"></i></button>
+                                        </form>
+                                        <script>
+                                            //var ww{{ attachment_video.id }} = document.getElementById('screenshot-{{ attachment_video.id }}');
+                                            var video{{ attachment_video.id }} = document.getElementById('video-{{ attachment_video.id }}');
+                                            function play(){
+                                                video{{ attachment_video.id }}.play();
+                                            }
+
+
+                                            function pause(){
+                                                video{{ attachment_video.id }}.pause();
+                                            }
+                                            video{{ attachment_video.id }}.addEventListener("timeupdate", function(){
+                                                var currentTime{{ attachment_video.id }} = video{{ attachment_video.id }}.currentTime;//获取当前播放时间
+                                                console.log(currentTime{{ attachment_video.id }});//在调试器中打印
+                                                //document.getElementById('display-{{ attachment_video.id }}').innerHTML=currentTime;
+                                                document.getElementById('display-{{ attachment_video.id }}').value=currentTime{{ attachment_video.id }};
+                                                //configureHtmlWriter(currentTime)
+                                            });
+                                            //ww{{ attachment_video.id }}.onclick =  function(){
+
+                                            //alert(document.getElementById('display-{{ attachment_video.id }}').value)
+                                            // }
+
+                                        </script>
+                                    </div>
+
+                                    <!-- 视频截屏-->
+                                    <span style="margin-top:10px;"><small>{{ attachment_video.time }}</small></span>
+                                </div>
+                                <div style="height:25px;margin-top: 15px;margin-bottom: 15px;" class="col-md-12">
+                                    <a href="/download/media/{{ attachment_video.url }}"style="float:left;padding: 1px 4px;" class="btn-info" >下载</a>
+                                    {% ifequal attachment_video.author.username user_now %}
+                                        <form action="" method="post" style="float:left;margin-left: 30px;" >
+                                            <input type="hidden" value="attachment_remove" name="judge">
+                                            <input type="hidden" value="{{ attachment_video.url }}" name="video_url_delete">
+                                            <input type="submit" value="删除" style="font-color:red;" class="btn-danger" is_archive="true" >
+                                        </form>
+                                    {% endifequal %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div><!-- end col -->
+
+
+
+
+    <div id="cover_div" style="background-color: rgba(0,0,0,0.3);z-index:9999;position: fixed;top:0;left:0;width: 100%;height: 100%;" {% if error_change_parent %}{% else %}hidden="hidden"{% endif %}>
+        <div style="width: 500px;height: 480px;background-color:white;border-radius: 4px;position: fixed;left:35%;top:27%;" id="notice_div">
+            <form method="post" action="">
+                <div style="width: 70%;border:0px solid #d1d1d1;margin: auto ;padding-top: 100px;" align="center">
+                    <h3>修改父任务</h3>
+                    <p style="color:red;">{{ error_change_parent }}</p>
+                    <input type="number" value="{{ url }}" id="project_id_input" hidden="hidden">
+                    <input type="text" name="judge" value="change_parent_task" hidden="hidden">
+                    <input type="text" class="form-control" placeholder="请输入关键字"  value="" id="search_task" onkeyup="showtask(this.value)">
+                    <div id="task_list"></div>
+
+                </div>
+
+                <div style="margin-top: 10px;" align="center">
+                    <input type="submit" value="确定！" style="background-color: #249cdb;color: white;border:none;height: 40px;width: 100px;font-size: 15px;margin-left:5px;" name="change">
+                    <input type="button" value="取消" style="background-color: #00b900;color: white;border:none;height: 40px;width: 60px;font-size: 15px;" id="close_cover">
+                    <input type="submit" value="撤销父子关系！" style="background-color: #dbbc39;color: white;border:none;height: 35px;width: 100px;font-size: 15px;position:absolute;right: 2px;bottom: 2px;" name="clear">
+                </div>
+            </form>
+        </div>
+
+    </div>
+{% endblock %}
+
+
+{% block jQuery %}
+
+    {{ block.super }}
+    <!--图片浏览-->
+    <!-- datetime -->
+    <script src="{% static 'datetime/jquery.js' %}"></script>
+    <script src="{% static 'datetime/jquery.datetimepicker.full1.js' %}"></script>
+
+    <!--文件上传-->
+    <script src="{% static 'jquery-Upload/js/fileinput.js' %}" type="text/javascript"></script>
+    <script src="{% static 'jquery-Upload/js/fileinput_locale_zh.js' %}" type="text/javascript"></script>
+    <script>/*
+     window.onerror = function(errorMsg) {
+     $('#console').html($('#console').html()+'<br>'+errorMsg)
+     }*/
+
+    $.datetimepicker.setLocale('ch');
+    $('#datetimepicker').datetimepicker({value:'{{ task_start_date }}',step:10});
+
+
+    $('#default_datetimepicker').datetimepicker({
+        formatTime:'H:i',
+        formatDate:'d.m.Y',
+        //defaultDate:'8.12.1986', // it's my birthday
+        defaultDate:'+03.01.1970', // it's my birthday
+        defaultTime:'10:00',
+        timepickerScrollbar:false
+    });
+
+    </script>
+
+    <script>/*
+     window.onerror = function(errorMsg) {
+     $('#console').html($('#console').html()+'<br>'+errorMsg)
+     }*/
+
+    $.datetimepicker.setLocale('ch');
+    $('#datetimepicker1').datetimepicker({value:'{{ task_end_date }}',step:10});
+
+
+    $('#default_datetimepicker1').datetimepicker({
+        formatTime:'H:i',
+        formatDate:'d.m.Y',
+        //defaultDate:'8.12.1986', // it's my birthday
+        defaultDate:'+03.01.1970', // it's my birthday
+        defaultTime:'10:00',
+        timepickerScrollbar:false
+    });
+    {% for list in lists %}
+        $.datetimepicker.setLocale('ch');
+        $('#datetime{{ list.id }}').datetimepicker({value:'{{ list.start_date }}',step:10});
+        $('#enddate{{ list.id }}').datetimepicker({value:'{{ list.end_date }}',step:10});
+        $('#default_datetime{{ list.id }}').datetimepicker({
+            formatTime:'H:i',
+            formatDate:'d.m.Y',
+            // defaultDate:'8.12.1986', // it's my birthday
+            defaultDate:'+03.01.1970', // it's my birthday
+            defaultTime:'10:00',
+            timepickerScrollbar:false
+        });
+        $('#default_enddate{{ list.id }}').datetimepicker({
+            formatTime:'H:i',
+            formatDate:'d.m.Y',
+            // defaultDate:'8.12.1986', // it's my birthday
+            defaultDate:'+03.01.1970', // it's my birthday
+            defaultTime:'10:00',
+            timepickerScrollbar:false
+        });
+    {% endfor %}
+
+    </script>
+
+
+
+    <script>
+
+
+        $(document).ready(function(){
+            //删除评论提示
+            $('.show_cover').click(function(){
+                $(this).next().append('<div id="cover_div" style="background-color: rgba(0,0,0,0.5);z-index:9999;position: fixed;top:0;left:0;width: 100%;height: 100%;">'+
+                        '<div style="width: 500px;height: 280px;background-color:white;border-radius: 4px;position: fixed;left:35%;top:27%;" id="notice_div">'+
+                        '<div style="width: 70%;border:0px solid #d1d1d1;margin: auto ;padding-top: 100px;" align="center">'+
+                        '<h2>是否确定？</h2>'+
+                        '<span style="color: #808080;">'+$(this).next().children().first().text()+'</span>'+
+                        '</div>'+
+
+                        '<div style="margin-top: 10px;" align="center">'+
+                        '<input type="button" value="取消" style="background-color: #00b900;color: white;border:none;height: 40px;width: 60px;font-size: 15px;" id="close_cover">'+
+                        '<input type="submit" value="是的，确定！" style="background-color: #dbbc39;color: white;border:none;height: 40px;width: 100px;font-size: 15px;margin-left:5px;" >'+
+                        '</div>'+
+                        '</div>'+
+
+                        '</div>')
+            });
+
+            $('.show_cover').next().delegate('#close_cover','click',function(){
+                $(this).parents().find('#cover_div').remove()
+            });//删除评论提示
+
+            //附件排序
+            $(function(){
+                var div = $('#attachment_box').children().toArray().sort(function(a,b){
+                    return parseInt(new Date($(b).attr('time').replace(/[\u4e00-\u9fa5]/g,'/')).getTime())-
+                            parseInt(new Date($(a).attr('time').replace(/[\u4e00-\u9fa5]/g,'/')).getTime())
+                });
+                $(div).appendTo('#attachment_box')
+            });
+            //-end 附件排序
+        });
+
+
+        //DIV缩放火狐兼容版
+        $('.foldable').click(function(event){
+            e = event.clientY;
+            s = document.documentElement.scrollTop ||  document.body.scrollTop;
+            if(window.$(this).find('i').attr('class')=='fa fa-caret-right'){
+                window.$(this).find('i').attr('class','fa fa-caret-down');
+            }
+            else{
+                window.$(this).find('i').attr('class','fa fa-caret-right');
+            }
+            r =  window.$(this).text();
+            window.$(this).next().slideToggle(500);
+            $('body,html').animate({'scrollTop':s+e-100},500);
+            $('.foldable').each(function(){
+                if($(this).text()!=r){
+                    $(this).next().slideUp(500);
+                    $(this).find('i').attr('class','fa fa-caret-right')
+                }
+            })
+        });
+        //
+        /*
+         var attribute = document.getElementById('attribute');
+         var button = document.getElementById('button');
+         attribute.onclick = function(){
+         if(button.style.display == 'none'){
+         button.style.display = 'block';
+         }
+         else{
+         button.style.display = 'none';
+         }
+         };
+         */
+    </script>
+
+    <script>
+
+        var attachment = document.getElementById('attachment');
+        var attachment_block = document.getElementById('attachment_block');
+        attachment.onclick = function(){
+            if(attachment_block.style.display == 'none'){
+                attachment_block.style.display = 'block';
+            }
+            else{
+                attachment_block.style.display = 'none';
+            }
+        };
+    </script>
+
+    <script>
+
+        var at_label = document.getElementById('at_label');
+        var at_list = document.getElementById('at_list');
+
+        at_label.onclick = function(){
+            if(at_list.style.display =='none'){
+                at_list.style.display = ''
+            }
+            else{
+                at_list.style.display = 'none'
+            }
+        };
+
+
+        var reply = document.getElementsByName('reply_label');
+        var reply_len = reply.length;
+        var reply_content = document.getElementsByName('reply_content');
+        for(var i=0;i<reply_len;i++){
+            reply[i].index = i;
+            reply[i].onclick = function(){
+
+                x = this.index;
+                if(reply_content[x].style.display == 'none'){
+                    reply_content[x].style.display = 'block';
+                }
+                else{
+                    reply_content[x].style.display = 'none'
+                }
+            }
+
+        }
+
+
+        var delete_label = document.getElementsByName('delete_label');
+        var delete_len = delete_label.length;
+        var delete_form = document.getElementsByName('delete_form');
+        /*
+         for(var i=0;i<delete_len;i++)
+         {
+         delete_label[i].index = i;
+
+         delete_label[i].onclick = function(){
+
+         x=this.index;
+         //   if(delete_label[x].getAttribute('point')=='comment_point'){
+         //          if(confirm('确定删除此评论？\n注：该评论下的回复将一同被删除')){
+
+         delete_form[x].submit();
+         //   }
+         //   else{
+         //       return false;
+         //   }
+         //   }
+         //   else{
+         //          if(confirm('确定删除该条回复？')){
+
+         //        delete_form[x].submit();
+         //   }
+         //   else{
+         //       return false;
+         //   }
+         //   }
+
+
+
+
+         };
+
+
+         }
+
+         */
+        var comment_div = document.getElementsByName('comment_div');
+        var div_len = comment_div.length;
+
+
+        for(var i=0;i<div_len;i++)
+        {
+            comment_div[i].index = i;
+
+            comment_div[i].onmouseover = function(){
+
+                x=this.index;
+                //alert(delete_label[x].childNodes[0].innerNodes);
+                //delete_label[x].innerHTML='<i class="fa fa-reply-all" aria-hidden="true"></i>'
+                delete_label[x].setAttribute('class',"fa fa-reply-all");
+                delete_label[x].setAttribute('aria-hidden',"true");
+            };
+            comment_div[i].onmouseout = function(){
+
+                x=this.index;
+
+                //delete_label[x].innerHTML=''
+                delete_label[x].setAttribute('class',"");
+                delete_label[x].setAttribute('aria-hidden',"");
+            };
+
+
+        }
+
+
+    </script>
+
+    <script>
+
+        $(document).ready(function(){
+
+            $('#cl').click(function(){
+                        $('#cover_div').css({'height':$(window).height(),'width':$(window).width()}).show();
+                        //alert($(window).width());
+                        //alert($(window).height());
+                    }
+            );
+            $('#close_cover').click(function(){
+                $('#cover_div').hide()
+            });
+
+
+//多选jq
+            $('div#selected_div b').click(function(){
+                $(this).parent().next().slideToggle('fast');
+                $(this).parent().next().next().slideToggle('fast')
+
+            });
+
+            $('div#selected_div a').click(function(){
+                //alert($(this).attr('id_'));
+                if($(this).parent().attr('id_')=='selected')
+                {
+                    //alert(1)
+                    $('#'+$(this).attr('id_')).attr('selected',false);
+                    $(this).remove();
+                    $('[id_="unselected"]').append('<a id_='+$(this).attr('id_')+' style="line-height: 35px;padding: 2px;' +
+                            'border:1px solid #f4f4f4;cursor:default;font-size: 16px;color:#696969;">'+$(this).text()+'</a>');
+
+                }
+                else{
+                    //alert(2)
+                    $('#'+$(this).attr('id_')).attr('selected',true);
+                    $(this).remove();
+                    $('[id_="selected"]').append('<a id_='+$(this).attr('id_')+' style="line-height: 35px;padding: 2px;' +
+                            'border:1px solid #f4f4f4;cursor:default;font-size: 16px;color:#696969;">'+$(this).text()+'</a>');
+                }
+            });
+
+            $('div#selected_div').delegate('a','click',function(){
+
+                //alert($(this).attr('id_'));
+                if($(this).parent().attr('id_')=='selected')
+                {
+                    //alert(1)
+                    $('#'+$(this).attr('id_')).attr('selected',false);
+                    $(this).remove();
+                    $('[id_="unselected"]').append('<a id_='+$(this).attr('id_')+' style="line-height: 35px;padding: 2px;' +
+                            'border:1px solid #f4f4f4;cursor:default;font-size: 16px;color:#696969;">'+$(this).text()+'</a>');
+
+                }
+                else{
+                    //alert(2)
+                    $('#'+$(this).attr('id_')).attr('selected',true);
+                    $(this).remove();
+                    $('[id_="selected"]').append('<a id_='+$(this).attr('id_')+' style="line-height: 35px;padding: 2px;' +
+                            'border:1px solid #f4f4f4;cursor:default;font-size: 16px;color:#696969;">'+$(this).text()+'</a>');
+                }
+
+            });
+//多选jq
+
+            //添加附件备注
+            task_id = {{ id }};
+            project_id = {{ url }};
+            // alert(project_id)
+            $('html').append('<div style="width: 80%;height: 20px;border: 1px solid #0000ff;" id="update_attachment_name" onclick="update_attachment_name()" hidden=""></div>');
+            $('#update_attachment_name').click(function(){
+                $('.new_name').each(function(e){
+
+                    jQuery.ajax({
+                        type:"POST",
+                        data: {new_name:$(this).val(),old_name:$(this).attr('old_name'),judge:'change_attachment_name',task_id:task_id,project_id:project_id},
+                        url: "{% url 'change_attachment_name' %}",
+                        cache: false,
+                        dataType: "html",
+                        success: function(result, statues, xml){
+
+                        },
+                        error: function(){
+
+                        }
+                    });
+
+                    if($('.new_name').length-1==e){
+                        // alert('test')
+                        setTimeout('location.reload()',500);
+                    }
+                });
+
+
+            });
+            //end-添加附件备注
+
+
+        })
+    </script>
+    <script>
+        var clip = new ZeroClipboard( document.getElementById("d_clip_button"), {
+            moviePath: "ZeroClipboard.swf"
+        } );
+
+        // 复制内容到剪贴板成功后的操作
+        clip.on( 'complete', function(client, args) {
+            return alert("复制成功，复制内容为："+ args.text);
+        } );
+
+    </script>
+
+    <!--<script>
+        videojs('vidId').ready(function() {
+          this.hotkeys({
+            volumeStep: 0.1,
+            seekStep: 5
+          });
+        });
+    </script>-->
+
+    {% if change_task == 'false' %}
+        <script>
+            alert("完成时间小于开始时间，请从新修改")
+        </script>
+    {% endif %}
+
+
+{% endblock %}

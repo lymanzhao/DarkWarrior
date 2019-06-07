@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+
+{% block Navigation %}
+{% endblock %}
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"/>
+
+{% block content %}
+
+    <style type="text/css">
+    .card-box {border-top-style: solid; border-top-width: 3px; width: 300px;}
+    #s{width:350px;}
+    </style>
+
+        <a style="float: right;margin-top: -5%" href="/logout/"><i class="ti-power-off m-r-5"></i> 注销</a>
+        <div class="row" id="foo">
+        {% for padID in padIDs %}
+
+                    <div class="col-lg-4" id="s">
+                        <div class="card-box project-box">
+                            <div class="notification-box" style="position: absolute;right: 0px;top: 0px; border: 10px;">
+                                <ul class="list-inline m-b-0">   <!--***********************-->
+                                    <li>
+                                        <a href="#" class="right-bar-toggle"  style="color: #1e266a;"  project_id="{{ padID }}">
+                                            <i class="zmdi zmdi-notifications-none"></i>
+
+                                            <div class="noti-dot"  notice="notice_{{ padID }}" hidden="hidden">
+                                                <span class="dot"></span>
+                                                <span class="pulse"></span>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                </ul>
+                            </div>
+
+                            <h4 class="m-t-0 m-b-5" style="border:0px solid grey;">
+                                <a href="http://filmind.cn:9001/p/{{ padID }}" style="font-family: SimSun;">{{ padID }}</a>
+                            </h4>
+
+                            <p class="text-success text-uppercase m-b-20 font-13">{{ project.project_summary }}</p>
+                            <p class="text-muted font-13" style="border:0px blue solid;height: 20px;max-width:92%;overflow: hidden;text-overflow:ellipsis;
+                                                                 white-space:nowrap;">
+                            </p>
+
+                        </div>
+                    </div><!-- end col-->
+
+
+        {% endfor %}
+
+        </div>
+    
+    {% block material %}
+            <link type="text/css" rel="stylesheet" href="{% static 'material/materialize.css' %}"  media="screen,projection"/>
+            <script type="text/javascript" src="{% static 'jquery-2.1.1.min.js' %}"></script>
+            <script type="text/javascript" src="{% static 'material/js/materialize.min.js' %}"></script>
+
+            <div class="mater fixed-action-btn" style="bottom: 20%; right:0.5%;" >
+                <a class="mater btn-floating btn-large red" style="display: none;">
+                    <!--<b class="large">添加</b>-->
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                </a>
+                <ul style="list-style: none;margin:0;padding:0;">
+
+
+                    {% if template.name == 'effects' %}
+                        <li>
+                            <a class="mater btn-floating green" data-container="body" data-toggle="popover" data-trigger="hover focus  manual click" data-animation="true" data-placement="left" data-content="镜头" class="material-icons" href="/{{ url }}/effects/newshot/">
+                                <!--<b>镜头</b>-->
+                                <i class="fa fa-video-camera" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                        <li >
+                            <a class="mater btn-floating blue" data-container="body" data-toggle="popover" data-trigger="hover focus  manual click" data-animation="true" data-placement="left" data-content="资产" href="/{{ url }}/newassets/" class="material-icons" >
+                                <!--<b class="material-icons">资产</b>-->
+                                <i class="fa fa-archive" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                    {% elif template.name == 'HR' %}
+                        <li>
+                            <a class="mater btn-floating red" data-container="body" data-toggle="popover" data-trigger="hover focus  manual click" data-animation="true" data-placement="left" data-content="请假单" class="material-icons" href="/{{ url }}/HR/create_leave/">
+                                <!--<b>请假单</b>-->
+                                <i class="fa fa-beer" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="mater btn-floating green" data-container="body" data-toggle="popover" data-trigger="hover focus  manual click" data-animation="true" data-placement="left" data-content="申请单" class="material-icons" href="/{{ url }}/HR/create_Leave_application/">
+                                <!--<b>申请单</b>-->
+                                <i class="fa fa-tasks" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a class="mater btn-floating red" data-container="body" data-toggle="popover" data-trigger="hover focus  manual click" data-animation="true" data-placement="left" data-content="任务" href="/{{ url }}/newtask/"class="material-icons" >
+                                <!--<b class="material-icons">任务</b>-->
+                                <i class="fa fa-tasks" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                        <li >
+                            <a class="mater btn-floating blue" data-container="body" data-toggle="popover" data-trigger="hover focus  manual click" data-animation="true" data-placement="left" data-content="资产" href="/{{ url }}/newassets/" class="material-icons" >
+                                <!--<b class="material-icons">资产</b>-->
+                                <i class="fa fa-archive" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                    <li>
+                        <a class="mater btn-floating green" data-container="body" data-toggle="popover" data-trigger="hover focus  manual click" data-animation="true" data-placement="left" data-content="维基" class="material-icons" href="/{{ url }}/create_wiki/">
+                            <!--<b>维基</b>-->
+                            <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        {% endblock %}
+                <!-- end row -->
+
+<!--添加笔记（新建任务笔记）-->
+<div class="mater fixed-action-btn" style="display:block;bottom: 20%; right: 0.5%;">
+<a data-container="body" data-toggle="popover" data-trigger="hover focus  manual click" data-animation="true" data-placement="left" data-content="新建笔记" href="/padlist/create_pad/"class="material-icons" ><img src="{% static 'image/addNote.png' %}" /></a>
+</div>
+
+<div class="mater fixed-action-btn" id="backtop" style="display:block;bottom: 20%; right: 0.5%;">
+<a href="#back_top" target="_self" id="back_top_button"></a>
+</div>
+
+
+<script type="text/javascript" src="{% static 'jQuery.js' %}"></script>  <!--jq压缩文件-->
+<script type="text/javascript" src="{% static 'Sortable.js' %}"></script>
+<script type="text/javascript" src="{% static 'app.js' %}"></script>
+
+
+<script type="text/javascript">
+
+//生成随机颜色js
+function getRandomColor()
+{
+var c = '#';
+
+var cArray = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'];
+for(var i = 0; i < 6;i++)
+{
+var cIndex = Math.round(Math.random()*15);
+c += cArray[cIndex];
+}
+return c;
+    //alert(c)
+}
+//getRandomColor()
+
+//}
+cards = $('.card-box')
+//alert(cards.length)
+//cards.css('border-top','red 1px solid')
+cards.each(function () {
+    var c = '#';
+
+var cArray = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'];
+for(var i = 0; i < 6;i++)
+{
+var cIndex = Math.round(Math.random()*15);
+c += cArray[cIndex];
+}
+    //alert(1)
+    $(this).css('border-top','3px solid '+c)
+})
+
+
+//拖拽js
+
+var el = document.getElementById('foo');
+new Sortable(el);
+new Sortable(el, {
+    group: "name",
+    store: null, // @see Store
+    handle: ".my-handle", // 点击目标元素约束开始
+    draggable: ".item",   // 指定那些选项需要排序
+    ghostClass: "sortable-ghost",
+
+    onStart: function (/**Event*/evt) { // 拖拽
+        var itemEl = evt.item;
+    },
+
+    onEnd: function (/**Event*/evt) { // 拖拽
+        var itemEl = evt.item;
+    },
+
+    onAdd: function (/**Event*/evt){
+        var itemEl = evt.item;
+    },
+
+    onUpdate: function (/**Event*/evt){
+        var itemEl = evt.item; // 当前拖拽的html元素
+    },
+
+    onRemove: function (/**Event*/evt){
+        var itemEl = evt.item;
+    }
+});
+
+</script>
+{% endblock %}
+
+<!-- -->
+
+

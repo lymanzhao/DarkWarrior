@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load staticfiles %}
+    <script type="text/javascript" src="{% static 'jQuery.js' %}"></script>  <!--jq压缩文件-->
+    <link href="{% static 'loading/loading.css'%}" rel="stylesheet" type="text/css" />
+    <script>
+
+        document.onreadystatechange = subSomething;//当页面加载状态改变的时候执行这个方法.
+        function subSomething()
+        {
+            if(document.readyState == "complete")
+            {
+
+                $('#loading_div').remove()
+            }
+            else{
+                setTimeout('$("#loading_div").show()',1000);
+            }
+
+        }
+    </script>
+    {% block icon %}
+        <link rel="shortcut icon" href='' id="icon">
+    {% endblock %}
+
+    {% block title %}
+        <title id="title"></title>
+    {% endblock %}
+
+    {% block css %}
+        <!--Morris Chart CSS -->
+        <link rel="stylesheet" href="{% static 'assets/plugins/morris/morris.css'%}">
+        <link href="{% static 'assets/css/bootstrap.min.css'%}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/core.css'%}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/components.css'%}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/icons.css'%}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/pages.css'%}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/menu.css'%}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/responsive.css'%}" rel="stylesheet" type="text/css" />
+
+
+        <!--tags-->
+        <link href="{% static 'assets/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.css' %}" rel="stylesheet" />
+
+        <!-- datetime css-->
+        <link rel="stylesheet" type="text/css" href="{% static 'datetime/jquery.datetimepicker.css' %}"/>
+        <style type="text/css">
+            .custom-date-style {
+                background-color: red !important;
+            }
+
+            .input{
+            }
+            .input-wide{
+                width: 500px;
+            }
+            .report-ul{
+                margin-left: 30px;
+                display:none;
+                position: absolute;
+                background-color: #ffffff;
+            }
+            .report-ul li{
+                position: relative;
+                top: -38px;
+                right: -190px;
+                background-color: #ffffff;
+                width: 150px;
+            }
+            .submenu li:hover  .report-ul{
+                display:block;
+            }
+        </style>
+    {% endblock %}
+
+    {% block head_js %}
+        <!-- HTML5 Shiv and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="{% static 'assets/js/html5shiv.js' %}"></script>
+        <script src="{% static 'assets/js/respond.min.js' %}"></script>
+        <![endif]-->
+
+        <script src="{% static 'assets/js/modernizr.min.js'%}"></script>
+    {% endblock %}
+    <style>
+        #back_top_button{
+            position: absolute;
+            top: 15px;
+            right: 0px;
+            z-index: 2;
+            width: 55px;
+            height: 55px;
+            background-image: url('{% static 'assets/images/back_top2.png' %}')
+        }
+        #back_top_button:hover{
+            position: absolute;
+            top: 15px;
+            right: 0px;
+            z-index: 2;
+            width: 55px;
+            height: 55px;
+            background-image: url('{% static 'assets/images/back_top1.png' %}')
+        }
+    </style>
+
+</head>
+<style>
+
+    #bell:hover{background-color: rgba(0, 0, 0, 0.4); height: 0px;}
+</style>
+
+<body onload="init()" style="overflow: auto;">
+<a name="back_top" id="back_top" style="position: absolute;top: -50px"></a>
+<!--loading animate  -->
+<div id="loading_div" style="background-color: rgba(0,0,0,0.00);z-index:9999;position: absolute;top:0;left:0;width: 100%;height: 100%;display:none;" onclick="$(this).hide()" >
+    <div style="width: 100px;height: 30px;border:0px solid #50b4fa;position: fixed;left: 47%;top:35%;">
+        <div style="width: 30px;height: 30px;background-color: #31ff74;display:inline-block;border-radius: 50%;position: absolute;left: 0;box-shadow:1px 1px 1px #a9a9a9; " id="c_1"></div>
+        <div style="width: 30px;height: 30px;background-color: #50b4fa;display: inline-block;border-radius: 50%;position: absolute;left: 70px;box-shadow:1px 1px 1px #a9a9a9;" id="c_2"></div>
+    </div>
+</div><!--end loading -->
+{% block Navigation %}
+    <!-- Navigation Bar-->
+    <header id="topnav">
+
+
+        <div class="navbar-custom">
+            <div class="container">
+
+                <!-- Navigation Menu-->
+                <ul class="navigation-menu">
+                    <li class="has-submenu">
+                        <a href="/"><i class="fa fa-home" aria-hidden="true"></i></a>
+                        {% if not global_manage %}
+                            <ul class="submenu" style="margin-left:-14px;">
+                                <li><a href="/{{ url }}/">项目首页 </a> <li>
+                            </ul>
+                        {% endif %}
+                    </li>
+                    <!--  <li class="has-submenu">
+                                <a href="/{{ url }}/"><i class="zmdi zmdi-view-dashboard"></i> <span> 项目首页 </span> </a>
+                            </li>
+                            -->
+
+                    <li class="has-submenu">
+                        {% if global_manage %}
+                            <a href="/global_report/"><i class="zmdi zmdi-collection-text"></i><span> 报表 </span> </a>
+                        {% else %}
+                            <a href="#"><i class="zmdi zmdi-collection-text"></i><span> 报表 </span> </a>
+                            <ul class="submenu">
+                                <li><a href="#">查报表</a>
+                                    <ul class="report-ul" >
+                                        <li> <a href="/{{ url }}/report/">报表1</a>   </li>
+                                        <li><a href="/{{ url }}/query/">批量修改</a></li>
+                                    </ul>
+                                </li>
+                                {% if template.name == 'effects' %}
+                                    <li><a href="#">制片</a>
+                                        <ul class="report-ul" >
+                                            <li><a href="/{{ url }}/shot_query/">任务分配进度表</a></li>
+                                            <li><a href="/{{url}}/effects/gallery/">故事板</a></li>
+                                        </ul>
+                                    </li>
+                                {% endif %}
+                                {% if template.name == 'HR' %}
+                                    <li><a href="#">考勤</a>
+                                        <ul class="report-ul" >
+                                            <li><a href="/{{ url }}/HR/attendance/">考勤表</a></li>
+                                            <li><a href="/{{ url }}/HR/attendance_statistic/">考勤统计表</a></li>
+                                            <li><a href="/{{ url }}/HR/CompanyPersonnel/">公司员工表</a></li>
+                                        </ul>
+                                    </li>
+                                {% endif %}
+                                <li><a href="/{{ url }}/wiki_index/">维基索引</a></li>
+                                <li><a href="/{{ url }}/roadmap/">里程碑</a></li>
+
+                                <li><a href="/{{url}}/project_members/">项目成员</a></li>
+                                <li><a href="/{{url}}/project_teams/">项目团队</a></li>
+                                <li><a href="/{{url}}/timeline/">时间线</a></li>
+                            </ul>
+                        {% endif %}
+                    </li>
+
+                    {% if not global_manage %}
+                        {% if template.name != 'HR' %}
+                            <li class="has-submenu">
+                                <a href="#"><i class="zmdi zmdi-chart"></i><span>资产</span></a>
+                                <ul class="submenu">
+                                    <li><a href="/{{ url }}/svn/">浏览库</a></li>
+                                    <li><a href="/{{ url }}/create_repository/">创建库</a></li>
+                                    <li><a href="/{{ url }}/owner_svn/">我的资产库</a></li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if not global_manage %}
+                        {% if template.name == 'effects' %}
+                            <li class="has-submenu">
+                                <a href="/{{ url }}/effects/kanban/"><i class="zmdi zmdi-collection-item"></i><span> 看板 </span> </a>
+
+                            </li>
+                        {% elif template.name == 'HR' %}
+                            <li class="has-submenu">
+                                <a href="/{{ url }}/HR/kanban/"><i class="zmdi zmdi-collection-item"></i><span> 看板 </span> </a>
+
+                            </li>
+                        {% else %}
+                            <li class="has-submenu">
+                                <a href="/{{ url }}/kanban/"><i class="zmdi zmdi-collection-item"></i><span> 看板 </span> </a>
+
+                            </li>
+                        {% endif %}
+                    {% endif %}
+
+
+                    {% if global_manage %}
+                        <li class="has-submenu">
+                            <a href="/global_view_calendar/"><i class="zmdi zmdi-calendar "></i><span> 日历</span> </a>
+                        </li>
+                    {% else %}
+                        {% if template.name == 'effects' %}
+                            <li class="has-submenu">
+                                <a href="/{{ url }}/effects/view_calendar/"><i class="zmdi zmdi-calendar "></i><span> 日历</span> </a>
+
+                            </li>
+                        {% elif template.name == 'HR' %}
+                            <li class="has-submenu">
+                                <a href="/{{ url }}/HR/view_calendar/"><i class="zmdi zmdi-calendar "></i><span> 日历</span> </a>
+
+                            </li>
+                        {% else %}
+                            <li class="has-submenu">
+                                <a href="/{{ url }}/view_calendar/"><i class="zmdi zmdi-calendar "></i><span> 日历</span> </a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+
+
+                    {% if global_manage %}
+                        <li class="has-submenu">
+                            <a href="/global_gantt/"><i class="zmdi zmdi-view-list"></i> <span> 甘特图 </span> </a>
+                        </li>
+                        <li class="has-submenu">
+                            <a href="/archive/"><i class="fa fa-paste"></i><span>归档</span> </a>
+                        </li>
+                    {% else %}
+                        {% if template.name == 'effects' %}
+                            <li class="has-submenu">
+                                <a href="/{{ url }}/effects/gantt/"><i class="zmdi zmdi-view-list"></i> <span> 甘特图 </span> </a>
+                            </li>
+
+                        {% elif template.name == 'HR' %}
+                            <li class="has-submenu">
+                                <a href="/{{ url }}/HR/gantt/"><i class="zmdi zmdi-view-list"></i> <span> 甘特图 </span> </a>
+                            </li>
+                        {% else %}
+                            <li class="has-submenu">
+                                <a href="/{{ url }}/gantt/"><i class="zmdi zmdi-view-list"></i> <span> 甘特图 </span> </a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+
+
+                    {% if global_manage %}
+                        <li class="has-submenu">
+                            <a href="/global_manage/"><i class="zmdi zmdi-layers"></i><span>管理</span> </a>
+                        </li>
+                    {% else %}
+                        <li class="has-submenu">
+                            <a href="/{{ url }}/manage/"><i class="zmdi zmdi-layers"></i><span>管理</span> </a>
+                        </li>
+                    {% endif %}
+
+                </ul>
+                <!-- End navigation menu  -->
+
+                <ul class="nav navbar-nav navbar-right pull-right">
+                    {% if not user_now %}
+                        <li>
+                            <a href="/login/" class="logo">
+                                <span>登录</span>
+                            </a>
+                        </li>
+
+                        <li class="logo">
+                            <a href="/registration/">
+                                <span>注册</span>
+                            </a>
+                        </li>
+                    {% else %}
+                    {% if not global_manage %}
+                        <li>
+                            <!-- Notification -->
+                            <div class="notification-box">
+                                <ul class="list-inline m-b-0">
+                                    <li>
+                                        <a href="#" class="right-bar-toggle"  style="color: #1e266a;" project_id="{{ url }}">
+                                            <i class="zmdi zmdi-notifications-none"></i>
+
+                                            <div class="noti-dot" style="display: none;" id="message_label">
+                                                <span class="dot"></span>
+                                                <span class="pulse"></span>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                </ul>
+                            </div>
+                            <!-- End Notification bar -->
+                        </li>
+                    {% endif %}
+
+                        <li class="dropdown user-box">
+                            <a href="" class="dropdown-toggle waves-effect waves-light profile " data-toggle="dropdown" aria-expanded="true">
+                                {% if user_head_portrait %}
+                                    <img src="/media/{{ user_head_portrait }}" alt="user-img" class="img-circle user-img" style="width:37px;height:37px;">
+                                {% else %}
+                                    <img src="{% static 'assets/images/users/user-default.jpg' %}" alt="user-img" class="img-circle user-img" style="width:37px;">
+                                {% endif %}
+                                <div class="user-status away"><i class="zmdi zmdi-dot-circle"></i></div>
+                            </a>
+
+                            <ul class="dropdown-menu">
+                                <li><a href="/personal_log/"><i class="ti-agenda m-r-5"></i><span>个人日志</span></a></li>
+                                <li><a href="/personal_settings"><i class="ti-user m-r-5"></i><span>个人资料</span></a></li>
+                                <!--<li><a href="/{{ url }}/chat_register/"><i class="ti-comments m-r-5"></i><span>聊天用户注册</span></a></li>-->
+                                <li><a href="/password_change/"><i class="ti-lock m-r-5"></i><span>修改密码</span></a></li>
+                                <li><a href="/logout/"><i class="ti-power-off m-r-5"></i><span>注销</span></a></li>
+                            </ul>
+                        </li>
+
+                    {% endif %}
+                </ul>
+
+
+            </div>
+        </div>
+
+
+    </header>
+    <!-- End Navigation Bar-->
+{% endblock %}
+
+<div class="wrapper">
+    <div class="container-fluid" style="width: 90%;">
+        <div style="margin-bottom: 5%;margin-top: 3%">
+            {% block content %}
+
+
+            {% endblock %}
+        </div>
+        {% block material %}
+            <link type="text/css" rel="stylesheet" href="{% static 'material/materialize.css' %}"  media="screen,projection"/>
+            <script type="text/javascript" src="{% static 'jquery-2.1.1.min.js' %}"></script>
+            <script type="text/javascript" src="{% static 'material/js/materialize.min.js' %}"></script>
+
+            <div class="mater fixed-action-btn" style="bottom: 20%; right:0.5%;" >
+                <a class="mater btn-floating btn-large red">
+                    <!--<b class="large">添加</b>-->
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                </a>
+                <ul style="list-style: none;margin:0;padding:0;">
+
+
+                    {% if template.name == 'effects' %}
+                        <li>
+                            <a class="mater btn-floating green" data-container="body" data-toggle="popover" data-trigger="hover focus  manual click" data-animation="true" data-placement="left" data-content="镜头" class="material-icons" href="/{{ url }}/effects/newshot/">
+                                <!--<b>镜头</b>-->
+                                <i class="fa fa-video-camera" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                        <li >
+                            <a class="mater btn-floating blue" data-container="body" data-toggle="popover" data-trigger="hover focus  manual click" data-animation="true" data-placement="left" data-content="资产" href="/{{ url }}/newassets/" class="material-icons" >
+                                <!--<b class="material-icons">资产</b>-->
+                                <i class="fa fa-archive" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                    {% elif template.name == 'HR' %}
+                        <li>
+                            <a class="mater btn-floating red" data-container="body" data-toggle="popover" data-trigger="hover focus  manual click" data-animation="true" data-placement="left" data-content="请假单" class="material-icons" href="/{{ url }}/HR/create_leave/">
+                                <!--<b>请假单</b>-->
+                                <i class="fa fa-beer" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="mater btn-floating green" data-container="body" data-toggle="popover" data-trigger="hover focus  manual click" data-animation="true" data-placement="left" data-content="申请单" class="material-icons" href="/{{ url }}/HR/create_Leave_application/">
+                                <!--<b>申请单</b>-->
+                                <i class="fa fa-tasks" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                        <!--<li>
+                            <a class="mater btn-floating red" data-container="body" data-toggle="popover" data-trigger="hover focus  manual click" data-animation="true" data-placement="left" data-content="任务" href="/{{ url }}/newtask/"class="material-icons" >
+                                <b class="material-icons">任务</b>
+                                <i class="fa fa-tasks" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                      -->
+                    {% else %}
+                        <li>
+                            <a class="mater btn-floating red" data-container="body" data-toggle="popover" data-trigger="hover focus  manual click" data-animation="true" data-placement="left" data-content="任务" href="/{{ url }}/newtask/"class="material-icons" >
+                                <!--<b class="material-icons">任务</b>-->
+                                <i class="fa fa-tasks" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                        <li >
+                            <a class="mater btn-floating blue" data-container="body" data-toggle="popover" data-trigger="hover focus  manual click" data-animation="true" data-placement="left" data-content="资产" href="/{{ url }}/newassets/" class="material-icons" >
+                                <!--<b class="material-icons">资产</b>-->
+                                <i class="fa fa-archive" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                    <li>
+                        <a class="mater btn-floating green" data-container="body" data-toggle="popover" data-trigger="hover focus  manual click" data-animation="true" data-placement="left" data-content="维基" class="material-icons" href="/{{ url }}/create_wiki/">
+                            <!--<b>维基</b>-->
+                            <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        {% endblock %}
+
+       <div>{% block chat %}{% endblock %}</div>
+
+        {% block footer %}
+            <!-- Footer -->
+            <footer class="footer navbar-fixed-bottom">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <!--<a href="/"><img src="{% static 'assets/images/CGW.png'%}" style="width: 100px;height: 75px"></a>-->
+                        </div>
+                        <div class="col-xs-6">
+                            <ul class="pull-right list-inline m-b-0">
+                                <li>
+                                    <span id="company_name"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+            <!-- End Footer -->
+        {% endblock %}
+
+    </div>
+    <!-- end container -->
+
+
+
+    <!-- Right Sidebar -->
+    <div class="side-bar right-bar">
+        <a href="javascript:void(0);" class="right-bar-toggle">
+            <i class="zmdi zmdi-close-circle-o"></i>
+        </a>
+
+        {% block iframe %}
+            <iframe src='/{{ url }}/message_2/' style="height:810px;width: 240px;border: hidden;" id="message_list">
+
+            </iframe>
+        {% endblock %}
+    </div>
+</div>
+
+{% block jQuery %}
+    <!-- jQuery  -->
+    <script src="{% static 'assets/js/jquery.min.js'%}"></script>
+    <script src="{% static 'assets/js/bootstrap.min.js'%}"></script>
+    <script src="{% static 'assets/js/detect.js'%}"></script>
+    <script src="{% static 'assets/js/fastclick.js'%}"></script>
+
+    <script src="{% static 'assets/js/jquery.slimscroll.js'%}"></script>
+    <script src="{% static 'assets/js/jquery.blockUI.js'%}"></script>
+    <script src="{% static 'assets/js/waves.js'%}"></script>
+    <script src="{% static 'assets/js/wow.min.js'%}"></script>
+    <script src="{% static 'assets/js/jquery.nicescroll.js'%}"></script>
+    <script src="{% static 'assets/js/jquery.scrollTo.min.js'%}"></script>
+
+    <!-- KNOB JS -->
+    <!--[if IE]>
+        <script type="text/javascript" src="{% static 'assets/plugins/jquery-knob/excanvas.js'%}"></script>
+        <![endif]-->
+    <script src="{% static 'assets/plugins/jquery-knob/jquery.knob.js'%}"></script>
+
+    <!--Morris Chart-->
+    <!--	<script src="{% static 'assets/plugins/morris/morris.min.js'%}"></script>
+		<script src="{% static 'assets/plugins/raphael/raphael-min.js'%}"></script>
+	-->
+    <!-- Dashboard init -->
+    <script src="{% static 'assets/pages/jquery.dashboard.js'%}"></script>
+
+    <!-- App js -->
+    <script src="{% static 'assets/js/jquery.core.js'%}"></script>
+    <script src="{% static 'assets/js/jquery.app.js'%}"></script>
+
+    <!-- datetime -->
+    <script src="{% static 'datetime/jquery.js' %}"></script>
+    <script src="{% static 'datetime/jquery.datetimepicker.full.js' %}"></script>
+
+
+    <!--tags-->
+    <script src="{% static 'assets/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js' %}"></script>
+
+
+{% endblock %}
+
+<script>
+
+    $(document).ready(function(){
+        //获取公司名称
+        var xmlhttp;
+        xmlhttp=new XMLHttpRequest();
+        xmlhttp.onreadystatechange=function()
+        {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200)
+            {
+                var company_name = xmlhttp.responseText;
+                if(company_name!='False')
+                {
+                    $('#company_name').html(company_name);
+                    $('#title').html(company_name);
+                }
+            }
+        };
+        xmlhttp.open("GET","/company_name/",true);
+        xmlhttp.send();
+        //end
+
+        //获取站点logo
+        var xmlhttp_icon;
+        xmlhttp_icon=new XMLHttpRequest();
+        xmlhttp_icon.onreadystatechange=function()
+        {
+            if (xmlhttp_icon.readyState==4 && xmlhttp_icon.status==200)
+            {
+                var sites_icon = xmlhttp_icon.responseText;
+                if(sites_icon!='False')
+                {
+                    $('#icon').attr('href','/media/'+sites_icon);
+                }
+            }
+        };
+        xmlhttp_icon.open("GET","/sites_logo/",true);
+        xmlhttp_icon.send();
+        //end
+
+        //
+        $('.right-bar-toggle').click(function () {
+            var url = $(this).attr('project_id');
+            if(url!=undefined){
+                document.getElementById('message_list').src='/'+url+'/message_2';
+            }
+
+        })
+
+
+    });
+</script>
+<script>
+    //消息图标显示
+    //window.setInterval('loadXMLDoc()',500);
+    function loadXMLDoc()
+    {
+        var xmlhttp;
+
+        xmlhttp=new XMLHttpRequest();
+
+
+        xmlhttp.onreadystatechange=function()
+        {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200)
+            {
+                if(xmlhttp.responseText=='True')
+                {
+                    document.getElementById("message_label").style.display='';
+                }
+                else{
+                    document.getElementById("message_label").style.display='none';
+                }
+            }
+        };
+        xmlhttp.open("GET","/{{ url }}"+"/judgment_message/",true);
+        xmlhttp.send();
+    }
+
+    window.onscroll = function () {
+        var t = document.documentElement.scrollTop || document.body.scrollTop;
+        if (t > 10) {
+            document.getElementById('topnav').hidden='hidden';
+            $('#search_div').hide();
+            $('#backtop').show();
+        } else {
+            document.getElementById('topnav').hidden='';
+            $('#search_div').show();
+            $('#backtop').hide();
+        }
+    }
+</script>
+
+
+{% ifequal project_archive.is_archive True%} <!--项目归档     -->
+    {% block is_archive %}
+        <script>
+            $(document).ready(function(){
+                $('[is_archive="true"]').css('visibility','hidden');
+            })
+        </script>
+    {% endblock %}
+{% endifequal %}
+
+
+<div class="mater fixed-action-btn" id="backtop" style="display:none;bottom: 20%; right: 0.5%;">
+    <a href="#back_top" target="_self" id="back_top_button"></a>
+</div>
+
+</body>
+</html>

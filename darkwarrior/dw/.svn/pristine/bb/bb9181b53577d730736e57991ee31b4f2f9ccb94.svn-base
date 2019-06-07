@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block css %}
+    {{ block.super }}
+    <!-- Editatable  Css-->
+    <!-- DataTables -->
+    <link href="{% static 'assets/plugins/datatables/jquery.dataTables.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'assets/plugins/datatables/buttons.bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'assets/plugins/datatables/fixedHeader.bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'assets/plugins/datatables/responsive.bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'assets/plugins/datatables/scroller.bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+
+
+    <link href="{% static 'assets/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.css' %}" rel="stylesheet" />
+    <style>
+
+        .sub {color: #ffffff;border:none;background-color: #50b4fa;line-height: 27px;
+            box-shadow: 1px 2px 1px #acb5bc;border-radius:2px;width: 55px;}
+    </style>
+    <script src="{% static 'assets/js/modernizr.min.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'ckeditor/ckeditor.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'datetime/jquery.datetimepicker.css' %}"/>
+    <link href="{% static 'assets/plugins/bootstrap-daterangepicker/daterangepicker.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+    <!--
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <h4 class="header-title m-t-0 m-b-30">报表1</h4>
+                    <form action="" method="post">
+			            <input type="hidden" value="task_select" name="judge">
+                        <div style="margin-top: 20px;margin-bottom: 30px">
+                            <label for="shu">属主:</label>
+                            <input type="text" id="shu" name="owner_select" {% if  owner_select  %} value="{{ owner_select }}" {% endif %}>
+			                {% for status in statuss %}
+                                <input type="checkbox"  id="status" name="select_status" {% if  status.id in select_conditions  %} checked {% endif %}  value="{{ status.id }}" style="margin-left: 20px">
+                                <label for="status">{{ status.name }}</label>
+                            {% endfor %}
+                            <input type="submit" value="筛选" style="margin-left: 20px" class="sub">
+                        </div>
+                    </form>
+
+
+                    <div class="">
+                        <table class="table table-striped" id="datatable-editable">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center;">序号</th>
+                                    <th style="text-align: center;">缩略图</th>
+                                    <th style="text-align: center;">任务</th>
+                                    <th style="text-align: center;">状态</th>
+                                    <th style="text-align: center;">预计起始时间</th>
+                                    <th style="text-align: center;">实际起始时间</th>
+                                    <th style="text-align: center;">预计完成时间</th>
+                                    <th style="text-align: center;">实际完成时间</th>
+                                    <th style="text-align: center;">预计所用天数</th>
+                                    <th style="text-align: center;">实际所用天数</th>
+                                </tr>
+                            </thead>
+
+                            <tbody style="text-align: center">
+                                   {% for task in tasks %}
+                                    <tr >
+                                    <td style="vertical-align: middle;text-align: center;"><a href="/{{ url }}/task/{{ task.id }}" style="list-style-type: none;color: red">{{ task.display_id }}</a></td>
+                                    <td style="vertical-align: middle;text-align: center;">{% if task.task_image %} <img src="/media/{{ task.task_image }}" width="150px;">{% else %}无缩略图{% endif %}</td>
+                                    <td style="vertical-align: middle;text-align: center;">{{ task.summary }}</td>
+                                    <td style="vertical-align: middle;text-align: center;">{{ task.status }}</td>
+                                    <td style="vertical-align: middle;text-align: center;">{{ task.predict_start_date }}</td>
+                                    <td style="vertical-align: middle;">{{ task.start_date }}</td>
+                                    <td style="vertical-align: middle;text-align: center;">{{ task.predict_end_date }}</td>
+                                    <td style="vertical-align: middle;text-align: center;">{{ task.end_date }}</td>
+                                    <td style="vertical-align: middle;text-align: center;">{{ task.predict_duration }}</td>
+                                    <td style="vertical-align: middle;text-align: center;">{{ task.duration }}</td>
+
+                                    </tr>
+                                   {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-box table-responsive">
+                <form action="" method="post" class="form-horizontal" style="margin-left: -5%">
+                     <div class="form-group">
+                        <input type="hidden" value="task_select" name="judge">
+                        <label class="control-label col-md-1">日期</label>
+                        <div class="col-md-3">
+                            <div class="input-daterange input-group col-md-10" id="date-range">
+                                <input type="text" value="{{ start_date }}" class="form-control" name="start" />
+                                <span class="input-group-addon bg-primary b-0 text-white">to</span>
+                                <input type="text" value="{{ end_date }}" class="form-control" name="end" />
+                            </div>
+
+                        </div>
+                         <input type="submit" value="筛选"  class="sub">
+                    </div>
+                </form>
+
+
+
+                <table id="datatable-buttons" class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th style="text-align: center;">序号</th>
+                        <th style="text-align: center;">缩略图</th>
+                        <th style="text-align: center;">任务</th>
+                        <th style="text-align: center;">状态</th>
+                        <th style="text-align: center;">属主</th>
+                        <th style="text-align: center;">预计起始时间</th>
+                        <th style="text-align: center;">实际起始时间</th>
+                        <th style="text-align: center;">预计完成时间</th>
+                        <th style="text-align: center;">实际完成时间</th>
+                        <th style="text-align: center;">预计所用天数</th>
+                        <th style="text-align: center;">实际所用天数</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for task in tasks %}
+                        <tr >
+                            <td style="vertical-align: middle;text-align: center;"><a href="/{{ url }}/task/{{ task.id }}" style="list-style-type: none;color: red">{{ task.display_id }}</a></td>
+                            <td style="vertical-align: middle;text-align: center;">{% if task.task_image %} <img src="/media/{{ task.task_image }}" width="150px;">{% else %}无缩略图{% endif %}</td>
+                            <td style="vertical-align: middle;text-align: center;">{{ task.summary }}</td>
+                            <td style="vertical-align: middle;text-align: center;">{{ task.status }}</td>
+                            <td style="vertical-align: middle;text-align: center;">{{ task.owner }}</td>
+                            <td style="vertical-align: middle;text-align: center;">{{ task.predict_start_date }}</td>
+                            <td style="vertical-align: middle;">{{ task.start_date }}</td>
+                            <td style="vertical-align: middle;text-align: center;">{{ task.predict_end_date }}</td>
+                            <td style="vertical-align: middle;text-align: center;">{{ task.end_date }}</td>
+                            <td style="vertical-align: middle;text-align: center;">{{ task.predict_duration }}</td>
+                            <td style="vertical-align: middle;text-align: center;">{{ task.duration }}</td>
+
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div><!-- end col -->
+    </div>
+    <!-- end row -->
+
+
+{% endblock %}
+
+
+{% block jQuery %}
+    {{ block.super }}
+
+
+
+    <!-- Datatables-->
+    <script src="{% static 'report_excel/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.bootstrap.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/buttons.bootstrap.min.js' %}"></script>
+
+    <script src="{% static 'assets/plugins/datatables/jszip.min.js' %}"></script>  <!-- excel-->
+    <!--<script src="{% static 'assets/plugins/datatables/pdfmake.min.js' %}"></script>-->  <!-- pdf -->
+    <!--<script src="{% static 'assets/plugins/datatables/vfs_fonts.js' %}"></script>-->    <!-- pdf -->
+    <script src="{% static 'report_excel/buttons.html5.js' %}"></script>
+
+    <script src="{% static 'assets/plugins/datatables/buttons.print.min.js' %}"></script>   <!-- print -->
+
+    <script src="{% static 'assets/plugins/datatables/dataTables.fixedHeader.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.keyTable.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/responsive.bootstrap.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.scroller.min.js' %}"></script>
+
+    <!-- Datatable init js -->
+    <script src="{% static 'assets/pages/datatables.init.js' %}"></script>
+
+    <script src="{% static 'datetime/jquery.datetimepicker.full.js' %}"></script>
+
+    <script src="{% static 'assets/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js' %}"></script>
+
+    <script src="{% static 'assets/plugins/bootstrap-daterangepicker/daterangepicker.js' %}"></script>
+    <script src="{% static 'assets/plugins/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#datatable').dataTable();
+            $('#datatable-keytable').DataTable( { keys: true } );
+            $('#datatable-responsive').DataTable();
+            $('#datatable-scroller').DataTable( { ajax: "{% static 'assets/plugins/datatables/json/scroller-demo.json' %}", deferRender: true, scrollY: 380, scrollCollapse: true, scroller: true } );
+            var table = $('#datatable-fixed-header').DataTable( { fixedHeader: true } );
+        } );
+        TableManageButtons.init();
+
+    </script>
+
+    <script>/*
+     window.onerror = function(errorMsg) {
+     $('#console').html($('#console').html()+'<br>'+errorMsg)
+     }*/
+
+    $.datetimepicker.setLocale('ch');
+
+    jQuery('#date-range').datepicker({
+        toggleActive: true
+    });
+    </script>
+{% endblock %}
+

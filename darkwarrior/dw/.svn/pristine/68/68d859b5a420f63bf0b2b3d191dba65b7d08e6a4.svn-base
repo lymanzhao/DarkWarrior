@@ -1,0 +1,76 @@
+{% extends 'global_manage/manage_base.html' %}
+
+{% load staticfiles %}
+
+{% block css %}
+    {{ block.super }}
+    <!-- Editatable  Css-->
+    <link rel="stylesheet" href="{% static 'assets/plugins/magnific-popup/dist/magnific-popup.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/plugins/jquery-datatables-editable/datatables.css' %}" />
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel">
+                <div class="panel-body">
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="m-b-30">
+                                <a href="/global_manage/add_project_type/">
+                                    <button class="btn btn-primary waves-effect waves-light" >
+                                        基础项目类型<i class="fa fa-plus" ></i>
+                                    </button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="table table-striped" id="datatable-editable">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center">ID</th>
+                                <th style="text-align: center">项目类型</th>
+                                <th style="text-align: center">界面设置</th>
+                            </tr>
+                        </thead>
+
+                        <tbody style="text-align: center">
+                            {% for project_type in project_types %}
+                                <tr>
+                                    <td style="text-align: center"><a href="/global_manage/project_type_edit/{{ project_type.id }}/" style="list-style-type: none;color: red">#{{ project_type.id }}</a></td>
+                                    <td style="text-align: center">
+                                        <a href="/global_manage/project_type_edit/{{ project_type.id }}/" style="list-style-type: none;color: #0f70b8">
+                                        {{ project_type.name }}
+                                        </a>
+                                    </td>
+                                    <td style="text-align: center"><a href="/global_manage/project_interface_edit/{{ project_type.id }}/" style="list-style-type: none;color: #0f70b8">编辑</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+
+{% block jQuery %}
+    {{ block.super }}
+
+    <!-- Editable js -->
+    <script src="{% static 'assets/plugins/magnific-popup/dist/jquery.magnific-popup.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/jquery-datatables-editable/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.bootstrap.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/mindmup-editabletable.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/numeric-input-example.js' %}"></script>
+
+    <!-- init -->
+    <script src="{% static 'assets/pages/datatables.editable.init.js' %}"></script>
+
+{% endblock %}

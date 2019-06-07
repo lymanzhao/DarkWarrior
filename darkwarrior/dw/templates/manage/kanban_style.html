@@ -1,0 +1,95 @@
+{% extends 'manage/manage_base.html' %}
+
+{% load staticfiles %}
+
+{% block css %}
+    {{ block.super }}
+    <!-- Editatable  Css-->
+    <link rel="stylesheet" href="{% static 'assets/plugins/magnific-popup/dist/magnific-popup.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/plugins/jquery-datatables-editable/datatables.css' %}" />
+    <!--拾色器 -->
+    <link rel="stylesheet" href="{% static 'pick-a-color/pick-a-color-1.2.3.min.css'%}">
+    <style>
+    .sub {color: #ffffff;border:none;background-color: #50b4fa;line-height: 27px;
+            box-shadow: 1px 2px 1px #acb5bc;border-radius:2px;}
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="">
+<h3>看板优先级颜色</h3>
+<br>
+{% if notice %}
+<span style="color:#9b9b9b;">您还没有属于自己的项目类型！</span>
+    <a href="/{{ url }}/manage/add_project_type/">添加</a>
+{% endif %}
+                        <table class="table table-striped" id="datatable-editable">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center">ID</th>
+                                    <th style="text-align: center">优先级</th>
+                                    <th style="text-align: center">背景色</th>
+                                    <th style="text-align: center">文本颜色</th>
+                                     <th style="text-align: center">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody style="text-align: center">
+                                {% for priority in prioritys  %}
+                                    <tr>
+                                        <form action="" method="post" >
+                                                <td><a href="#" style="list-style-type: none;color: red">{{ priority.id }}</a>
+                                                    <input type="" value="{{ priority.id }}" name="id" hidden="hidden"></td>
+                                                <td>{{ priority.name }}</td>
+
+                                                <td><input type="text"  value="{% if priority.color %}{{ priority.color }}{% else %}{{ color_default }}{% endif %} "  class="pick-a-color form-control">
+                                                    <input type="text"  value="{% if priority.color %}{{ priority.color }}{% else %}{{ color_default }}{% endif %} " name="color" hidden="">
+                                                </td>
+                                                <td><input type="text"  value="{% if priority.textColor %}{{ priority.textColor }}{% else %}{{ textColor_default }}{% endif %}" class="pick-a-color form-control">
+                                                    <input type="text"  value="{% if priority.textColor %}{{ priority.textColor }}{% else %}{{ textColor_default }}{% endif %}" name="textColor" hidden="">
+                                                </td>
+
+                                                <td>
+                                                      <input type="text"value="priority" name="judge" hidden="hidden">
+                                                    <input type="submit" name="change" style="border:#000080;" value="修改" class="sub">
+                                                        <input type="submit" name="reset" style="border:#000080;" value="恢复默认" class="sub">
+                                                </td>
+                                        </form>
+                                    </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+
+
+</div>
+
+
+{% endblock %}
+
+
+
+{% block jQuery %}
+    {{ block.super }}
+    <!-- Editable js -->
+    <script src="{% static 'assets/plugins/magnific-popup/dist/jquery.magnific-popup.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/jquery-datatables-editable/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.bootstrap.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/mindmup-editabletable.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/numeric-input-example.js' %}"></script>
+
+    <!-- init -->
+    <script src="{% static 'assets/pages/datatables.editable.init.js' %}"></script>
+    <!--拾色器 -->
+    <script src="{% static 'pick-a-color/tinycolor-0.9.15.min.js' %}"></script>
+    <script src="{% static 'pick-a-color/pick-a-color-1.2.3.min.js' %}"></script>
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+      $(".pick-a-color").pickAColor();
+    });
+
+    </script>
+
+{% endblock %}
+

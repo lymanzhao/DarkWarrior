@@ -1,0 +1,449 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+{% block css %}
+    {{ block.super }}
+    <script src="{% static 'effects_gantt/dhtmlxgantt.js' %}"></script>
+
+    <link rel="stylesheet" {% if gantt_css %}href="{% static gantt_css_url %}"{% else %}
+          href="{% static 'codebase/skins/dhtmlxgantt_terrace.css' %}"{% endif %}
+          type="text/css" media="screen" title="no title" charset="utf-8">
+    <!--<script src="{% static 'gantt/ext/dhtmlxgantt_undo.js' %}"></script>-->
+    <script src="{% static 'gantt/locale/locale_cn.js' %}" charset="utf-8"></script>
+    <script src="{% static 'gantt/ext/dhtmlxgantt_tooltip.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'ckeditor/ckeditor.js' %}"></script>
+    <script type="text/javascript" src="{% static 'search/ajax_search.js' %}"></script>
+    <!--
+        <style>
+            .gantt_task_line, .gantt_line_wrapper {
+            margin-top: 0px;
+            }
+            .gantt_side_content {
+                margin-bottom: 0px;
+            }
+            .gantt_task_link .gantt_link_arrow {
+                margin-top: 0px
+            }
+            .gantt_side_content.gantt_right {
+                bottom: 0;
+            }
+            .nested_task .gantt_add{
+                display: none !important;
+            }
+        </style>
+    -->
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="row" style="margin-top: -50px;">
+        <div class="col-md-12">
+            {{get_form |safe}}
+
+            <div class="panel">
+                <div class="panel-body">
+                    <h4 class="header-title m-t-0 m-b-30">甘特图</h4>
+                    <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" >
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <input type="hidden" value="" id="parent_id" name="parent_id">
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">镜头号</label>
+                                        <div class="col-md-10">
+                                            <input type="text" class="form-control" placeholder="请输入任务概述" name="summary" autofocus="autofocus" required="">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">镜头说明</label>
+                                        <div class="col-md-10">
+                                            <textarea id="elm1" name="content">{{ content }}</textarea>
+                                            <script type="text/javascript">CKEDITOR.replace('content')</script>
+
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label" >缩略图</label>
+                                        <div class="col-md-10">
+                                            <input type="file" class="form-control"  name="task_image" >
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">任务类型</label>
+                                        <div class="col-md-10">
+                                            <select class="change_sel" name="type">
+                                                {% for type in types %}
+                                                    <option {% ifequal type_default type %} selected {% endifequal %} value="{{ type.id }}">{{ type.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">制作流程</label>
+                                        <div class="col-md-10">
+                                            <select class="change_sel" name="milestone">
+                                                {% for milestone in milestones %}
+                                                    <option {% ifequal milestone_default milestone %} selected {% endifequal %} value="{{ milestone.id }}">{{ milestone.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">应用程序</label>
+                                        <div class="col-md-10">
+                                            <select class="change_sel" name="component">
+                                                {% for component in components %}
+                                                    <option {% ifequal component_default component %} selected {% endifequal %} value="{{ component.id }}">{{ component.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">优先级</label>
+                                        <div class="col-md-10">
+                                            <select class="change_sel" name="priority">
+                                                {% for priority in prioritys %}
+                                                    <option {% ifequal priority_default priority %} selected {% endifequal %} value="{{ priority.id }}">{{ priority.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">属主</label>
+                                        <div class="col-md-10">
+                                            <div class="tags-default">
+                                                <input type="text" value="" data-role="tagsinput" id="search_text" onkeyup="showHint(this.value)"
+                                                       class="form-control" placeholder="请输入属主姓名" name="owner"/>
+                                            </div>
+
+                                            <div id="txtHint" ></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">版本</label>
+                                        <div class="col-md-10">
+                                            <select class="change_sel" name="version">
+                                                {% for version in versions %}
+                                                    <option {% ifequal version_default version %} selected {% endifequal %} value="{{ version.id }}">{{ version.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                    <label class="col-md-2 control-label">等级</label>
+                                    <div class="col-md-10">
+                                        <select class="change_sel" name="grade">
+                                            {% for grade in grades %}
+                                                <option  value="{{ grade.name }}">{{ grade.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label" >任务起始时间</label>
+                                        <div class="col-md-10">
+                                            <input type="text" value="" class="form-control" name="start_date" id="datetimepicker"/>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label" >任务结束时间</label>
+                                        <div class="col-md-10">
+                                            <input type="text" class="form-control" value="" name="end_date" id="datetimepicker1"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label" >故事点</label>
+                                        <div class="col-md-10">
+                                            <input type="text" placeholder="文本输入框只能输入数字（整数或浮点数）" onkeyup="this.value=this.value.replace(/^\.|^0\d{1,}|\.{2,}|[^.\d]|\..*\./g,'');" onblur="this.value=this.value.replace(/\.$/g,'');" class="form-control" value="" name="story_point" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">
+                                            <input type="checkbox" name="relevance" value="task_relevance">前后关联
+                                        </label>
+                                        <div class="col-md-10">
+                                            <input class=" form-control input-block" placeholder="请输入要关联的任务id，并且选择关联类型,默认为①尾-->②头" type="number" name="task_id">
+                                            <select class="change_sel" name="relevance_type">
+                                                <option value="3">①头-->②尾</option>
+                                                <option value="2">①尾-->②尾</option>
+                                                <option value="1">①头-->②头</option>
+                                                <option value="0">①尾-->②头</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" style="margin-left: 85%;margin-top: 5%">
+                                        <div class="col-sm-4">
+                                            <input type="submit" class="batn btn-purple btn-rounded w-md  " value="提交" is_archive="true">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!--	<input type='button' value='按任务名称排序' onclick='gantt.sort("text", true);'>
+                         <input type='button' value='按任务开始时间排序' onclick='gantt.sort("start_date", true);'>-->
+
+                    <div id="gantt_here" style='height:{{ height_num }}px;'></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--
+    <button type="submit" id="gantt_save_btns">更新</button>
+
+    <form id ="task" action="" method="post">
+        <input type="text" value="" id="task" name="task_text">
+
+    </form>
+    -->
+
+{% endblock %}
+
+{% block jQuery %}
+    {{ block.super }}
+    <script src="/static/lly/query_select.js" id="query_select"></script><!-- 单选下拉控件-->
+
+    <script>/*
+     window.onerror = function(errorMsg) {
+     $('#console').html($('#console').html()+'<br>'+errorMsg)
+     }*/
+
+    $.datetimepicker.setLocale('ch');
+    $('#datetimepicker').datetimepicker({value:'{{ now_date }}',step:10});
+
+
+    $('#default_datetimepicker').datetimepicker({
+        formatTime:'H:i',
+        formatDate:'d.m.Y',
+        //defaultDate:'8.12.1986', // it's my birthday
+        defaultDate:'+03.01.1970', // it's my birthday
+        defaultTime:'10:00',
+        timepickerScrollbar:false
+    });
+
+    </script>
+
+    <script>/*
+     window.onerror = function(errorMsg) {
+     $('#console').html($('#console').html()+'<br>'+errorMsg)
+     }*/
+
+    $.datetimepicker.setLocale('ch');
+    $('#datetimepicker1').datetimepicker({value:'{{ now_date }}',step:10});
+
+
+    $('#default_datetimepicker1').datetimepicker({
+        formatTime:'H:i',
+        formatDate:'d.m.Y',
+        //defaultDate:'8.12.1986', // it's my birthday
+        defaultDate:'+03.01.1970', // it's my birthday
+        defaultTime:'10:00',
+        timepickerScrollbar:false
+    });
+
+    </script>
+
+    <script type="text/javascript">
+
+
+        var tasks = {
+            data:[
+
+                {% for gantt_task in gantt_tasks %}
+                    {id:{{ gantt_task.id }},
+                        text:"{{ gantt_task.summary }}",
+                        start_date:"{{ gantt_task.start_date }}",
+                        duration:{{ gantt_task.duration }},
+                        progress:'{{ gantt_task.progress }}',
+                        open: true,
+                        'parent':'{{ gantt_task.parent }}',
+                        color:{% if gantt_task.color %}'{{ gantt_task.color }}'{% else %}''{% endif %},
+                        textColor:{% if gantt_task.textColor %}'{{ gantt_task.textColor }}'{% else %}''{% endif %},
+                        progressColor:{% if gantt_task.progressColor %}'{{ gantt_task.progressColor }}'{% else %}''{% endif %}},
+                {% endfor %}
+
+            ],
+            links:[
+                {% for gatt_link in gantt_links %}
+                    {id:{{ gatt_link.id }}, source:{{ gatt_link.source }}, target:{{ gatt_link.target }}, type:"{{ gatt_link.type }}"},
+                {% endfor %}
+            ]
+        };
+
+        gantt.config.task_height = {% if gantt_task_height %}{{ gantt_task_height }}{% else %}28{% endif %};
+        gantt.config.row_height = {% if gantt_row_height %}{{ gantt_row_height }}{% else %}38{% endif %};
+
+        gantt.templates.tooltip_text = function(start,end,task){
+            return "<b>概述:</b> "+task.text+"<br><b>持续时间:</b> " + task.duration + "天";
+        };
+
+
+        gantt.templates.grid_row_class = function( start, end, task ){
+            if ( task.$level > 1 ){
+                return "nested_task"
+            }
+            return "";
+        };
+        gantt.config.sort = true;
+        gantt.config.xml_date = "%Y-%m-%d %H:%i";
+
+        {% ifequal project_archive.is_archive True %} //项目归档
+            gantt.config.readonly = true;
+        {% endifequal %}
+
+        gantt.init("gantt_here");
+        gantt.parse (tasks);
+        gantt.sort('start_date',true);               //时间倒序
+    </script>
+    <script>
+
+
+        document.write('<div style="position: absolute;z-index: 999;display:none;">\
+            <a  onclick="add_link()" id="add_link">增加线段</a>\
+            \
+            <a  onclick="delete_link()" id="delete_link">删除线段</a>\
+            <input type="number" value="" id="source">\
+            <input type="number" value="" id="target">\
+            <input type="number" value="" id="type">\
+            \
+            <a  onclick="change_task()" id="change_task">修改任务</a>\
+            <input type="text" value="" id="id">\
+            <input type="text" value="" id="start_date">\
+            <input type="text" value="" id="duration">\
+            <input type="text" value="" id="progress">\
+            <input type="text" value="" id = "text">\
+            <a  onclick="delete_task()" id="delete_task">删除任务</a>\
+            <input type="text" value="" id="task_id">\
+            <input type="text" value="" id="parent">\
+            <div id="project_id"></div>\
+        </div>');
+
+        $(document).ready(function(){
+            $('#project_id').html({{ url }});
+        });
+
+
+        function add_link(){
+            var source = document.getElementById('source').value;
+            var target = document.getElementById('target').value;
+            var type = document.getElementById('type').value;
+
+            jQuery.ajax({
+
+                type:"POST",
+                data: {source:source,target:target,type:type,judge:'add_link'},
+                url: "{% url 'link' %}", //后台处理函数的url 这里用的是static url 需要与urls.py中的name一致
+                cache: false,
+                dataType: "html",
+                success: function(result, statues, xml){
+                    alert('ajax');                                         //成功时弹出view传回来的结果
+                },
+                error: function(){
+                    //alert("false");
+                }
+            });
+        }
+
+
+        function delete_link(){
+            var source = document.getElementById('source').value;
+            var target = document.getElementById('target').value;
+            var type = document.getElementById('type').value;
+
+            jQuery.ajax({
+                type:"POST",
+                data: {source:source,target:target,type:type,judge:'delete_link'},
+                url: "{% url 'link' %}", //后台处理函数的url 这里用的是static url 需要与urls.py中的name一致
+                cache: false,
+                dataType: "html",
+                success: function(result, statues, xml){
+                    alert('ajax');                                         //成功时弹出view传回来的结果
+                },
+                error: function(){
+                    //alert("false");
+                }
+            });
+        }
+
+
+
+        function change_task(){
+            var id = document.getElementById('id').value;
+            var start_date = document.getElementById('start_date').value;
+            var duration = document.getElementById('duration').value;
+            var progress = document.getElementById('progress').value;
+            var text = document.getElementById('text').value;
+
+            jQuery.ajax({
+                type:"POST",
+                data: {id:id,start_date:start_date,duration:duration,text:text,progress:progress,judge:'change_task'},
+                url: "{% url 'link' %}", //后台处理函数的url 这里用的是static url 需要与urls.py中的name一致
+                cache: false,
+                dataType: "html",
+                success: function(result, statues, xml){
+                    alert('ajax');                                         //成功时弹出view传回来的结果
+                },
+                error: function(){
+                    //alert("false");
+                }
+            });
+        }
+
+        function delete_task(){
+            var task_id = document.getElementById('task_id').value;
+            var parent = document.getElementById('parent').value;
+
+            jQuery.ajax({
+                type:"POST",
+                data: {task_id:task_id,parent:parent,judge:'delete_task'},
+                url: "{% url 'link' %}", //后台处理函数的url 这里用的是static url 需要与urls.py中的name一致
+                cache: false,
+                dataType: "html",
+                success: function(result, statues, xml){
+                    alert('ajax');                                         //成功时弹出view传回来的结果
+                },
+                error: function(){
+                    //alert("false");
+                }
+            });
+        }
+
+        function add_task(){
+            var id = document.getElementById('id').value;
+            var start_date = document.getElementById('start_date').value;
+            var duration = document.getElementById('duration').value;
+            var progress = document.getElementById('progress').value;
+            var text = document.getElementById('text').value;
+
+            jQuery.ajax({
+                type:"POST",
+                data: {id:id,start_date:start_date,duration:duration,text:text,progress:progress,judge:'add_task'},
+                url: "{% url 'link' %}", //后台处理函数的url 这里用的是static url 需要与urls.py中的name一致
+                cache: false,
+                dataType: "html",
+                success: function(result, statues, xml){
+                    location.href = "{{url }}/gantt/";                                         //成功时弹出view传回来的结果
+                },
+                error: function(){
+                    //alert("false");
+                }
+            });
+        }
+
+
+    </script>
+{% endblock %}

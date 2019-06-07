@@ -1,0 +1,43 @@
+<div class="row port m-b-20" judge="container">
+    <hr style="height:1px;border:none;border-top:1px dashed #979797;margin-right: 10px;" />
+    <span style="float: right;margin-top: -30px;color:#979797;">{{ page_num }}</span>
+    <div  class='portfolioContainer' style="position: relative;" id="test">
+        <div class="col-sm-6 col-lg-3 col-md-4" style="margin-bottom: -10px;"></div>
+        {% for dict in all_list %}
+            {% if dict.task_image %}
+                <div image = 'true' style=""
+                     class="col-sm-6 col-lg-3 col-md-4 {{ dict.task.status }} {{ dict.task.type }} {{ dict.task.priority }} {{ dict.task.version }} {{ dict.task.component }} {{ dict.task.milestone }}" id_="{{ dict.task.id }}">
+                    <div class="gal-detail thumb">
+
+                        <a href="/{{ url }}/effects/task/{{ dict.task.id }}"  title="{{ dict.task.summary }}">
+                            <img src="/media/{{ dict.task_image }}" class="thumb-img" alt="图片丢失">
+                        </a>
+
+                        <h4></h4>
+                        <p class="text-muted">
+                            #{{ dict.task.display_id }} {{ dict.task.summary }} {{ dict.task.scene }}场
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% for image in dict.attachment_image %}
+                <div image = 'true' style=""
+                     class="col-sm-6 col-lg-3 col-md-4 {{ dict.task.status }} {{ dict.task.type }} {{ dict.task.priority }} {{ dict.task.version }} {{ dict.task.component }} {{ dict.task.milestone }}" id_="{{ dict.task.id }}">
+                    <div class="gal-detail thumb">
+
+                        <a href="/{{ url }}/effects/task/{{ image.owner.id }}" title="{{ image.name }}">
+                            <img src="/media/{{ image.url }}" class="thumb-img" alt="图片丢失" >
+                        </a>
+
+                        <h4></h4>
+                        <p class="text-muted">
+                            #{{ dict.task.display_id }} {{ dict.task.summary }} {{ dict.task.scene }}场
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+
+        {% endfor %}
+    </div>
+</div>

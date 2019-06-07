@@ -1,0 +1,182 @@
+{% extends 'manage/manage_base.html' %}
+{% load staticfiles %}
+
+
+{% block content %}
+
+
+
+    <div class="row" style="margin-bottom: 5%">
+        <div class="col-lg-6">
+            <div class="card-box">
+
+                <h4 class="header-title m-t-0 m-b-30">项目修改</h4>
+
+                {% for error in errors %}
+                    <h5 style="color: red">{{ error }}</h5>
+                {% endfor %}
+
+                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data" >
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">项目名称</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" name="project_name"  value="{{ project.project_name }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">项目logo</label>
+                        <div class="col-md-10">
+                            <input type="file" class="form-control" name="project_logo"  value="{{ project.project_logo }}">
+                            {% if project.project_logo %}<img src="/media/{{ project.project_logo }}" width="150px;"height="150px;">{% endif %}
+                        </div>
+                    </div>
+<!--
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">项目类型</label>
+                        <div class="col-md-10">
+                            <select class="change_sel" name="project_type">
+				<option  value="{{ now_project_type.id }}">{{ now_project_type.name }}</option>
+                                {% for type in project_types %}
+				    {% if now_project_type.id != type.id %}
+                                        <option  value="{{ type.id }}">{{ type.name }}</option>
+				    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+-->
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">项目描述</label>
+                        <div class="col-md-10">
+                            <textarea class="form-control" rows="6" name="project_description">{{ project.project_description }}</textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">预计完成时间</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" name="project_due_time" id="datetimepicker"  value="">
+                        </div>
+                    </div>
+		    <!--
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">实际完成时间</label>
+                        <div class="col-md-10">
+                            <input type="date" class="form-control" name="project_complete_time"  value="{{ project.complete_time }}">
+                        </div>
+                    </div>
+		    
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">项目状态</label>
+                        <div class="col-md-10">
+                            <input class="form-control" rows="6" name="project_status" value="{{ project.project_status }}">
+                        </div>
+                    </div>
+                    -->
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">权限控制</label>
+                        <div class="col-md-10">
+                            <select class="change_sel" name="is_check_permission">
+                                <option value="1" {% if project.is_check_permission %}selected {% endif %}>开启</option>
+                                <option value="0" {% if not project.is_check_permission %}selected {% endif %}>关闭</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">项目状态</label>
+                        <div class="col-md-10">
+                            <select class="change_sel" name="is_archive">
+                                <option value="1" {% if project.is_archive %}selected {% endif %}>项目归档</option>
+                                <option value="0" {% if not project.is_archive %}selected {% endif %}>进行中</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row text-right" style="margin-top: 5%">
+                        <div class="col-md-12">
+                            <input type="submit" class="batn btn-purple btn-rounded w-md  " value="提交">
+                        </div>
+                    </div>
+
+                </form>
+                <!--
+		<a class="btn btn-bordered btn-custom" style="margin-right: 15px;color:red;" onclick="return confirm('确定删除此项目')" href="../delect_project/{{ project.id }}/"
+                                                     data-container="body" data-toggle="popover" data-trigger="hover focus  manual click" 
+                                                     data-animation="true" data-placement="auto" data-content="删除后将丢失数据，删除请谨慎" >删除</a>
+               -->
+                <input type="button" value="删除" style="color: #ffffff;border:1px solid #cacaca;background-color: #f5d43b;line-height: 27px;width: 55px;
+                                                           box-shadow: 1px 2px 1px #a5a5a5;border-radius:2px;"
+                                                            class="show_cover">
+                <div>
+                    <div hidden="hidden">该操作将会删除“{{ project.project_name }}”整个项目以及该项目下的所有数据，请谨慎操作！</div>
+                </div>
+            </div>
+        </div><!-- end col -->
+
+
+    </div>
+
+
+{% endblock %}
+
+{% block jQuery %}
+    {{ block.super }}
+    <script src="/static/lly/query_select.js" id="query_select"></script><!-- 单选下拉控件-->
+    <script>/*
+            window.onerror = function(errorMsg) {
+                $('#console').html($('#console').html()+'<br>'+errorMsg)
+            }*/
+
+            $.datetimepicker.setLocale('ch');
+            $('#datetimepicker').datetimepicker({value:'{{ now_date }}',step:10});
+
+
+            $('#default_datetimepicker').datetimepicker({
+                formatTime:'H:i',
+                formatDate:'d.m.Y',
+                //defaultDate:'8.12.1986', // it's my birthday
+                defaultDate:'+03.01.1970', // it's my birthday
+                defaultTime:'10:00',
+                timepickerScrollbar:false
+            });
+         
+ //删除提示
+          $('.show_cover').click(function(){
+        $(this).next().append('<div id="cover_div" style="background-color: rgba(0,0,0,0.5);z-index:9999;position: fixed;top:0;left:0;width: 100%;height: 100%;">'+
+                               '<div style="width: 500px;height: 280px;background-color:white;border-radius: 4px;position: fixed;left:35%;top:27%;" id="notice_div">'+
+                               '<div style="width: 70%;border:0px solid #d1d1d1;margin: auto ;padding-top: 100px;" align="center">'+
+                                '<h2>是否确定？</h2>'+
+                                '<span style="color: #808080;">'+$(this).next().children().first().text()+'</span>'+
+                                '</div>'+
+
+                                '<div style="margin-top: 10px;" align="center">'+
+                                '<input type="button" value="取消" style="background-color: #00b900;color: white;border:none;height: 40px;width: 60px;font-size: 15px;" id="close_cover">'+
+                                '<a href="/{{url}}/manage/delect_project/{{url}}/">'+
+                                '<input type="button" value="是的，确定！" name="delete_team" style="background-color: #dbbc39;color: white;border:none;height: 40px;width: 100px;font-size: 15px;margin-left:5px;">'+
+                                 '</a>'+
+                                 '</div>'+
+                                 '</div>'+
+
+                                 '</div>')
+    });
+$('.show_cover').next().delegate('#close_cover','click',function(){
+    $(this).parents().find('#cover_div').remove()
+});       
+
+//删除提示
+        </script>
+{% endblock %}
+
+{% block is_archive %}
+      {%if project_archive.is_archive%}
+            <script>
+
+            //项目归档后该页面也可操作
+
+            </script>
+      {%endif%}
+    {% endblock %}
+

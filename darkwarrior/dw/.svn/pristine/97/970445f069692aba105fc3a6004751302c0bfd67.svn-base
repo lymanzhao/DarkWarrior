@@ -1,0 +1,256 @@
+{% extends 'manage_l/manage_base.html' %}
+
+{% block content %}
+    {% load staticfiles %}
+<body class=" app-auth model-group change-form">
+
+<!-- Container -->
+<div id="container">
+
+
+
+    <!-- Header -->
+    <div id="header">
+        <div id="branding">
+
+<h1 id="site-name"><a href="/{{ project_id }}/manage_l/">{{ project.project_name }} 后台管理</a></h1>
+
+        </div>
+
+
+        <div id="user-tools">
+
+                欢迎，
+                <strong>{{ staff_user.username }} </strong>.
+
+
+
+                    <a href="/{{ project_id }}">查看站点</a> /
+
+
+
+
+
+
+                <a href="/password_change/">修改密码</a> /
+
+                <a href="/logout/">注销</a>
+
+        </div>
+
+
+
+    </div>
+    <!-- END Header -->
+<div class="breadcrumbs">
+<a href="/{{ project_id }}">首页</a>&rsaquo; <a href="/{{ project_id }}/manage_l/">认证和授权</a>
+&rsaquo; <a href="../">组</a>
+&rsaquo; {{ group.name }}
+</div>
+
+
+
+
+
+
+
+    <!-- Content -->
+    <div id="content" class="colM">
+
+        <h1>编辑 组</h1>
+        <div id="content-main">
+
+<!--
+  <ul class="object-tools">
+
+    <li>
+
+        <a href="/adminauth/group/1/history/" class="historylink">历史</a>
+    </li>
+
+
+  </ul>
+-->
+
+<form enctype="multipart/form-data" action="" method="post" id="group_form" novalidate><input type='hidden' name='csrfmiddlewaretoken' value='QY09evXSrG9wY7KFJVDOv9P68NuKuJIz' />
+<div>
+
+
+
+
+
+
+
+  <fieldset class="module aligned ">
+
+
+
+        <div class="form-row field-name">
+
+
+                <div>
+
+
+                        <label class="required" for="id_name">名称:</label>
+
+                            <input class="vTextField" id="id_name" maxlength="80" name="group_name" type="text" value="{% if group_name %}{{ group_name }}{% else %}{{ group.name }}{% endif %}" />
+
+
+{% if error_name %}<span style="color: red;">{{ error_name }}</span>{% endif %}
+                </div>
+
+        </div>
+
+
+          <div class="form-row field-groups">
+
+
+                <div>
+
+
+                        <label for="id_groups">组员:</label>
+
+
+<div class="related-widget-wrapper">
+    <select multiple="multiple" class="selectfilter" id="id_groups" name="group_members">
+
+        {% for user in selected_user %}
+            <option value="{{ user.id }}" selected="selected">{{ user.username }}</option>
+        {% endfor %}
+
+        {% for user in no_selected_user %}
+            <option value="{{ user.id }}">{{ user.username }}</option>
+        {% endfor %}
+
+
+</select><script type="text/javascript">addEvent(window, "load", function(e) {SelectFilter.init("id_groups", "人员", 0, "/static/manage/"); });</script>
+
+
+
+
+
+
+</div>
+
+
+
+
+                        <p class="help">按住 ”Control“，或者Mac上的 “Command”，可以选择多个。</p>
+
+                </div>
+
+        </div>
+
+
+
+        <div class="form-row field-permissions">
+
+
+                <div>
+
+
+                        <label for="id_permissions">权限:</label>
+
+
+<div class="related-widget-wrapper">
+    <select multiple="multiple" class="selectfilter" id="id_permissions" name="group_permissions">
+        {% for selected_permission in selected_permissions %}
+            <option value="{{ selected_permission.id }}" selected="selected">{{ selected_permission.description }}</option>
+        {% endfor %}
+
+        {% for no_permission in no_permissions %}
+            <option value="{{ no_permission.id }}" >{{ no_permission.description }}</option>
+        {% endfor %}
+
+
+</select>
+    <script type="text/javascript">addEvent(window, "load", function(e) {SelectFilter.init("id_permissions", "权限", 0, "/static/manage/"); });</script>
+
+
+
+
+
+
+</div>
+
+
+
+
+                        <p class="help">按住 ”Control“，或者Mac上的 “Command”，可以选择多个。</p>
+
+                </div>
+
+        </div>
+
+</fieldset>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="submit-row">
+<input type="submit" value="保存" class="default" name="_save" />
+    <a href="../">
+        <input type="button" value="取消" class="default" name="_save" />
+    </a>
+
+
+<p class="deletelink-box"><a href="delete/" class="deletelink">删除</a></p>
+
+
+
+</div>
+
+
+
+    <script type="text/javascript">
+        (function($) {
+            $(document).ready(function() {
+                $('.add-another').click(function(e) {
+                    e.preventDefault();
+                    showAddAnotherPopup(this);
+                });
+                $('.related-lookup').click(function(e) {
+                    e.preventDefault();
+                    showRelatedObjectLookupPopup(this);
+                });
+
+            });
+        })(django.jQuery);
+    </script>
+
+
+
+
+<script type="text/javascript">
+(function($) {
+    var field;
+
+
+})(django.jQuery);
+</script>
+
+
+</div>
+</form></div>
+
+
+        <br class="clear" />
+    </div>
+    <!-- END Content -->
+
+    <div id="footer"></div>
+</div>
+<!-- END Container -->
+
+</body>
+
+{% endblock %}

@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block head_js  %}
+    {{ block.super }}
+
+       <link href="{% static 'jQuery.js' %}" rel="stylesheet" />
+
+{% endblock %}
+{% block content %}
+ <div class="row" style="margin-top:-50px;">
+                    <div class="col-sm-12">
+                        <h4>项目成员日志</h4>
+                        <h4>成员:{{member}}</h4>
+                    </div>
+
+
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="timeline">
+
+
+                                <!--
+                                <div class="timeline-desk">
+                                    <div class="panel">
+                                        <div class="panel-body">
+                                            <span class="arrow-alt"></span>
+                                            <span class="timeline-icon"><i class="zmdi zmdi-circle"></i></span>
+                                            <h4 class="text-muted">31 December 2015</h4>
+                                            <p class="timeline-date text-muted"><small>08:25 am</small></p>
+                                            <p>Download the new updates of Ubold admin dashboard</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                -->
+
+
+                                {% for comment in comment_all %}
+               <article class="timeline-item alt" time="{{ comment.comment_parent.time }}" owner="{{ comment.comment_parent.owner }}" _id="{{comment.comment_parent.id  }}">
+                    <div class="timeline-desk">
+                                 <div class="panel">
+                                    <div class="panel-body">
+
+                                     <span class="timeline-icon"><i class="zmdi zmdi-circle"></i></span>
+
+
+                    <div class="media m-b-10"  style="border:1px solid #dddddd;border-radius: 1%;padding: 5px;background-color: #e2faff;"
+                                                       onclick="window.location.href='/{{ url }}/task/{{ comment.owner_task.id }}/'">
+                        <div class="media-left" >
+                            {% if comment.comment_parent.owner.head_portrait %}
+                                <a href="#">
+                                    <img class="media-object img-circle thumb-sm" alt="64x64" src="/media/{{ comment.comment_parent.owner.head_portrait }}">
+                                </a>
+                            {% endif %}
+                        </div>
+
+                        <div class="media-body" name='comment_div' style='border:0px solid red;'>
+                            <p class="font-10 text-muted m-b-0">
+                                <h4   style="border: 0px solid red;text-align: left;"  >
+                                    <small style="border: 0px solid red;">
+                                        <a href="" style="color: #337ab7">{{ comment.comment_parent.owner }}</a>
+                                        {% ifnotequal  comment.comment_parent.at_people ''%}
+                                          @ {{comment.comment_parent.at_people}}
+                                        {% endifnotequal %}
+
+                                    </small>
+                                    <small>：{{ comment.comment_parent.content }}</small>
+                                </h4>
+                                <div class="col-md-12">
+                                    {% for image in comment.comment_image %}
+                                        <div class="col-md-8" style="text-align: center">
+                                            <a href="/media/{{ image.url }}">
+                                                <img src="/media/{{ image.url }}" class="img-thumbnail" style="max-width: 100%" >
+                                            </a>
+                                        </div>
+                                    {% endfor %}
+
+                                    {% for file in comment.comment_file %}
+                                        <div class="col-md-8" style="text-align: center">
+                                            <a href="/media/{{ file.url }}">
+                                                <p class=" m-b-10">{{ file.name }}</p>
+                                            </a>
+                                        </div>
+                                    {% endfor %}
+
+                                    {% for video in comment.comment_video %}
+                                        <div class="col-md-12" style="text-align: center">
+                                            <video id="video1"  width="100%" height="75%" controls>
+                                                <source src="/media/{{ video.url }}">
+                                            </video>
+                                            <div style="height: 21%">
+                                                <p style="text-align: center"><small style="color: #989898">{{ video.name }}</small></p>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <small>{{ comment.comment_parent.time }}</small>
+
+                            </p>
+
+
+
+
+
+                         </div>
+
+                            {% for comment_child in comment.comment_child %}
+                                <div class="media" name='comment_div' style='margin-left:35px;border:0px solid gray;'>
+
+                                    <div class="media-left">
+                                        {% if comment_child.owner.head_portrait %}
+                                            <a href="#">
+                                                <img class="media-object img-circle thumb-sm" alt="64x64" src="/media/{{ comment_child.owner.head_portrait }}">
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                    <div class="media-body">
+                                        <p class="font-13 text-muted m-b-0">
+                                            <h4 class="media-heading" style="text-align: left;">
+                                                <small>
+                                                    <a href="" style="color: #337ab7">{{ comment_child.owner }}</a>
+                                                    <small>回复</small>
+                                                    <a href="" style="color: #337ab7">{{ comment_child.author }}</a>
+                                                </small>
+                                                <small>：{{ comment_child.content }}</small>
+                                            </h4>
+                                            <small>{{ comment_child.time }}</small>
+
+                                        </p>
+
+
+
+
+                                    </div>
+                                </div>
+                            {% endfor %}
+                      <!--  </div>-->
+                    </div>
+
+
+
+                                             </div>
+                                    </div>
+                               </div>
+                            </article>
+                {% endfor %}
+
+
+                        </div>
+                                    {% if more_data %}
+                                         <div align="center" id="loading_anymore" style="cursor:pointer;" >加载更多</div>
+                                    {% endif %}
+                    </div>
+                </div>
+                <!-- end row -->
+
+</div>
+
+
+{% endblock %}
+
+{% block jQuery %}
+
+        {{ block.super }}
+
+    <script>
+
+    $(document).ready(function(){
+         
+        var user_id = '{{ member_id }}';
+        var flag = false;
+      $(window).scroll(function() {
+
+        if(flag){
+            return false;
+        }
+
+        if ($(document).scrollTop() >= $(document).height() - $(window).height()-50) {
+            var loading_index = $('article').last().attr('_id');
+             var project_id = '{{ project_id }}';
+             var xmlhttp;
+
+            if (window.XMLHttpRequest)
+              {// code for IE7+, Firefox, Chrome, Opera, Safari
+              xmlhttp=new XMLHttpRequest();
+              }
+            else
+              {// code for IE6, IE5
+              xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+              }
+            xmlhttp.onreadystatechange=function()
+              {
+              if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                {
+                    if(xmlhttp.responseText=='False'){
+                        $('#loading_anymore').hide();
+
+                    }
+                    else if(xmlhttp.responseText=='data_error'){
+                        $('#loading_anymore').html('数据加载异常，请重新刷新页面！')
+                    }
+                    else{
+                        $('article').last().after(xmlhttp.responseText);
+                        flag = false;
+                        $('#loading_anymore').html('加载更多');
+                    }
+                }
+              };
+            xmlhttp.open("GET","/"+project_id+"/loading_personal_timeline/"+loading_index+"/10/"+user_id+"/",true);
+            xmlhttp.send();
+            flag = true;
+            $('#loading_anymore').html('正在加载数据。。。。');
+            }
+        });
+
+        $("article").each(function(){
+
+              if($(this).prev().attr('owner')!=undefined && $(this).prev().attr('owner')==$(this).attr('owner')){
+                $(this).attr('class',$(this).prev().attr('class'));
+                if($(this).attr('class')=='timeline-item alt'){
+                    $(this).find('.panel-body').prepend('<span class="arrow-alt"></span>');
+                }
+                  else if($(this).attr('class')=='timeline-item'){
+                    $(this).find('.panel-body').prepend('<span class="arrow"></span>');
+                }
+              }
+              else{
+                  if($(this).prev().attr('class')=='timeline-item alt'){
+                      $(this).attr('class','timeline-item');
+                      $(this).find('.panel-body').prepend('<span class="arrow"></span>');
+                  }
+                  else if($(this).prev().attr('class')=='timeline-item'){
+                      $(this).attr('class','timeline-item alt');
+                      $(this).find('.panel-body').prepend('<span class="arrow-alt"></span>');
+                  }
+                  else{
+                      $(this).find('.panel-body').prepend('<span class="arrow-alt"></span>');
+                  }
+              }
+        });
+
+         });
+         
+ 
+    </script>
+
+{% endblock %}

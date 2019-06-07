@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+
+{% load staticfiles %}
+<link href="{% static 'assets/css/icons.css'%}" rel="stylesheet" type="text/css" />
+
+<style>
+
+    * { padding: 0px; margin: 0px;text-decoration: none; }
+    li {list-style: none;}
+    a{color:#568dd9;display: block;}
+    a:hover{background-color: ghostwhite;}
+    p{color: #bf00bf;font-size: 15px;cursor: pointer;font-weight:bold;}
+.new_message{padding: 5px;border-bottom: 1px solid lightsteelblue;}
+
+</style>
+<body>
+<a style="margin-left: 210px;cursor:pointer;width: 0;height: 0;float: left;" onclick="document.getElementById('clear_form').submit()">
+<i class="fa fa-eraser" aria-hidden="true" title='清空消息列表'></i>
+</a>
+<form action="" method="post" hidden="hidden" id="clear_form">
+    <input type="text" value="clear_message" name="clear_message">
+    <input type="submit" value="clear">
+</form>
+<br>
+
+
+
+
+
+
+    {% ifnotequal message.comment_num 0%}
+        <p>评论:{{ message.comment_num }}条</p>
+    {% endifnotequal %}
+    <div>
+        {% for i in message.comment %}
+
+             <a href="/{{ i.owner_project.id }}/task/{{ i.owner_task.id }}" target="_parent" >
+                 <div name="new_message" class="new_message"  >
+                    <li style="font-size: 12px;color: #626374;overflow: hidden;width: 220px;">来源：{{ i.owner_task }} {{ i.promulgator }}<li>
+                    <li style="font-size: 10px;">时间：{{ i.time }}</li>
+                 </div>
+            </a>
+
+
+           <form action="" method="post"  style="border:1px solid red;display:none;">
+                 <input type="number" value="{{ i.id }}" name="check_news">
+                 <input type="submit"   name="submit_news">
+
+           </form>
+
+        {% endfor %}
+    </div>
+
+
+
+    {% ifnotequal message.reply_num 0%}
+        <p   >回复:{{ message.reply_num }}条</p>
+    {% endifnotequal %}
+
+    <div   >
+        {% for i in message.reply %}
+            <a href="/{{ i.owner_project.id }}/task/{{ i.owner_task.id }}" target="_parent"   >
+                <div name="new_message" class="new_message" >
+                    <li style="font-size: 12px;color: #626374;">来源：{{ i.owner_task }} {{ i.promulgator }}<li>
+                    <li style="font-size: 10px;">时间：{{ i.time }} </li>
+                </div>
+            </a>
+
+           <form action="" method="post"  style="border:1px solid red;display:none;">
+                 <input type="number" value="{{ i.id }}" name="check_news">
+                 <input type="submit"   name="submit_news">
+
+           </form>
+
+        {% endfor %}
+
+    </div>
+
+    {% ifnotequal message.task_status_num 0%}
+        <p    style="font-size: 16px">任务单状态:{{ message.task_status_num }}条</p>
+    {% endifnotequal %}
+
+    <div   >
+        {% for i in message.task_status %}
+            <a href="/{{ i.owner_project.id }}/task/{{ i.owner_task.id }}" target="_parent"   >
+                <div name="new_message" class="new_message" >
+
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        任务单：{{ i.owner_task }}
+                    </li>
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        状态被<span style="color: #0099FF">{{ i.promulgator }}</span>修改为<span style="color: red">{{ i.name }}</span>
+                    </li>
+
+                    <li style="font-size: 10px;margin-top: 5px">
+                        时间：{{ i.time }}
+                    </li>
+                </div>
+            </a>
+
+           <form action="" method="post"  style="border:1px solid red;display:none;">
+                 <input type="number" value="{{ i.id }}" name="check_news">
+                 <input type="submit"   name="submit_news">
+
+           </form>
+
+        {% endfor %}
+
+    </div>
+
+    {% ifnotequal message.task_image_num 0%}
+        <p    style="font-size: 16px">任务单图片:{{ message.task_image_num }}条</p>
+    {% endifnotequal %}
+
+    <div   >
+        {% for i in message.task_image %}
+            <a href="/{{ i.owner_project.id }}/task/{{ i.owner_task.id }}" target="_parent"   >
+                <div name="new_message" class="new_message" >
+
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        任务单：{{ i.owner_task }}
+                    </li>
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        图片被<span style="color: #0099FF">{{ i.promulgator }}</span>修改为<span style="color: red">{{ i.name }}</span>
+                    </li>
+
+                    <li style="font-size: 10px;margin-top: 5px">
+                        时间：{{ i.time }}
+                    </li>
+                </div>
+            </a>
+
+           <form action="" method="post"  style="border:1px solid red;display:none;">
+                 <input type="number" value="{{ i.id }}" name="check_news">
+                 <input type="submit"   name="submit_news">
+
+           </form>
+
+        {% endfor %}
+
+    </div>
+
+    {% ifnotequal message.task_owner_num 0%}
+        <p    style="font-size: 16px">任务单属主:{{ message.task_owner_num }}条</p>
+    {% endifnotequal %}
+
+    <div   >
+        {% for i in message.task_owner %}
+            <a href="/{{ i.owner_project.id }}/task/{{ i.owner_task.id }}" target="_parent"   >
+                <div name="new_message" class="new_message" >
+
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        任务单：{{ i.owner_task }}
+                    </li>
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        属主被<span style="color: #0099FF">{{ i.promulgator }}</span>修改为<span style="color: red">{{ i.name }}</span>
+                    </li>
+
+                    <li style="font-size: 10px;margin-top: 5px">
+                        时间：{{ i.time }}
+                    </li>
+                </div>
+            </a>
+
+           <form action="" method="post"  style="border:1px solid red;display:none;">
+                 <input type="number" value="{{ i.id }}" name="check_news">
+                 <input type="submit"   name="submit_news">
+
+           </form>
+
+        {% endfor %}
+
+    </div>
+
+
+    {% ifnotequal message.task_reporter_num 0%}
+        <p    style="font-size: 16px">任务单审核人:{{ message.task_reporter_num }}条</p>
+    {% endifnotequal %}
+
+    <div   >
+        {% for i in message.task_reporter %}
+            <a href="/{{ i.owner_project.id }}/task/{{ i.owner_task.id }}" target="_parent"   >
+                <div name="new_message" class="new_message" >
+
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        任务单：{{ i.owner_task }}
+                    </li>
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        审核人被<span style="color: #0099FF">{{ i.promulgator }}</span>修改为<span style="color: red">{{ i.name }}</span>
+                    </li>
+
+                    <li style="font-size: 10px;margin-top: 5px">
+                        时间：{{ i.time }}
+                    </li>
+                </div>
+            </a>
+
+           <form action="" method="post"  style="border:1px solid red;display:none;">
+                 <input type="number" value="{{ i.id }}" name="check_news">
+                 <input type="submit"   name="submit_news">
+
+           </form>
+
+        {% endfor %}
+
+    </div>
+
+
+    {% ifnotequal message.task_summary_num 0%}
+        <p    style="font-size: 16px">任务单概述:{{ message.task_summary_num }}条</p>
+    {% endifnotequal %}
+
+    <div   >
+        {% for i in message.task_summary %}
+            <a href="/{{ i.owner_project.id }}/task/{{ i.owner_task.id }}" target="_parent"   >
+                <div name="new_message" class="new_message" >
+
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        任务单：{{ i.owner_task }}
+                    </li>
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        概述被<span style="color: #0099FF">{{ i.promulgator }}</span>修改为<span style="color: red">{{ i.name }}</span>
+                    </li>
+
+                    <li style="font-size: 10px;margin-top: 5px">
+                        时间：{{ i.time }}
+                    </li>
+                </div>
+            </a>
+
+           <form action="" method="post"  style="border:1px solid red;display:none;">
+                 <input type="number" value="{{ i.id }}" name="check_news">
+                 <input type="submit"   name="submit_news">
+
+           </form>
+
+        {% endfor %}
+
+    </div>
+
+    {% ifnotequal message.task_type_num 0%}
+        <p    style="font-size: 16px">任务单类型:{{ message.task_type_num }}条</p>
+    {% endifnotequal %}
+
+    <div   >
+        {% for i in message.task_type %}
+            <a href="/{{ i.owner_project.id }}/task/{{ i.owner_task.id }}" target="_parent"   >
+                <div name="new_message" class="new_message" >
+
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        任务单：{{ i.owner_task }}
+                    </li>
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        类型被<span style="color: #0099FF">{{ i.promulgator }}</span>修改为<span style="color: red">{{ i.name }}</span>
+                    </li>
+
+                    <li style="font-size: 10px;margin-top: 5px">
+                        时间：{{ i.time }}
+                    </li>
+                </div>
+            </a>
+
+           <form action="" method="post"  style="border:1px solid red;display:none;">
+                 <input type="number" value="{{ i.id }}" name="check_news">
+                 <input type="submit"   name="submit_news">
+
+           </form>
+
+        {% endfor %}
+
+    </div>
+
+
+    {% ifnotequal message.task_milestone_num 0%}
+        <p    style="font-size: 16px">里程碑:{{ message.task_milestone_num }}条</p>
+    {% endifnotequal %}
+
+    <div   >
+        {% for i in message.task_milestone %}
+            <a href="/{{ i.owner_project.id }}/task/{{ i.owner_task.id }}" target="_parent"   >
+                <div name="new_message" class="new_message" >
+
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        任务单：{{ i.owner_task }}
+                    </li>
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        里程碑被<span style="color: #0099FF">{{ i.promulgator }}</span>修改为<span style="color: red">{{ i.name }}</span>
+                    </li>
+
+                    <li style="font-size: 10px;margin-top: 5px">
+                        时间：{{ i.time }}
+                    </li>
+                </div>
+            </a>
+
+           <form action="" method="post"  style="border:1px solid red;display:none;">
+                 <input type="number" value="{{ i.id }}" name="check_news">
+                 <input type="submit"   name="submit_news">
+
+           </form>
+
+        {% endfor %}
+
+    </div>
+
+    {% ifnotequal message.task_component_num 0%}
+        <p    style="font-size: 16px">组件:{{ message.task_component_num }}条</p>
+    {% endifnotequal %}
+
+    <div   >
+        {% for i in message.task_component %}
+            <a href="/{{ i.owner_project.id }}/task/{{ i.owner_task.id }}" target="_parent"   >
+                <div name="new_message" class="new_message" >
+
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        任务单：{{ i.owner_task }}
+                    </li>
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        组件被<span style="color: #0099FF">{{ i.promulgator }}</span>修改为<span style="color: red">{{ i.name }}</span>
+                    </li>
+
+                    <li style="font-size: 10px;margin-top: 5px">
+                        时间：{{ i.time }}
+                    </li>
+                </div>
+            </a>
+
+           <form action="" method="post"  style="border:1px solid red;display:none;">
+                 <input type="number" value="{{ i.id }}" name="check_news">
+                 <input type="submit"   name="submit_news">
+
+           </form>
+
+        {% endfor %}
+
+    </div>
+
+
+    {% ifnotequal message.task_priority_num 0%}
+        <p    style="font-size: 16px">优先级:{{ message.task_priority_num }}条</p>
+    {% endifnotequal %}
+
+    <div   >
+        {% for i in message.task_priority %}
+            <a href="/{{ i.owner_project.id }}/task/{{ i.owner_task.id }}" target="_parent"   >
+                <div name="new_message" class="new_message" >
+
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        任务单：{{ i.owner_task }}
+                    </li>
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        优先级被<span style="color: #0099FF">{{ i.promulgator }}</span>修改为<span style="color: red">{{ i.name }}</span>
+                    </li>
+
+                    <li style="font-size: 10px;margin-top: 5px">
+                        时间：{{ i.time }}
+                    </li>
+                </div>
+            </a>
+
+           <form action="" method="post"  style="border:1px solid red;display:none;">
+                 <input type="number" value="{{ i.id }}" name="check_news">
+                 <input type="submit"   name="submit_news">
+
+           </form>
+
+        {% endfor %}
+
+    </div>
+
+
+    {% ifnotequal message.task_version_num 0%}
+        <p    style="font-size: 16px">版本:{{ message.task_version_num }}条</p>
+    {% endifnotequal %}
+
+    <div   >
+        {% for i in message.task_version %}
+            <a href="/{{ i.owner_project.id }}/task/{{ i.owner_task.id }}" target="_parent"   >
+                <div name="new_message" class="new_message" >
+
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        任务单：{{ i.owner_task }}
+                    </li>
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        版本被<span style="color: #0099FF">{{ i.promulgator }}</span>修改为<span style="color: red">{{ i.name }}</span>
+                    </li>
+
+                    <li style="font-size: 10px;margin-top: 5px">
+                        时间：{{ i.time }}
+                    </li>
+                </div>
+            </a>
+
+           <form action="" method="post"  style="border:1px solid red;display:none;">
+                 <input type="number" value="{{ i.id }}" name="check_news">
+                 <input type="submit"   name="submit_news">
+
+           </form>
+
+        {% endfor %}
+
+    </div>
+
+
+    {% ifnotequal message.task_description_num 0%}
+        <p    style="font-size: 16px">描述:{{ message.task_description_num }}条</p>
+    {% endifnotequal %}
+
+    <div   >
+        {% for i in message.task_description %}
+            <a href="/{{ i.owner_project.id }}/task/{{ i.owner_task.id }}" target="_parent"   >
+                <div name="new_message" class="new_message" >
+
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        任务单：{{ i.owner_task }}
+                    </li>
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        描述被<span style="color: #0099FF">{{ i.promulgator }}</span>修改为<span style="color: red">{{ i.name }}</span>
+                    </li>
+
+                    <li style="font-size: 10px;margin-top: 5px">
+                        时间：{{ i.time }}
+                    </li>
+                </div>
+            </a>
+
+           <form action="" method="post"  style="border:1px solid red;display:none;">
+                 <input type="number" value="{{ i.id }}" name="check_news">
+                 <input type="submit"   name="submit_news">
+
+           </form>
+
+        {% endfor %}
+
+    </div>
+
+{% ifnotequal message.application_num 0%}
+        <p    style="font-size: 16px">申请通知:{{ message.application_num }}条</p>
+    {% endifnotequal %}
+
+    <div   >
+        {% for i in message.application %}
+            <a href="/{{ i.owner_project.id }}/check_application/{{ i.promulgator }}" target="_parent"   >
+                <div name="new_message" class="new_message" >
+
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        <span style="color: #0099FF">{{ i.promulgator }}</span>申请加入<span style="color: red">{{ i.owner_project }}</span>
+                    </li>
+
+                    <li style="font-size: 10px;margin-top: 5px">
+                        时间：{{ i.time }}
+                    </li>
+                </div>
+            </a>
+
+           <form action="" method="post"  style="border:1px solid red;display:none;">
+                 <input type="number" value="{{ i.id }}" name="check_news">
+                 <input type="submit"   name="submit_news">
+
+           </form>
+
+        {% endfor %}
+
+    </div>
+
+
+      {% ifnotequal message.application_reply_num 0%}
+        <p    style="font-size: 16px">申请回复:{{ message.application_reply_num }}条</p>
+    {% endifnotequal %}
+
+    <div   >
+        {% for i in message.application_reply %}
+            <a href="/{{ i.owner_project.id }}/" target="_parent"   >
+                <div name="new_message" class="new_message" >
+                     <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        审核人：{{ i.promulgator }}
+                    </li>
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        您已成功加入<span style="color: red">{{ i.owner_project }}</span>
+                    </li>
+
+                    <li style="font-size: 10px;margin-top: 5px">
+                        时间：{{ i.time }}
+                    </li>
+                </div>
+            </a>
+
+           <form action="" method="post"  style="border:1px solid red;display:none;">
+                 <input type="number" value="{{ i.id }}" name="check_news">
+                 <input type="submit"   name="submit_news">
+
+           </form>
+
+        {% endfor %}
+
+    </div>
+
+
+    {% ifnotequal message.task_team_num 0%}
+        <p>任务团队:{{ message.task_team_num }}条</p>
+    {% endifnotequal %}
+
+    <div>
+        {% for i in message.task_team %}
+            <a href="/{{ i.owner_project.id }}/task/{{ i.owner_task.id }}" target="_parent"   >
+                <div name="new_message" class="new_message" >
+
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        任务单：{{ i.owner_task }}
+                    </li>
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        操作: <span style="color: red">{{ i.name }}</span>被<span style="color: #0099FF">{{ i.promulgator }}</span>添加
+                    </li>
+
+                    <li style="font-size: 10px;margin-top: 5px">
+                        时间：{{ i.time }}
+                    </li>
+                </div>
+            </a>
+
+           <form action="" method="post"  style="border:1px solid red;display:none;">
+                 <input type="number" value="{{ i.id }}" name="check_news">
+                 <input type="submit"   name="submit_news">
+
+           </form>
+
+        {% endfor %}
+
+    </div>
+
+
+    {% ifnotequal message.team_comment_num 0%}
+        <p>团队消息:{{ message.team_comment_num }}条</p>
+    {% endifnotequal %}
+
+    <div>
+        {% for i in message.team_comment %}
+            <a href="/{{ i.owner_project.id }}/task/{{ i.owner_task.id }}" target="_parent"   >
+                <div name="new_message" class="new_message" >
+
+                    <li style="font-size: 12px;color: #626374;overflow: hidden;width: 220px;">来源：{{ i.owner_task }} {{ i.promulgator }}<li>
+                    <li style="font-size: 10px;margin-top: 5px">
+                        时间：{{ i.time }}
+                    </li>
+                </div>
+            </a>
+
+           <form action="" method="post"  style="border:1px solid red;display:none;">
+                 <input type="number" value="{{ i.id }}" name="check_news">
+                 <input type="submit"   name="submit_news">
+
+           </form>
+
+        {% endfor %}
+    </div>
+
+
+    {% ifnotequal message.task_attachment_num 0%}
+        <p>附件消息:{{ message.task_attachment_num }}条</p>
+    {% endifnotequal %}
+
+    <div>
+        {% for i in message.task_attachment %}
+            <a href="/{{ i.owner_project.id }}/task/{{ i.owner_task.id }}" target="_parent"   >
+                <div name="new_message" class="new_message" >
+
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        任务单：{{ i.owner_task }}
+                    </li>
+                    <li style="font-size: 12px;color: #626374;margin-top: 5px">
+                        操作: <span style="color: #0099FF">{{ i.name }}</span>
+                    </li>
+
+                    <li style="font-size: 10px;margin-top: 5px">
+                        时间：{{ i.time }}
+                    </li>
+                </div>
+            </a>
+
+           <form action="" method="post"  style="border:1px solid red;display:none;">
+                 <input type="number" value="{{ i.id }}" name="check_news">
+                 <input type="submit"   name="submit_news">
+
+           </form>
+
+        {% endfor %}
+
+    </div>
+
+
+
+
+
+<script>
+
+    var new_message = document.getElementsByName('new_message');
+    var news_len = new_message.length;
+    var submit_news = document.getElementsByName('submit_news');
+
+        for(var i=0;i<news_len;i++)
+        {
+          new_message[i].index = i;
+
+            new_message[i].onclick = function(){
+
+                x=this.index;
+
+
+                submit_news[x].click();
+                //alert(x);
+
+
+
+
+
+            };
+
+
+        }
+</script>
+
+</body>
+</html>

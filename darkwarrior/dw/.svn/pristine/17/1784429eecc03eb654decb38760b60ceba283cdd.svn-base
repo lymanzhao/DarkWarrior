@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="row">
+                    <div class="col-sm-12">
+                        <div class="card-box">
+                            <h4 class="header-title m-t-0 m-b-30">创建版本库</h4>
+
+                            {% for error in errors %}
+                                <span style="color: red;margin-bottom:20px;">{{ error }}</span>
+                            {% endfor %}
+
+                            <form action="" method="post">
+                                <input type="text"  name="name" placeholder="请输入版本库名:版本库名只允许字母、数字、下划线，不允许中文及其他字符" value="{{ name }}" style="margin-bottom: 20px;display: block;width:40%">
+                                <span style="margin-bottom: 20px;display: block;width:40%">版本库默认路径/var/www/svn/</span>
+                                <textarea id="elm1" name="description" placeholder="版本描述" style="display: block;height:100px;margin-bottom: 20px;width:40%;">{{ description }}</textarea>
+                                <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5" is_archive="true" style="margin-top: 20px" >提交 </button>
+                            </form>
+                        </div>
+                    </div><!-- end col -->
+                </div>
+
+{% endblock %}

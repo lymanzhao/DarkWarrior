@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block content %}
+    <div class="row" style="font-size: 16px;" >
+                    <div class="col-md-6" style="width:100%">
+                        <div class="card-box" >
+                            <h4 class="header-title m-t-0 m-b-30">版本库</h4>
+                                    <ul>
+                                    <li style="list-style-image: url({% static 'assets/images/file-1.gif' %} )"> {{ path }}
+                                    <ul>
+                                    {% if not str %}
+                                        {% for i in list %}
+                                              <li style="list-style-image: url({% static 'assets/images/file-1.gif' %} )">
+                                                <a href="{{ i }}/">{{ i }}</a>
+                                              </li>
+                                            {% empty %}
+                                            <li style="list-style-image: url({% static 'assets/images/file-1.gif' %} )">
+                                                该版本库没有文件
+                                            </li>
+                                        {% endfor %}
+                                    {% else %}
+                                        {% for i in list %}
+                                        <li style="list-style:none ">{{ i }}</li>
+                                        {% endfor %}
+                                    {% endif %}
+                                    </ul>
+                                   <li style="list-style:none "> {% ifequal rs 1 %}
+                                            <a href="../">返回上一级</a>
+                                   {% endifequal %}
+                                   </li>
+                                   </ul>
+
+                            </div>
+                        </div>
+                    </div><!-- end col -->
+{% endblock %}

@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+
+{% block content %}
+        {% if createproject %}
+                <div class="row" style="margin-top: -3%">
+                    <div class="col-sm-4">
+                        <a href="create_project/" class="btn btn-purple btn-rounded w-md waves-effect waves-light m-b-20">创建项目</a>
+                    </div>
+                </div>
+        {% endif %}
+        <div class="row">
+        {% for project in projects_list %}
+
+                    <div class="col-lg-4">
+                        <div class="card-box project-box">
+                            <!--
+                            {%if project.is_archive%}
+                            <div class="label label-success" style="background-color: #aeaeae;">     
+                                 已归档
+                            </div>
+                            {%else%}
+                            <div class="label label-success">
+                            进行中
+                            </div>
+                            {%endif%}
+                            -->
+                            <div class="notification-box" style="border:0px solid red;position: absolute;right: 0px;top: 0px;" >
+                                <ul class="list-inline m-b-0">
+                                    <li>
+                                        <a href="#" class="right-bar-toggle"  style="color: #1e266a;"  project_id="{{ project.project_id }}">
+                                            <i class="zmdi zmdi-notifications-none"></i>
+
+                                            <div class="noti-dot"  notice="notice_{{ project.project_id }}" hidden="hidden">
+                                                <span class="dot"></span>
+                                                <span class="pulse"></span>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                </ul>
+                            </div>
+
+                            <h4 class="m-t-0 m-b-5" style="border:0px solid grey;">
+                                {% if project.template.name == 'effects' %}
+                                    <a href="/{{ project.project_id }}/effects/kanban/" class="text-inverse">{{ project.project_name }}</a>
+                                {% elif project.template.name == 'HR' %}
+                                    <a href="/{{ project.project_id }}/HR/kanban/" class="text-inverse">{{ project.project_name }}</a>
+                                {% elif project.project_type.name == '编剧策划' %}
+                                    <a href="/padlist/{{ project.project_id }}/show/" class="text-inverse">{{ project.project_name }}</a>
+                                {% else %}
+                                    <a href="/{{ project.project_id }}/" class="text-inverse">{{ project.project_name }}</a>
+                                {% endif %}
+
+                            </h4>
+
+                            <p class="text-success text-uppercase m-b-20 font-13">{{ project.project_summary }}</p>
+                            <p class="text-muted font-13" style="border:0px blue solid;height: 20px;max-width:92%;overflow: hidden;text-overflow:ellipsis;
+                                                                 white-space:nowrap;">
+                              <small>{{ project.project_description }}</small>
+                            </p>
+                            <ul class="list-inline">
+                                <li>
+                                    <span   style="font-size: 15px;font-weight: bolder;">项目类型 :</span>
+                                    <span style="font-size: 15px;font-weight: bolder;color: mediumpurple;">{{ project.project_type }}</span>
+                                </li>
+                                <li>
+                                    <span   style="font-size: 15px;font-weight: bolder;">项目主管 :</span>
+                                    <span style="font-size: 15px;font-weight: bolder;color: mediumpurple;">{{ project.project_creator }}</span>
+                                </li>
+                            </ul>
+                            <div class="project-members m-b-20">
+                                <span class="m-r-5 font-600">团队 :</span>
+                                {%for group in project.project_groups%}
+                                    {{group.name}}
+                                {%endfor%}
+                                <!--
+                                {%ifequal project.is_archive False%}
+                                 <a href="/{{ project.project_id  }}/application/" style="float: right;">申请加入</a>
+                                {%endifequal%}
+                                -->
+                            </div>
+
+                            <p class="font-600 m-b-5">进度 <span class="text-success pull-right">{{ project.percent }}%</span></p>
+                            <div class="progress progress-bar-success-alt progress-sm m-b-5">
+                                <div class="progress-bar progress-bar-success progress-animated wow animated animated"
+                                     role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"
+                                     style="width: {{ project.percent }}%; visibility: visible; animation-name: animationProgress;">
+                                </div><!-- /.progress-bar .progress-bar-danger -->
+                            </div><!-- /.progress .no-rounded -->
+                          
+                           <div style="height: 35px;">
+                                <form style="margin-top:10px;text-align: right;" method="post" action="">
+                                 <input type="text" name="project_id" value="{{ project.project_id }}" hidden>
+                                 <input type="text" name="delete" value="archive" hidden>
+                                {% if project.project_archive %}
+                                    <input type="submit"  value="项目归档" class="btn-danger" hidden="">
+                                {% endif %}
+                                </form>
+
+                            </div>
+                          
+                        </div>
+                    </div><!-- end col-->
+
+
+        {% endfor %}
+
+        </div>
+                <!-- end row -->
+
+          {% if other_projects_list %}
+          <div class="row">
+          <!--
+          <hr style="border:solid 1px #dadada;margin-bottom: 40px;">
+          -->
+          <div style="height: 48px;margin-top: 5px;">
+          <div style="border:1px solid #66cc66;float: left;line-height: 25px;display: inline-block;color: #184e8c;border-bottom: none;
+                width: 66px;text-align: center;font: bold 14px verdana;height: 25px;padding-top: 4px;">其他项目</div>
+          <div style="border-bottom:solid 1px #66cc66;width: 85%;float: left;height: 25px;"></div>
+          </div>
+        {% for project in other_projects_list %}
+
+                    <div class="col-lg-4">
+                        <div class="card-box project-box">
+                            {%if project.is_archive%}
+                            <div class="label label-success" style="background-color: #aeaeae;">
+                                 已归档
+                            </div>
+                            {%else%}
+                            <div class="label label-success">
+                            进行中
+                            </div>
+                            {%endif%}
+                            <!--
+                            <div class="notification-box" style="border:0px solid red;position: absolute;right: 40px;top: 0px;" >
+                                <ul class="list-inline m-b-0">
+                                    <li>
+                                        <a href="#" class="right-bar-toggle"  style="color: #1e266a;"  project_id="{{ project.project_id }}">
+                                            <i class="zmdi zmdi-notifications-none"></i>
+
+                                            <div class="noti-dot"  notice="notice_{{ project.project_id }}" hidden="hidden">
+                                                <span class="dot"></span>
+                                                <span class="pulse"></span>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                </ul>
+                            </div>
+                            -->
+                            <h4 class="m-t-0 m-b-5"><a href="/{{ project.project_id }}/" class="text-inverse">{{ project.project_name }}</a></h4>
+
+                            <p class="text-success text-uppercase m-b-20 font-13">{{ project.project_summary }}</p>
+                            <p class="text-muted font-13" style="border:0px blue solid;height: 20px;max-width:92%;overflow: hidden;text-overflow:ellipsis;
+                                                                 white-space:nowrap;">
+                              <small>{{ project.project_description }}</small>
+                            </p>
+                            <ul class="list-inline">
+                                <li>
+                                    <span   style="font-size: 15px;font-weight: bolder;">项目类型 :</span>
+                                    <span style="font-size: 15px;font-weight: bolder;color: mediumpurple;">{{ project.project_type }}</span>
+                                </li>
+                                <li>
+                                    <span   style="font-size: 15px;font-weight: bolder;">项目主管 :</span>
+                                    <span style="font-size: 15px;font-weight: bolder;color: mediumpurple;">{{ project.project_creator }}</span>
+                                </li>
+                            </ul>
+                            <div class="project-members m-b-20">
+                                <span class="m-r-5 font-600">团队 :</span>
+                                {%for group in project.project_groups%}
+                                    {{group.name}}
+                                {%endfor%}
+                                {%ifequal project.is_archive False%}
+                                 <a href="/{{ project.project_id  }}/application/" style="float: right;"><i class="fa fa-user-plus" aria-hidden="true" title="申请加入"></i></a>
+                                {%endifequal%}
+                            </div>
+
+                            <p class="font-600 m-b-5">进度 <span class="text-success pull-right">{{ project.percent }}%</span></p>
+                            <div class="progress progress-bar-success-alt progress-sm m-b-5">
+                                <div class="progress-bar progress-bar-success progress-animated wow animated animated"
+                                     role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"
+                                     style="width: {{ project.percent }}%; visibility: visible; animation-name: animationProgress;">
+                                </div><!-- /.progress-bar .progress-bar-danger -->
+                            </div><!-- /.progress .no-rounded -->
+
+                           <div style="height: 35px;">
+                                <form style="margin-top:10px;text-align: right;" method="post" action="">
+                                 <input type="text" name="project_id" value="{{ project.project_id }}" hidden>
+                                 <input type="text" name="delete" value="archive" hidden>
+                                {% if project.project_archive %}
+                                    <input type="submit"  value="项目归档" class="btn-danger" hidden="">
+                                {% endif %}
+                                </form>
+
+                            </div>
+
+                        </div>
+                    </div><!-- end col-->
+
+
+        {% endfor %}
+
+        </div>
+                <!-- end row -->
+        {% endif %}
+
+
+    <script>
+             window.setInterval('show_notice()',10000);
+             function show_notice()
+             {
+                 $('.right-bar-toggle').each(function () {
+                        var url = $(this).attr('project_id');
+                        if(url!=undefined){
+                            var xmlhttp;
+                            xmlhttp=new XMLHttpRequest();
+                            xmlhttp.onreadystatechange=function()
+                              {
+                              if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                                {
+                                    if(xmlhttp.responseText=='True')
+                                    {
+                                        $('[notice=notice_'+url+']').show();
+                                    }
+                                    else{
+                                        $('[notice=notice_'+url+']').hide();
+                                    }
+                                }
+                              };
+                            xmlhttp.open("GET","/"+url+"/judgment_message/",true);
+                            xmlhttp.send();
+                        }
+                 })
+             }
+
+
+        $(document).ready(function () {
+
+             $('.right-bar-toggle').each(function () {
+                    var url = $(this).attr('project_id');
+                    if(url!=undefined){
+                        var xmlhttp;
+                        xmlhttp=new XMLHttpRequest();
+                        xmlhttp.onreadystatechange=function()
+                          {
+                          if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                            {
+                                if(xmlhttp.responseText=='True')
+                                {
+                                    $('[notice=notice_'+url+']').show();
+                                }
+                                else{
+                                    $('[notice=notice_'+url+']').hide();
+                                }
+                            }
+                          };
+                        xmlhttp.open("GET","/"+url+"/judgment_message/",true);
+                        xmlhttp.send();
+                    }
+             })
+
+        })
+
+    </script>
+{% endblock %}
+{% block material %}
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'manage/manage_base.html' %}
+{% load staticfiles %}
+
+
+{% block content %}
+
+
+
+    <div class="row" style="margin-bottom: 5%">
+        <div class="col-lg-6">
+            <div class="card-box">
+                {% for error in errors %}
+                    <h5 style="color: red">{{ error }}</h5>
+                {% endfor %}
+                <h4 class="header-title m-t-0 m-b-30">修改任务优先级</h4>
+
+                <form class="form-horizontal" role="form" action="" method="post">
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">优先级名称</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" name="task_priority_name" value="{{ task_priority.name }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">优先级排序</label>
+                        <div class="col-md-10">
+                            <input type="number" class="form-control" name="task_priority_value" value="{{ task_priority.value }}">
+                        </div>
+                    </div>
+
+
+                    <div class="row text-right" style="margin-top: 5%">
+                        <div class="col-md-12">
+                            <input type="submit" class="batn btn-purple btn-rounded w-md  " value="提交">
+                        </div>
+                    </div>
+
+                </form>
+
+                <form action="" method="post">
+                    <div class="row text-left" style="margin-top: 5%">
+                        <div class="col-md-12">
+                            <input type="hidden" value="{{ task_priority_id }}" name="priority_id">
+                            <input type="button"  style="color: #ffffff;border:none;background-color: #50b4fa;line-height: 27px;width: 55px;
+                                                                                    box-shadow: 1px 2px 1px #99a2a9;border-radius:2px;"  value="删除" class="show_cover">
+                            <div>
+                                <div hidden="hidden">该操作将会删除“{{ task_priority.name }}”任务优先级以及该项目中所有与该优先级相关的任务，请谨慎操作！</div>
+                            </div>  
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div><!-- end col -->
+
+
+    </div>
+
+<script src="{% static 'delete_notice/normal_notice.js' %}"></script>          <!--一般删除提示jQ -->
+{% endblock %}

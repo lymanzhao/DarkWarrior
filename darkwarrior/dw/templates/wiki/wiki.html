@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+
+{%if content %}
+
+<div class="card-box task-detail"  >
+    <div>
+
+            {{ content.content|safe }}
+
+    
+
+    </div>
+</div>
+
+<div class="col-sm-4">
+             <a href="/{{ project_id }}/wiki_index/{{ content.id }}/edit/">
+          
+                <button class="batn btn-purple btn-rounded w-md " >编辑</button>
+            </a>
+</div>
+
+
+
+{% endif %}
+<p style="color: red;font-size:30px;">
+         {% if notice_no %}
+             {{ notice_no }}
+              <a href="/{{ project_id }}/create_wiki">>>去创建</a>
+         {% endif %}
+
+     </p>
+
+{% endblock %}
+

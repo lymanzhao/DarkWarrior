@@ -1,0 +1,90 @@
+{% extends 'manage/manage_base.html' %}
+
+{% load staticfiles %}
+
+{% block css %}
+    {{ block.super }}
+    <!-- Editatable  Css-->
+    <link rel="stylesheet" href="{% static 'assets/plugins/magnific-popup/dist/magnific-popup.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/plugins/jquery-datatables-editable/datatables.css' %}" />
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <h4 class="header-title m-t-0 m-b-30">用户申请 历史记录</h4>
+
+
+                    <table class="table table-striped" id="datatable-editable">
+                        <thead>
+                            <tr>
+                                 <th style="text-align: center">ID</th>
+                                <th style="text-align: center">用户名</th>
+                                <th style="text-align: center">性别</th>
+                                <th style="text-align: center">职位</th>
+                                <th style="text-align: center">邮箱</th>
+                                <th style="text-align: center">注册时间</th>
+                                <th style="text-align: center">申请时间</th>
+                                <th style="text-align: center">审核状态</th>
+                                <th style="text-align: center">审核人</th>
+                                <th style="text-align: center">操作</th>
+
+
+                            </tr>
+                        </thead>
+
+                        <tbody style="text-align: center">
+                            {% for i in application_records %}
+                                <tr>
+                                    <td style="text-align: center">
+                                    <a href="/{{ url }}/manage/user/{{ i.reminder.id }}/" style="list-style-type: none;color: red">#{{ i.reminder.id }}</a>
+                                    </td>
+                                    <td style="text-align: center"><small>{{i.reminder.username }}</small></td>
+                                    <td style="text-align: center"><small>{{ i.reminder.gender }}</small></td>
+                                    <td style="text-align: center"><small>{{ i.reminder.position }}</small></td>
+                                    <td style="text-align: center"><small>{{ i.reminder.address }}</small></td>
+                                    <td style="text-align: center"><small>{{i.reminder.date_joined }}</small></td>
+                                    <td style="text-align: center"><small>{{ i.time }}</small></td>
+                                    <td style="text-align: center"><small>{% ifequal i.status True %}通过{% else %}待审核{% endifequal %}</small></td>
+                                    <td style="text-align: center"><small>{% ifequal i.status True %}{{ i.name }}{% endifequal %}</small></td>
+                                    <td style="text-align: center">
+                                     {% ifequal i.status True %}
+                                         <small>无</small>
+                                     {% else %}
+                                         <a href="/{{ url }}/check_application/{{i.reminder.username }}" style="list-style-type: none;">审核</a>
+                                     {% endifequal %}
+
+                                    </td>
+
+
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+
+{% block jQuery %}
+    {{ block.super }}
+
+    <!-- Editable js -->
+    <script src="{% static 'assets/plugins/magnific-popup/dist/jquery.magnific-popup.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/jquery-datatables-editable/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.bootstrap.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/mindmup-editabletable.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/numeric-input-example.js' %}"></script>
+
+    <!-- init -->
+    <script src="{% static 'assets/pages/datatables.editable.init.js' %}"></script>
+
+{% endblock %}

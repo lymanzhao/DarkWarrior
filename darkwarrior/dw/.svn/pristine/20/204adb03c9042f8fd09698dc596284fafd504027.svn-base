@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block head_js %}
+     <!--复制到剪贴板-->
+    <script type="text/javascript" src="{% static 'zeroclipboard/ZeroClipboard.js' %}"></script>
+{% endblock %}
+{% block content %}
+
+<div class="col-lg-12">
+
+                        <div class="card-box">
+
+                            <h4 class="header-title m-t-0 m-b-30">资产库</h4>
+                                <div class="table-responsive">
+                                  <table  class="table">
+                                  <thead>
+                                   <tr>
+                                       <th>资产库名</th>
+                                       <th>创建者</th>
+                                       <th>操作</th>
+                                   </tr>
+                                   </thead>
+                                  <tbody>
+                                      {% for repository in repository_list %}
+                                      <tr>
+                                      <td>{{ repository.name }}</td>
+                                      <td>{{ repository.creator }}</td>
+                                      <td>
+                                          <a href="../svn/{{ repository.name }}/" style="margin-right: 15px"class="btn btn-bordered btn-custom" >查看资产库文件</a>
+                                          <a class="btn btn-bordered btn-custom" style="margin-right: 15px" onclick="return confirm('确定删除此资产库')" href="../delete_repository/{{ repository.name }}/"
+              data-container="body" data-toggle="popover" data-trigger="hover focus  manual click" data-animation="true" data-placement="auto" data-content="删除后将丢失数据，删除请谨慎" is_archive="true" >删除</a>
+                                          <a class="btn btn-bordered btn-custom" style="margin-right: 15px" href="../svn_log/{{ repository.name }}/">资产日志</a>
+                                          <a class="btn btn-bordered btn-custom" style="margin-right: 15px" href="../svn_recent_changes/{{ repository.name }}/">最近修改</a>
+                                           <a class="btn btn-bordered btn-custom"  href="../register_svn/{{ repository.name }}/" is_archive="true">注册用户</a>
+                                           <button class="btn btn-bordered btn-custom" data-clipboard-target="fe_text{{ repository.id }}" id="d_clip_button{{ repository.id }}"style="margin-left: 16px;">复制地址到剪贴板</button>
+                                           <div style="display: none;" id="fe_text{{ repository.id }}">{{ repository.host_name }}</div>
+                                      </td>
+                                      </tr>
+                                      {% endfor %}
+                                   </tbody>
+                                  </table>
+
+                                   <span style="display: block;margin-left: 15px;margin-top: 30px;">说明：首次提交版本库，请先注册版本库</span>
+                            </div>
+                        </div>
+                    </div><!-- end col -->
+{% endblock %}
+{% block jQuery %}
+<script>
+    {% for repo in repository_list %}
+    var clip = new ZeroClipboard( document.getElementById("d_clip_button{{ repo.id }}"), {
+  moviePath: "ZeroClipboard.swf"
+} );
+
+// 复制内容到剪贴板成功后的操作
+clip.on( 'complete', function(client, args) {
+  return alert("复制成功，复制内容为："+ args.text);
+} );
+    {% endfor %}
+    </script>
+{% endblock %}

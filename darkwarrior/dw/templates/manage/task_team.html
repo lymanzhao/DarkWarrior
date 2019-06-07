@@ -1,0 +1,84 @@
+{% extends 'manage/manage_base.html' %}
+
+{% load staticfiles %}
+
+{% block css %}
+    {{ block.super }}
+    <!-- Editatable  Css-->
+    <link rel="stylesheet" href="{% static 'assets/plugins/magnific-popup/dist/magnific-popup.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/plugins/jquery-datatables-editable/datatables.css' %}" />
+{% endblock %}
+
+{% block content %}
+
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <h4 class="header-title m-t-0 m-b-30">任务团队</h4>
+
+                    <a href="/{{ url }}/manage/add_task_team/">
+                        <div class="row" style="margin-bottom: 2%">
+                            <div class="col-md-12">
+                                <div class="text-left">
+                                    <button  class="batn btn-purple btn-rounded w-md">
+                                        添加团队
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <table class="table table-striped" id="datatable-editable">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center">ID</th>
+                                <th style="text-align: center">团队名称</th>
+                                <th style="text-align: center">团队成员</th>
+                            </tr>
+                        </thead>
+
+                        <tbody style="text-align: center">
+                            {% for team in task_teams %}
+                                <tr>
+                                    <td style="text-align: center"><a href="/{{ url }}/manage/task_team/{{ team.id }}" style="list-style-type: none;color: red">#{{ team.id }}</a></td>
+                                    <td style="text-align: center"><small>{{ team.name }}</small></td>
+
+                                    <td style="text-align: center">
+                                        <small>
+                                            <select>
+                                                {% for member in team.member.all %}
+                                                    <option>
+                                                        {{ member }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </small>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block jQuery %}
+    {{ block.super }}
+
+    <!-- Editable js -->
+    <script src="{% static 'assets/plugins/magnific-popup/dist/jquery.magnific-popup.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/jquery-datatables-editable/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.bootstrap.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/mindmup-editabletable.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/numeric-input-example.js' %}"></script>
+
+    <!-- init -->
+    <script src="{% static 'assets/pages/datatables.editable.init.js' %}"></script>
+
+{% endblock %}

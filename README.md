@@ -1,5 +1,8 @@
 # DarkWarrior
+![Dark_Warrior-logo-w-shadow-640](darkwarrior/static/project_logo/Dark_Warrior-logo-w-shadow-640.png)
+
 ## 开源说明
+
 DarkWarrior是我在2016年带领团队创业开发的项目，这两年一直躺在硬盘里，不如开源出来分享给大家。
 由于产品设计是在2015年做的，前端使用bootstrap实现，后端使用django 1.8，现在来说有点老，但程序本身很好用，只要剔除掉不用的app即可。
 

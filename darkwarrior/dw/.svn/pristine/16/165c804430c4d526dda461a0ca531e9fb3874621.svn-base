@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+{% block head_js  %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'ckeditor/ckeditor.js' %}"></script>
+    <script type="text/javascript" src="{% static 'search/ajax_search.js' %}"></script>
+{% endblock %}
+
+
+{% block content %}
+    <div class="row" style="margin-top: -50px;">
+    <div class="col-md-12">
+        <div class="panel">
+            <div class="panel-body">
+                <h2 class="m-b-30"><strong>创建请假单</strong></h2>
+                {% for error in errors %}
+                    <h4 style="color: red">{{ error }}</h4>
+                {% endfor %}
+                <div class="row">
+                    <div class="col-md-10">
+                        <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">请假概述</label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control" placeholder="请输入请假概述" name="summary" autofocus="autofocus" >
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">请假描述</label>
+                                <div class="col-md-10">
+                                    <textarea id="elm1" name="content">{{ content }}</textarea>
+                                    <script type="text/javascript">CKEDITOR.replace('content')</script>
+
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">请假类型</label>
+                                <div class="col-md-10">
+                                    <select class="change_sel" name="type">
+                                        {% for type in leave_types %}
+                                            <option  {% ifequal type_default type %} selected {% endifequal %} value="{{ type.id }}">{{ type.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-2 control-label" >请假起始时间</label>
+                                <div class="col-md-10">
+                                    <input type="text" value="" class="form-control" name="start_date" id="datetimepicker"/>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label class="col-md-2 control-label" >请假结束时间</label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control" value="" name="end_date" id="datetimepicker1"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">优先级</label>
+                                <div class="col-md-10">
+                                    <select class="change_sel" name="priority">
+                                        {% for priority in prioritys %}
+                                            <option {% ifequal priority_default priority %} selected {% endifequal %} value="{{ priority.id }}">{{ priority.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-left: 90%;margin-top: 5%">
+                                <div class="col-sm-4">
+                                    <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5" is_archive="true">提交 </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div><!-- end col -->
+                </div>
+
+            </div>    <!-- end row -->
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block jQuery %}
+    {{ block.super }}
+    <script src="/static/lly/query_select.js" id="query_select"></script><!-- 单选下拉控件-->
+    <script>/*
+         window.onerror = function(errorMsg) {
+         $('#console').html($('#console').html()+'<br>'+errorMsg)
+         }*/
+
+        $.datetimepicker.setLocale('ch');
+        $('#datetimepicker').datetimepicker({value:'{{ now_date }}',step:10});
+
+
+        $('#default_datetimepicker').datetimepicker({
+            formatTime:'H:i',
+            formatDate:'d.m.Y',
+            //defaultDate:'8.12.1986', // it's my birthday
+            defaultDate:'+03.01.1970', // it's my birthday
+            defaultTime:'10:00',
+            timepickerScrollbar:false
+        });
+
+    </script>
+
+    <script>/*
+         window.onerror = function(errorMsg) {
+         $('#console').html($('#console').html()+'<br>'+errorMsg)
+         }*/
+
+        $.datetimepicker.setLocale('ch');
+        $('#datetimepicker1').datetimepicker({value:'{{ now_date }}',step:10});
+
+
+        $('#default_datetimepicker1').datetimepicker({
+            formatTime:'H:i',
+            formatDate:'d.m.Y',
+            //defaultDate:'8.12.1986', // it's my birthday
+            defaultDate:'+03.01.1970', // it's my birthday
+            defaultTime:'10:00',
+            timepickerScrollbar:false
+        });
+
+    </script>
+
+{% endblock %}

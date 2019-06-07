@@ -1,0 +1,471 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block css %}
+    {{ block.super }}
+    <link rel="stylesheet" {% if scheduler_css %} href="{% static scheduler_css_url %}"{% else %} href="{% static 'codebase/dhtmlxscheduler.css' %}" {% endif %} type="text/css" media="screen" title="no title" charset="utf-8">
+    <style type="text/css" media="screen">
+        .inputstyle{
+            margin:5px 0;
+        }
+
+    </style>
+{% endblock %}
+
+{% block head_js  %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'ckeditor/ckeditor.js' %}"></script>
+    <script type="text/javascript" src="{% static 'search/ajax_search.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+    <div class="row" style="margin-bottom:1%;margin-top: -50px;">
+        <div class="col-md-12"  >
+            <div class="panel" style="height:auto;margin-bottom:10%;">
+                <div class="panel-body">
+
+                    <!--<h4 class="header-title m-t-0 m-b-30">日历</h4> -->
+
+                    {% comment %}<form class="form-horizontal" role="form" method="post"  enctype="multipart/form-data" id="taskform" style="display: none" >
+                        {% for error in errors %}
+                            <h4 style="color: red">{{ error }}</h4>
+                        {% endfor %}
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">任务概述</label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control inputstyle" placeholder="请输入任务概述" name="summary" id="summary" value="{{ taskorders.summary }}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">任务描述</label>
+                            <div class="col-md-10 inputstyle">
+                                <textarea id="elm1" name="content"  autofocus="autofocus" contenteditable="true"></textarea>
+                                <script type="text/javascript">CKEDITOR.replace('content')</script>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" >任务图片</label>
+                            <div class="col-md-10">
+                                <input type="file" class="form-control inputstyle"  name="task_image" id="task_image" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">任务类型</label>
+                            <div class="col-md-10 inputstyle">
+                                <select class="form-control " name="type" id="type">
+
+                                    {% for type in types %}
+
+                                        <option {% ifequal type_default type %} selected {% endifequal %} value="{{ type.id }}">{{ type.name }}</option>
+
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">里程碑</label>
+                            <div class="col-md-10 inputstyle">
+                                <select class="form-control inputstyle" name="milestone" id="milestone">
+
+                                    {% for milestone in milestones %}
+                                        <option {% ifequal milestone_default milestone %} selected {% endifequal %} value="{{ milestone.id }}">{{ milestone.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">组件名称</label>
+                            <div class="col-md-10 inputstyle">
+                                <select class="form-control inputstyle" name="component" id="component">
+
+                                    {% for component in components %}
+
+                                        <option {% ifequal component_default component %} selected {% endifequal %} value="{{ component.id }}">{{ component.name }}</option>
+
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-md-2 control-label">优先级</label>
+                            <div class="col-md-10 inputstyle">
+                                <select class="form-control inputstyle" name="priority" id="priority">
+
+                                    {% for priority in prioritys %}
+
+                                        <option {% ifequal priority_default priority %} selected {% endifequal %} value="{{ priority.id }}">{{ priority.name }}</option>
+
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group ">
+                            <label class="col-md-2 control-label">属主</label>
+                            <div class="col-md-10">
+
+                                <input type="text" id="search_text" onkeyup="showHint(this.value)"
+                                       class="form-control inputstyle" placeholder="请输入属主名称，可以为空" name="owner" />
+                                <div id="txtHint" ></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group ">
+                            <label class="col-md-2 control-label">版本</label>
+                            <div class="col-md-10">
+                                <select class="form-control inputstyle" name="version" id="version">
+
+                                    {% for version in versions %}
+
+                                        <option {% ifequal version_default version %} selected {% endifequal %} value="{{ version.id }}">{{ version.name }}</option>
+
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <!--
+				                <div class="form-group ">
+                                    <label class="col-md-2 control-label" >任务起始时间</label>
+                                    <div class="col-md-10">
+                                        <input type="text" value="{{ start_date }}" class="form-control inputstyle" name="start_date" id="datetimepicker"/>
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group ">
+                                    <label class="col-md-2 control-label" >任务结束时间</label>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control inputstyle" value="{{ start_date }}" name="end_date" id="datetimepicker1"/>
+                                    </div>
+                                </div>
+                               -->
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" >故事点</label>
+                            <div class="col-md-10">
+                                <input type="text" placeholder="文本输入框只能输入数字（整数或浮点数）" onkeyup="this.value=this.value.replace(/^\.|^0\d{1,}|\.{2,}|[^.\d]|\..*\./g,'');" onblur="this.value=this.value.replace(/\.$/g,'');" class="form-control inputstyle" name="story_point" id="story_point" value="{{ tasks.storypoint }}"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">
+                                <input type="checkbox" name="relevance" value="task_relevance">前后关联
+                            </label>
+                            <div class="col-md-10">
+                                <input class=" form-control input-block inputstyle" placeholder="请输入要关联的任务id，并且选择关联类型,默认为①尾-->②头" type="number" name="task_id">
+                                <select class=" form-control input-block inputstyle" name="relevance_type">
+                                    <option selected="selected">①头-->②尾,3</option>
+                                    <option selected="selected">①尾-->②尾,2</option>
+                                    <option selected="selected">①头-->②头,1</option>
+                                    <option selected="selected">①尾-->②头,0</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!--
+                        <div class="row" style="margin-left:80%;margin-top: 5%">
+                            <div class="col-sm-4">
+                                <input type="submit" class="batn btn-purple btn-rounded w-md" value="提交" onclick="return create()">
+                            </div>
+                        </div>-->
+                    </form>{% endcomment %}
+
+                    <div style="margin-left:20px;">{{get_form |safe}}</div>
+                    <div id="scheduler_here" class="dhx_cal_container"style='height:100%;min-height: 650px;'>
+
+                        <div class="dhx_cal_navline" style="height:20px">
+
+                            <div class="dhx_cal_prev_button">&nbsp;</div>
+                            <div class="dhx_cal_next_button">&nbsp;</div>
+                            <div class="dhx_cal_today_button"></div>
+                            <div class="dhx_cal_date"></div>
+
+                            <div class="dhx_cal_tab" name="day_tab" style="right:332px;"></div>
+                            <div class="dhx_cal_tab" name="week_tab" style="right:268px;"></div>
+                            <div class="dhx_cal_tab" name="month_tab" style="right:204px;"></div>
+                            <div class="dhx_cal_tab" name="year_tab" style="right:140px;"></div>
+                        </div>
+
+                        <div class="dhx_cal_header"></div>
+
+                        <div class="dhx_cal_data" ></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block jQuery %}
+    {{ block.super }}
+    <script src="{% static 'index_calendar/dhtmlxscheduler.js' %}" type="text/javascript" charset="utf-8"></script>
+    <script src="{% static 'codebase/ext/dhtmlxscheduler_year_view.js' %}" type="text/javascript" charset="utf-8"></script>
+    <script src="{% static 'codebase/ext/dhtmlxscheduler_container_autoresize.js' %}"></script>
+    <script src="{% static 'codebase/ext/dhtmlxscheduler_minical.js' %}" type="text/javascript" charset="utf-8"></script>
+
+    <!-- <script src="{% static 'codebase/ext/dhtmlxscheduler_limit.js' %}" type="text/javascript" charset="utf-8"></script>
+        <script src="{% static 'codebase/ext/dhtmlxscheduler_units.js' %}" type="text/javascript" charset="utf-8"></script>
+        <script src="{% static 'codebase/dhtmlxscheduler_timeline.js' %}" type="text/javascript" charset="utf-8"></script>
+        <script src="{% static 'codebase/locale/locale_cn.js' %}"type="text/javascript" charset="utf-8"></script>
+        <script src="{% static 'codebase/ext/dhtmlxscheduler_recurring.js' %}" type="text/javascript" charset="utf-8"></script>
+         -->
+    <script type="text/javascript" src="{% static 'jquery-2.1.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'ajaxfileupload.js' %}"></script>
+    <script>
+        function init(){
+            scheduler.config.api_date="%Y/%m/%d %H:%i";
+            scheduler.config.xml_date="%Y/%m/%d %H:%i";
+            scheduler.config.first_hour = 8;
+            scheduler.config.multi_day = true;
+            scheduler.locale.labels.year_tab ="年";
+            scheduler.config.container_autoresize=true;
+
+            scheduler.init('scheduler_here',null,"month");
+
+            scheduler.templates.event_class=function(s,e,ev){ return ev.custom?"custom":""; };
+            scheduler.config.show_loading = true;
+            scheduler.config.details_on_create = false;
+            scheduler.config.dblclick_create=false;
+            scheduler.config.drag_create=false;
+            scheduler.locale.labels.section_template = "创建新日程";
+            var events=[];
+            {% for i in calendar %}
+                events.push ({id:{{ i.id }}, text:"{{ i.text }}", start_date:"{{ i.start_date }}",end_date:"{{ i.end_date }}",color:"#{{ i.color }}",textColor:"#{{ i.textColor }}" });
+            {% endfor %}
+            scheduler.parse(events, "json");
+           /* scheduler.config.lightbox.sections=[
+                {name: "template", height: 1000, type: "template", map_to: "my_template"},
+                { name: "time", height: 72, type: "calendar_time", map_to: "auto" },
+            ];*/
+            {% comment %}{% if template.name == 'effects' %}
+                scheduler.attachEvent("onClick", function (id, e) {
+                    var ev = scheduler.getEvent(id);
+                    var id =ev.id;
+                    // location.href="/{{ url }}/task/"+id+'/';
+                    window.open("/{{ url }}/effects/task/"+id+'/');
+                });
+                scheduler.attachEvent("onDblClick", function (id, e) {
+                    var ev = scheduler.getEvent(id);
+                    var id =ev.id;
+                    // location.href="/{{ url }}/task/"+id+'/';
+                    window.open("/{{ url }}/effects/task/"+id+'/');
+
+                });
+            {% elif template.name == 'HR' %}
+                scheduler.attachEvent("onClick", function (id, e) {
+                    var ev = scheduler.getEvent(id);
+                    var id =ev.id;
+                    // location.href="/{{ url }}/task/"+id+'/';
+                    window.open("/{{ url }}/HR/task/"+id+'/');
+                });
+                scheduler.attachEvent("onDblClick", function (id, e) {
+                    var ev = scheduler.getEvent(id);
+                    var id =ev.id;
+                    // location.href="/{{ url }}/task/"+id+'/';
+                    window.open("/{{ url }}/HR/task/"+id+'/');
+
+                });
+            {% else %}
+                scheduler.attachEvent("onClick", function (id, e) {
+                    var ev = scheduler.getEvent(id);
+                    var id =ev.id;
+                    // location.href="/{{ url }}/task/"+id+'/';
+                    window.open("/{{ url }}/task/"+id+'/');
+                });
+                scheduler.attachEvent("onDblClick", function (id, e) {
+                    var ev = scheduler.getEvent(id);
+                    var id =ev.id;
+                    // location.href="/{{ url }}/task/"+id+'/';
+                    window.open("/{{ url }}/task/"+id+'/');
+
+                });
+            {% endif %}
+            scheduler.attachEvent("onEventCreated", function (id, e) {
+                var ev = scheduler.getEvent(id);
+                var myform = document.getElementById("taskform").innerHTML;
+                ev.my_template = myform;
+
+            });
+            {% endcomment %}
+            /*  var full_lightbox = [
+             {name: "template", height: 1000, type: "template", map_to: "my_template",focus: true},
+             { name: "time", height: 72, type: "calendar_time", map_to: "auto" },
+             ];
+             var restricted_lightbox = [
+             { name: "description", height: 200, map_to: "text", type: "textarea", focus: true},
+             { name: "time", height: 72, type: "calendar_time", map_to: "auto" },
+             ];
+             scheduler.attachEvent("onBeforeLightBox", function(event_id) {
+             scheduler.resetLightbox();
+             var ev = scheduler.getEvent(event_id);
+             var myform = document.getElementById("taskform").innerHTML;
+             scheduler.config.lightbox.sections = (ev.restricted) ? restricted_lightbox : full_lightbox;
+             ev.my_template = myform;
+             return true;
+             });
+             */
+
+            {% comment %}/**
+             * 删除
+             */
+            scheduler.attachEvent("onBeforeEventDelete", function(event_id,
+                                                                  event_object) {
+                var url = "/{{ url }}/delete_calendar/";
+                var id = event_object.id;
+                var text = event_object.text;
+                var convert = scheduler.date.date_to_str("%Y/%m/%d %H:%i");
+                $.ajax({
+                    type : "POST",
+                    url : url,
+                    dataType:"text",
+                    data:{"id":id},
+                    success : function(data) { location.href="/{{ url }}/view_calendar/"}
+                });
+            });
+
+
+            /**
+             * 修改
+             * */
+            scheduler.attachEvent("onEventChanged",
+                    function (event_id, event_object) {
+                        var url = "/{{ url }}/modify_calendar/";
+                        var id = event_object.id;
+
+                        /* var summary = document.getElementById('summary').value;
+                         var content = document.getElementById('elm1').value;
+                         var task_image = document.getElementById('task_image').value;
+                         var type = document.getElementById('type').value;
+                         var milestone = document.getElementById('milestone').value;
+                         var component = document.getElementById('component').value;
+                         var priority = document.getElementById('priority').value;
+                         var owner = document.getElementById('search_text').value;
+                         var version = document.getElementById('version').value;
+                         var story_point = document.getElementById('story_point').value;*/
+                        //var start_date=document.getElementById('datetimepicker').value;
+                        //var end_date=document.getElementById('datetimepicker1').value;
+                        var convert = scheduler.date.date_to_str("%Y/%m/%d %H:%i");
+                        var start_date = convert(event_object.start_date);
+                        var end_date = convert(event_object.end_date);
+                        //alert(start_date);
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            dataType: "text",
+                            data: {
+                                "start_date": start_date,
+                                "end_date": end_date,
+                                /*"summary": summary,
+                                 "content": content,
+                                 "task_image": task_image,
+                                 "type": type,
+                                 "milestone": milestone,
+                                 "component": component,
+                                 "priority": priority,
+                                 "owner": owner,
+                                 "version": version,
+                                 "story_point": story_point,*/
+                                "id": id,
+                            },
+                            success: function (data) {
+                                location.href = "/{{ url }}/view_calendar/"
+                            },
+                        });
+
+                    });
+
+            /**
+             添加事件
+             **/
+
+            scheduler.attachEvent("onEventAdded", function(event_id, event_object) {
+                var id = event_object.id;
+                var url = "/{{ url }}/newtask/";
+                var summary = document.getElementById('summary').value;
+                var content = document.getElementById('elm1').value;
+                var task_image = document.getElementById('task_image').value;
+                var type = document.getElementById('type').value;
+                var milestone = document.getElementById('milestone').value;
+                var component = document.getElementById('component').value;
+                var priority = document.getElementById('priority').value;
+                var owner = document.getElementById('search_text').value;
+                var version = document.getElementById('version').value;
+                var story_point = document.getElementById('story_point').value;
+                //var start_date=document.getElementById('datetimepicker').value;
+                //var end_date=document.getElementById('datetimepicker1').value;
+                var convert = scheduler.date.date_to_str("%Y/%m/%d %H:%i");
+                var start_date = convert(event_object.start_date);
+                var end_date = convert(event_object.end_date);
+                $.ajaxFileUpload({
+                    type:"POST",
+                    url:url,
+                    secureuri :false,
+                    fileElementId :'task_image',//file控件id
+                    dataType : 'text',
+                    data: {
+                        "start_date": start_date,
+                        "end_date": end_date,
+                        "summary": summary,
+                        "content": content,
+                        "type": type,
+                        "milestone": milestone,
+                        "component": component,
+                        "priority": priority,
+                        "owner": owner,
+                        "version": version,
+                        "story_point": story_point,
+                        "id": id,
+                    },
+                    success:function (data){
+                        location.href = "/{{ url }}/view_calendar/"
+                    },
+                    error:function(data, status, e){alert(e);}
+                });
+
+            });{% endcomment %}
+
+        }
+
+    </script>
+    <script>/*
+     window.onerror = function(errorMsg) {
+     $('#console').html($('#console').html()+'<br>'+errorMsg)
+     }*/
+
+    $.datetimepicker.setLocale('ch');
+    $('#datetimepicker').datetimepicker({value:'{{ now_date }}',step:10});
+
+
+    $('#default_datetimepicker').datetimepicker({
+        formatTime:'H:i',
+        formatDate:'d.m.Y',
+        //defaultDate:'8.12.1986', // it's my birthday
+        defaultDate:'+03.01.1970', // it's my birthday
+        defaultTime:'10:00',
+        timepickerScrollbar:false
+    });
+
+    </script>
+
+    <script>/*
+     window.onerror = function(errorMsg) {
+     $('#console').html($('#console').html()+'<br>'+errorMsg)
+     }*/
+
+    $.datetimepicker.setLocale('ch');
+    $('#datetimepicker1').datetimepicker({value:'{{ now_date }}',step:10});
+
+
+    $('#default_datetimepicker1').datetimepicker({
+        formatTime:'H:i',
+        formatDate:'d.m.Y',
+        //defaultDate:'8.12.1986', // it's my birthday
+        defaultDate:'+03.01.1970', // it's my birthday
+        defaultTime:'10:00',
+        timepickerScrollbar:false
+    });
+
+    </script>
+
+
+{% endblock %}

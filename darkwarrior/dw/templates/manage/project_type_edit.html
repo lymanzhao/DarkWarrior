@@ -1,0 +1,857 @@
+{% extends 'manage/manage_base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+
+
+    <div class="col-sm-12">
+        <div class="panel">
+
+
+            <!--项目类型 -->
+            <div class="panel-body">
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="m-b-30">
+                            <h4 class="header-title m-t-0 m-b-30" style="display: inline-block;">{{ project_type.name }}</h4>
+                                <a style="font-size: 13px;" href="/{{ url }}/manage/project_interface_edit/{{ project_type_id }}">
+                                    {% if present_project_type %} 当前项目类型{% endif %}
+                                    {% if create_project_type %} 自建项目类型{% endif %}
+                                    {% if base_project_type %} 基础项目类型{% endif %}
+                                    <i class="zmdi zmdi-refresh-sync"></i>
+                                </a>
+                                {% if base_project_type%}
+                                    <a style="font-size: 13px;margin-left: 10px;" href="/{{ url }}/manage/project_type/0" title="基础项目类型列表">
+                                        <i class="ti-menu-alt" style="margin-top: 15px;"></i>
+                                    </a>
+                                {% else %}
+                                    <a style="font-size: 13px;margin-left: 10px;" href="/{{ url }}/manage/project_type/" title="项目类型列表">
+                                        <i class="ti-menu-alt" style="margin-top: 15px;"></i>
+                                    </a>
+                                {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="">
+                    <div id="datatable-editable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
+                        <div class="row">
+                            <div class="col-sm-12">
+                            <p style="color: red;">{{ name_error }}</p>
+                                <table class="table table-striped dataTable no-footer" id="datatable-editable" role="grid" aria-describedby="datatable-editable_info">
+                                    <thead>
+                                    <tr role="row">
+                                        <th style="width: 300px;">名称</th>
+                                        <th style="width: 116px;">操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        <form method="post" action="">
+                                            <input type="hidden" name="judge" value="projectType">
+                                            <tr class="" role="row" style="border:0px solid red;">
+                                                <td>{{ project_type.name }}</td>
+                                                <td class="actions">
+                                                    <a  class="edit-row" style="cursor: pointer;"><i class="fa fa-pencil"></i></a>
+                                                </td>
+                                            </tr>
+
+                                            <tr class="" role="row" hidden="hidden" style="background-color: #f9f9f9;">
+                                                <td><input type="text" class="form-control input-block" value="{{ project_type.name }}" name="name" required="required"></td>
+                                                <td class="actions">
+                                                    <a  class="save-row" style="cursor: pointer;"><i class="fa fa-save"></i></a>
+                                                    <input type="submit" name="save" value="save" class="save" hidden="hidden">         <!--save -->
+                                                    <a  class="cancel-row" style="cursor: pointer;"><i class="fa fa-times"></i></a>
+                                                    <input type="submit" name="delete" value="delete" id="delete_projectType" hidden="hidden">
+                                                </td>
+                                            </tr>
+                                        </form>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <!--任务类型 -->
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="m-b-30">
+                            <button id="addToTable" class="btn btn-primary waves-effect waves-light" data-target="#task-type" data-toggle="modal">任务类型 <i class="fa fa-plus" ></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- add类型 -->
+                <div class="modal fade" id="task-type" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">添加任务类型</h4>
+                            </div>
+                            <div class="modal-body" >
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <input type="hidden" value="type" name="judge">
+                                        <label class="col-md-2 control-label">类型名称</label>
+                                        <div class="col-md-10">
+                                            <input type="text" class="form-control input-block" value="" name="name">
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5" name="create" value="create">ok</button> <!--add -->
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+                <!-- add类型 -->
+
+                <div class="">
+                    <div id="datatable-editable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
+                        <div class="row">
+                            <div class="col-sm-12">
+                            <p style="color: red;">{{ type_error }}</p>
+                                <table class="table table-striped dataTable no-footer" id="datatable-editable" role="grid" aria-describedby="datatable-editable_info">
+                                    <thead>
+                                    <tr role="row">
+                                        <th style="width: 230px;">ID</th>
+                                        <th style="width: 300px;">名称</th>
+                                        <th style="width: 269px;">排序</th>
+                                        <th style="width: 269px;">默认</th>
+                                        <th style="width: 116px;">操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for type in task_types %}
+                                            <tr class="" role="row" style="border:0px solid red;">
+                                                <td class="">{{ type.id }}</td>
+                                                <td>{{ type.name }}</td>
+                                                <td>{{ type.value }}</td>
+                                                <td>
+                                                    <form method="post" action="">
+                                                    <input type="hidden" name="judge" value="type">
+                                                    <input type="text" style="display: none;" value="{{ type.id }}" readonly="readonly" name="id" >
+                                                    <div class="radio radio-success radio-single" style="padding-left:20px;">
+                                                        <input type="radio" name="default" onclick="$('#type_{{ type.id }}').click()" id="type{{ type.id }}" {% ifequal type.default True %} checked {% endifequal %}>
+                                                        <label for="type{{ type.id }}"></label>
+                                                        <input type="submit" id="type_{{ type.id }}" name="default" value="default" hidden="hidden">
+                                                    </div>
+                                                    </form>
+                                                </td>
+                                                <td class="actions">
+                                                    <a  class="edit-row" style="cursor: pointer;"><i class="fa fa-pencil"></i></a>
+                                                    <a  class="remove-row" {% if type.taskorder_set.all %}hidden{% endif %} style="cursor: pointer;"><i class="fa fa-trash-o"></i></a>
+                                                    <form method="post" action="">
+                                                    <input type="hidden" name="judge" value="type">
+                                                    <input type="text" style="display: none;" value="{{ type.id }}" readonly="readonly" name="id" >
+                                                    <input type="text" name="delete" value="delete" class="delete" hidden="hidden">      <!--delete -->
+                                                    </form>
+                                                </td>
+                                            </tr>
+
+
+                                            <tr class="" role="row" hidden="hidden" style="background-color: #f9f9f9;">
+                                                <form method="post" action="">
+                                                <input type="hidden" name="judge" value="type">
+                                                <td><input type="text" class="form-control input-block" value="{{ type.id }}" readonly="readonly" name="id"></td>
+                                                <td><input type="text" class="form-control input-block" value="{{ type.name }}" name="name" required="required"></td>
+                                                <td><input type="number" class="form-control input-block" value="{{ type.value }}" name="value" required="required"></td>
+                                                <td>
+                                                </td>
+                                                <td class="actions">
+                                                    <a  class="save-row" style="cursor: pointer;"><i class="fa fa-save"></i></a>
+                                                    <input type="submit" name="save" value="save" class="save" hidden="hidden">         <!--save -->
+                                                    <a  class="cancel-row" style="cursor: pointer;"><i class="fa fa-times"></i></a>
+                                                </td>
+                                                </form>
+                                            </tr>
+
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!--任务优先级 -->
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="m-b-30">
+                            <button id="addToTable" class="btn btn-primary waves-effect waves-light" data-target="#task-priority" data-toggle="modal">任务优先级 <i class="fa fa-plus" ></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- add优先级 -->
+                <div class="modal fade" id="task-priority" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">添加任务优先级</h4>
+                            </div>
+                            <div class="modal-body" >
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <input type="hidden" value="priority" name="judge">
+                                        <label class="col-md-2 control-label">优先级名称</label>
+                                        <div class="col-md-10">
+                                            <input type="text" class="form-control input-block" value="" name="name">
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5" name="create" value="create">ok</button> <!--add -->
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+                <!-- add优先级 -->
+
+                <div class="">
+                    <div id="datatable-editable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
+                        <div class="row">
+                            <div class="col-sm-12">
+                            <p style="color: red;">{{ priority_error }}</p>
+                                <table class="table table-striped dataTable no-footer" id="datatable-editable" role="grid" aria-describedby="datatable-editable_info">
+                                    <thead>
+                                    <tr role="row">
+                                        <th style="width: 230px;">ID</th>
+                                        <th style="width: 300px;">名称</th>
+                                        <th style="width: 269px;">排序</th>
+                                        <th style="width: 269px;">默认</th>
+                                        <th style="width: 116px;">操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for priority in task_prioritys %}
+
+                                            <tr class="" role="row" style="border:0px solid red;">
+                                                <td class="">{{ priority.id }}</td>
+                                                <td>{{ priority.name }}</td>
+                                                <td>{{ priority.value }}</td>
+                                                <td>
+                                                    <form method="post" action="">
+                                                    <input type="hidden" name="judge" value="priority">
+                                                    <input type="text" class="form-control input-block" value="{{ priority.id }}" readonly="readonly" name="id" style="display: none;">
+                                                    <div class="radio radio-success radio-single" style="padding-left:20px;">
+                                                        <input type="radio" name="default" onclick="$('#priority_{{ priority.id }}').click()" id="priority{{ priority.id }}" {% ifequal priority.default True %} checked {% endifequal %}>
+                                                        <label for="priority{{ priority.id }}"></label>
+                                                        <input type="submit" id="priority_{{ priority.id }}" name="default" value="default" hidden="hidden">
+                                                    </div>
+                                                    </form>
+                                                </td>
+                                                <td class="actions">
+                                                    <a  class="edit-row" style="cursor: pointer;"><i class="fa fa-pencil"></i></a>
+                                                    <a  class="remove-row" {% if priority.taskorder_set.all %}hidden{% endif %} style="cursor: pointer;"><i class="fa fa-trash-o"></i></a>
+                                                    <form method="post" action="">
+                                                    <input type="hidden" name="judge" value="priority">
+                                                    <input type="text" class="form-control input-block" value="{{ priority.id }}" readonly="readonly" name="id" style="display: none;">
+                                                    <input type="text" name="delete" value="delete" class="delete" hidden="hidden">      <!--delete -->
+                                                    </form>
+                                                </td>
+                                            </tr>
+
+                                            <tr class="" role="row" hidden="hidden" style="background-color: #f9f9f9;">
+                                                <form method="post" action="">
+                                                <input type="hidden" name="judge" value="priority">
+                                                <td><input type="text" class="form-control input-block" value="{{ priority.id }}" readonly="readonly" name="id"></td>
+                                                <td><input type="text" class="form-control input-block" value="{{ priority.name }}" name="name" required="required"></td>
+                                                <td><input type="number" class="form-control input-block" value="{{ priority.value }}" name="value" required="required"></td>
+                                                <td>
+                                                </td>
+                                                <td class="actions">
+                                                    <a  class="save-row" style="cursor: pointer;"><i class="fa fa-save"></i></a>
+                                                    <input type="submit" name="save" value="save" class="save" hidden="hidden">         <!--save -->
+                                                    <a  class="cancel-row" style="cursor: pointer;"><i class="fa fa-times"></i></a>
+                                                </td>
+                                                </form>
+                                            </tr>
+
+
+
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!--任务状态 -->
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="m-b-30">
+                            <button id="addToTable" class="btn btn-primary waves-effect waves-light" data-target="#task-status" data-toggle="modal">任务状态 <i class="fa fa-plus" ></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- add状态 -->
+                <div class="modal fade" id="task-status" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">添加任务状态</h4>
+                            </div>
+                            <div class="modal-body" >
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <input type="hidden" value="status" name="judge">
+                                        <label class="col-md-2 control-label">状态名称</label>
+                                        <div class="col-md-10">
+                                            <input type="text" class="form-control input-block" value="" name="name">
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5" name="create" value="create">ok</button> <!--add -->
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+                <!-- add状态 -->
+
+                <div class="">
+                    <div id="datatable-editable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
+                        <div class="row">
+                            <div class="col-sm-12">
+                            <p style="color: red;">{{ status_error }}</p>
+                                <table class="table table-striped dataTable no-footer" id="datatable-editable" role="grid" aria-describedby="datatable-editable_info">
+                                    <thead>
+                                    <tr role="row">
+                                        <th style="width: 230px;">ID</th>
+                                        <th style="width: 300px;">名称</th>
+                                        <th style="width: 269px;">排序</th>
+                                        <th style="width: 116px;">操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for status in task_statuss %}
+
+                                            <tr class="" role="row" style="border:0px solid red;">
+                                                <td class="">{{ status.id }}</td>
+                                                <td>{{ status.name }}</td>
+                                                <td>{{ status.value }}</td>
+                                                <td class="actions">
+                                                    <a  class="edit-row" style="cursor: pointer;"><i class="fa fa-pencil"></i></a>
+                                                    <a  class="remove-row" {% if status.taskorder_set.all %}hidden{% endif %} style="cursor: pointer;"><i class="fa fa-trash-o"></i></a>
+                                                    <form method="post" action="">
+                                                    <input type="hidden" name="judge" value="status">
+                                                    <input type="text" class="form-control input-block" value="{{ status.id }}" readonly="readonly" name="id" style="display: none;">
+                                                    <input type="text" name="delete" value="delete" class="delete" hidden="hidden">      <!--delete -->
+                                                    </form>
+                                                </td>
+                                            </tr>
+
+                                            <tr class="" role="row" hidden="hidden" style="background-color: #f9f9f9;">
+                                                <form method="post" action="">
+                                                <input type="hidden" name="judge" value="status">
+                                                <td><input type="text" class="form-control input-block" value="{{ status.id }}" readonly="readonly" name="id"></td>
+                                                <td><input type="text" class="form-control input-block" value="{{ status.name }}" name="name" required="required"></td>
+                                                <td><input type="number" class="form-control input-block" value="{{ status.value }}" name="value" required="required"></td>
+                                                <td class="actions">
+                                                    <a  class="save-row" style="cursor: pointer;"><i class="fa fa-save"></i></a>
+                                                    <input type="submit" name="save" value="save" class="save" hidden="hidden">         <!--save -->
+                                                    <a  class="cancel-row" style="cursor: pointer;"><i class="fa fa-times"></i></a>
+                                                </td>
+                                                </form>
+                                            </tr>
+
+
+
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <!--任务组件 -->
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="m-b-30">
+                            <button id="addToTable" class="btn btn-primary waves-effect waves-light" data-target="#task-component" data-toggle="modal">任务组件 <i class="fa fa-plus" ></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- add组件 -->
+                <div class="modal fade" id="task-component" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">添加任务组件</h4>
+                            </div>
+                            <div class="modal-body" >
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <input type="hidden" value="component" name="judge">
+                                        <label class="col-md-2 control-label">组件名称</label>
+                                        <div class="col-md-10">
+                                            <input type="text" class="form-control input-block" value="" name="name">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">组件描述</label>
+                                        <div class="col-md-10">
+                                            <textarea class="form-control" rows="4" name="description"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5" name="create" value="create">ok</button> <!--add -->
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+                <!-- add组件 -->
+
+                <div class="">
+                    <div id="datatable-editable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
+                        <div class="row">
+                            <div class="col-sm-12">
+                            <p style="color: red;">{{ component_error }}</p>
+                                <table class="table table-striped dataTable no-footer" id="datatable-editable" role="grid" aria-describedby="datatable-editable_info">
+                                    <thead>
+                                    <tr role="row">
+                                        <th style="width: 230px;">ID</th>
+                                        <th style="width: 300px;">名称</th>
+                                        <th style="width: 269px;">描述</th>
+                                        <th style="width: 269px;">默认</th>
+                                        <th style="width: 116px;">操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for component in task_components %}
+
+                                            <tr class="" role="row" style="border:0px solid red;">
+                                                <td class="">{{ component.id }}</td>
+                                                <td>{{ component.name }}</td>
+                                                <td>{{ component.description }}</td>
+                                                <td>
+                                                    <form method="post" action="">
+                                                    <input type="hidden" name="judge" value="component">
+                                                    <input type="text" class="form-control input-block" value="{{ component.id }}" readonly="readonly" name="id" style="display: none;">
+                                                    <div class="radio radio-success radio-single" style="padding-left:20px;">
+                                                        <input type="radio" name="default" onclick="$('#component_{{ component.id }}').click()" id="component{{ component.id }}" {% ifequal component.default True %} checked {% endifequal %}>
+                                                        <label for="component{{ component.id }}"></label>
+                                                        <input type="submit" id="component_{{ component.id }}" name="default" value="default" hidden="hidden">
+                                                    </div>
+                                                    </form>
+                                                </td>
+                                                <td class="actions">
+                                                    <a  class="edit-row" style="cursor: pointer;"><i class="fa fa-pencil"></i></a>
+                                                    <a  class="remove-row" {% if component.taskorder_set.all %}hidden{% endif %} style="cursor: pointer;"><i class="fa fa-trash-o"></i></a>
+                                                    <form method="post" action="">
+                                                    <input type="hidden" name="judge" value="component">
+                                                    <input type="text" class="form-control input-block" value="{{ component.id }}" readonly="readonly" name="id" style="display: none;">
+                                                    <input type="text" name="delete" value="delete" class="delete" hidden="hidden">      <!--delete -->
+                                                    </form>
+                                                </td>
+                                            </tr>
+
+                                            <tr class="" role="row" hidden="hidden" style="background-color: #f9f9f9;">
+                                                <form method="post" action="">
+                                                <input type="hidden" name="judge" value="component">
+                                                <td><input type="text" class="form-control input-block" value="{{ component.id }}" readonly="readonly" name="id"></td>
+                                                <td><input type="text" class="form-control input-block" value="{{ component.name }}" name="name"></td>
+                                                <td><textarea class="form-control input-block" value="" name="description">{{ component.description }}</textarea></td>
+                                                <td></td>
+                                                <td class="actions">
+                                                    <a  class="save-row" style="cursor: pointer;"><i class="fa fa-save"></i></a>
+                                                    <input type="submit" name="save" value="save" class="save" hidden="hidden">         <!--save -->
+                                                    <a  class="cancel-row" style="cursor: pointer;"><i class="fa fa-times"></i></a>
+                                                </td>
+                                                </form>
+                                            </tr>
+
+
+
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <!--任务版本 -->
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="m-b-30">
+                            <button id="addToTable" class="btn btn-primary waves-effect waves-light" data-target="#task-version" data-toggle="modal">任务版本 <i class="fa fa-plus" ></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- add版本 -->
+                <div class="modal fade" id="task-version" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">添加版本</h4>
+                            </div>
+                            <div class="modal-body" >
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <input type="hidden" value="version" name="judge">
+                                        <label class="col-md-2 control-label">版本名称</label>
+                                        <div class="col-md-10">
+                                            <input type="text" class="form-control input-block" value="" name="name">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">版本描述</label>
+                                        <div class="col-md-10">
+                                            <textarea class="form-control" rows="4" name="description"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5" name="create" value="create">ok</button> <!--add -->
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+                <!-- add版本 -->
+
+                <div class="">
+                    <div id="datatable-editable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
+                        <div class="row">
+                            <div class="col-sm-12">
+                            <p style="color: red;">{{ version_error }}</p>
+                                <table class="table table-striped dataTable no-footer" id="datatable-editable" role="grid" aria-describedby="datatable-editable_info">
+                                    <thead>
+                                    <tr role="row">
+                                        <th style="width: 230px;">ID</th>
+                                        <th style="width: 300px;">名称</th>
+                                        <th style="width: 269px;">描述</th>
+                                        <th style="width: 269px;">发布时间</th>
+                                        <th style="width: 269px;">默认</th>
+                                        <th style="width: 116px;">操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for version in task_versions %}
+
+                                            <tr class="" role="row" style="border:0px solid red;">
+                                                <td class="">{{ version.id }}</td>
+                                                <td>{{ version.name }}</td>
+                                                <td>{{ version.description }}</td>
+                                                <td>{{ version.time }}</td>
+                                                <td>
+                                                    <form method="post" action="">
+                                                    <input type="hidden" name="judge" value="version">
+                                                    <input type="text" class="form-control input-block" value="{{ version.id }}" readonly="readonly" name="id" style="display: none;">
+                                                    <div class="radio radio-success radio-single" style="padding-left:20px;">
+                                                        <input type="radio" name="default" onclick="$('#version_{{ version.id }}').click()" id="version{{ version.id }}" {% ifequal version.default True %} checked {% endifequal %}>
+                                                        <label for="version{{ version.id }}"></label>
+                                                        <input type="submit" id="version_{{ version.id }}" name="default" value="default" hidden="hidden">
+                                                    </div>
+                                                    </form>
+                                                </td>
+                                                <td class="actions">
+                                                    <a  class="edit-row" style="cursor: pointer;"><i class="fa fa-pencil"></i></a>
+                                                    <a  class="remove-row" {% if version.taskorder_set.all %}hidden{% endif %} style="cursor: pointer;"><i class="fa fa-trash-o"></i></a>
+                                                    <form method="post" action="">
+                                                    <input type="hidden" name="judge" value="version">
+                                                    <input type="text" class="form-control input-block" value="{{ version.id }}" readonly="readonly" name="id" style="display: none;">
+                                                    <input type="text" name="delete" value="delete" class="delete" hidden="hidden">      <!--delete -->
+                                                    </form>
+                                                </td>
+                                            </tr>
+
+                                            <tr class="" role="row" hidden="hidden" style="background-color: #f9f9f9;">
+                                                <form method="post" action="">
+                                                <input type="hidden" name="judge" value="version">
+                                                <td><input type="text" class="form-control input-block" value="{{ version.id }}" readonly="readonly" name="id"></td>
+                                                <td><input type="text" class="form-control input-block" value="{{ version.name }}" name="name"></td>
+                                                <td><textarea class="form-control input-block" value="" name="description">{{ version.description }}</textarea></td>
+                                                <th></th>
+                                                <td></td>
+                                                <td class="actions">
+                                                    <a  class="save-row" style="cursor: pointer;"><i class="fa fa-save"></i></a>
+                                                    <input type="submit" name="save" value="save" class="save" hidden="hidden">         <!--save -->
+                                                    <a  class="cancel-row" style="cursor: pointer;"><i class="fa fa-times"></i></a>
+                                                </td>
+                                                </form>
+                                            </tr>
+
+
+
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <!--里程碑 -->
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="m-b-30">
+                            <button id="addToTable" class="btn btn-primary waves-effect waves-light" data-target="#task-milestone" data-toggle="modal">里程碑 <i class="fa fa-plus" ></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- add里程碑 -->
+                <div class="modal fade" id="task-milestone" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">添加里程碑</h4>
+                            </div>
+                            <div class="modal-body" >
+                                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <input type="hidden" value="milestone" name="judge">
+                                        <label class="col-md-2 control-label">里程碑名称</label>
+                                        <div class="col-md-10">
+                                            <input type="text" class="form-control input-block" value="" name="name">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">里程碑描述</label>
+                                        <div class="col-md-10">
+                                            <textarea class="form-control" rows="4" name="description"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">预计完成时间</label>
+                                        <div class="col-md-10">
+                                            <input type="text" class="form-control" name="time" id="datetimepicker"  value="">
+                                        </div>
+                                    </div>
+                                    <div class="text-right m-t-30">
+                                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5" name="create" value="create">ok</button> <!--add -->
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+                <!-- add里程碑 -->
+
+                <div class="">
+                    <div id="datatable-editable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
+                        <div class="row">
+                            <div class="col-sm-12">
+                            <p style="color: red;">{{ milestone_error }}</p>
+                                <table class="table table-striped dataTable no-footer" id="datatable-editable" role="grid" aria-describedby="datatable-editable_info">
+                                    <thead>
+                                    <tr role="row">
+                                        <th style="width: 230px;">ID</th>
+                                        <th style="width: 300px;">名称</th>
+                                        <th style="width: 269px;">描述</th>
+                                        <th style="width: 269px;">预计完成时间</th>
+                                        <th style="width: 269px;">里程碑状态</th>
+                                        <th style="width: 269px;">默认</th>
+                                        <th style="width: 116px;">操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for milestone in task_milestones %}
+
+                                            <tr class="" role="row" style="border:0px solid red;">
+                                                <td class="">{{ milestone.id }}</td>
+                                                <td>{{ milestone.name }}</td>
+                                                <td>{{ milestone.description }}</td>
+                                                <td>{{ milestone.due }}</td>
+                                                <td>{{ milestone.milestone_status }}</td>
+                                                <td>
+                                                    <form method="post" action="">
+                                                    <input type="hidden" name="judge" value="milestone">
+                                                    <input type="text" class="form-control input-block" value="{{ milestone.id }}" readonly="readonly" name="id" style="display: none;">
+                                                    <div class="radio radio-success radio-single" style="padding-left:20px;">
+                                                        <input type="radio" name="default" onclick="$('#milestone_{{ milestone.id }}').click()" id="milestone{{ milestone.id }}" {% ifequal milestone.default True %} checked {% endifequal %}>
+                                                        <label for="milestone{{ milestone.id }}"></label>
+                                                        <input type="submit" id="milestone_{{ milestone.id }}" name="default" value="default"  hidden="hidden">
+                                                    </div>
+                                                    </form>
+                                                </td>
+                                                <td class="actions">
+                                                    <a  class="edit-row" style="cursor: pointer;"><i class="fa fa-pencil"></i></a>
+                                                    <a  class="remove-row" {% if milestone.taskorder_set.all %}hidden{% endif %} style="cursor: pointer;"><i class="fa fa-trash-o"></i></a>
+                                                    <form method="post" action="">
+                                                    <input type="hidden" name="judge" value="milestone">
+                                                    <input type="text" class="form-control input-block" value="{{ milestone.id }}" readonly="readonly" name="id" style="display: none;">
+                                                    <input type="text" name="delete" value="delete" class="delete" hidden="hidden">      <!--delete -->
+                                                    </form>
+                                                </td>
+                                            </tr>
+
+                                            <tr class="" role="row" hidden="hidden" style="background-color: #f9f9f9;">
+                                                <form method="post" action="">
+                                                <input type="hidden" name="judge" value="milestone">
+                                                <td><input type="text" class="form-control input-block" value="{{ milestone.id }}" readonly="readonly" name="id"></td>
+                                                <td><input type="text" class="form-control input-block" value="{{ milestone.name }}" name="name"></td>
+                                                <td><textarea class="form-control input-block" value="" name="description">{{ milestone.description }}</textarea></td>
+                                                <th>
+
+                                                    <div class="form-group">
+                                                        <label class="col-md-2 control-label"></label>
+                                                        <div class="col-md-10">
+                                                            <input type="text" class="form-control" name="time" id="duetime{{ milestone.id }}"  value="">
+                                                        </div>
+                                                    </div>
+
+                                                </th>
+                                                <td><input type="text" class="form-control input-block" value="{{ milestone.milestone_status }}" name="milestone_status"></td>
+                                                <td></td>
+                                                <td class="actions">
+                                                    <a  class="save-row" style="cursor: pointer;"><i class="fa fa-save"></i></a>
+                                                    <input type="submit" name="save" value="save" class="save" hidden="hidden">         <!--save -->
+                                                    <a  class="cancel-row" style="cursor: pointer;"><i class="fa fa-times"></i></a>
+                                                </td>
+                                                </form>
+                                            </tr>
+
+
+
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            {% if create_project_type %}
+                <div class="panel-body">
+                        <div style="color: red;width: 50px;cursor: pointer;" onclick="$('#delete_projectType').click()">
+                            <i class="fa fa-times"></i> 删除
+                        </div>
+                </div>
+            {% endif %}
+
+            {% if base_project_type %}
+                <div class="panel-body">
+                        <div style="color: red;width: 50px;cursor: pointer;" onclick="$('#delete_projectType').click()">
+                            <i class="fa fa-times"></i> 删除
+                        </div>
+                </div>
+            {% endif %}
+
+
+
+
+        </div><!--end panel-->
+    </div> <!--end col-sm-12-->
+
+
+
+
+
+
+{% endblock %}
+
+{% block jQuery %}
+    {{ block.super }}
+    <script>
+        /*
+         window.onerror = function(errorMsg) {
+         $('#console').html($('#console').html()+'<br>'+errorMsg)
+         }*/
+
+        $.datetimepicker.setLocale('ch');
+        $('#datetimepicker').datetimepicker({value:'',step:10});
+
+
+        $('#default_datetimepicker').datetimepicker({
+            formatTime:'H:i',
+            formatDate:'d.m.Y',
+            //defaultDate:'8.12.1986', // it's my birthday
+            defaultDate:'+03.01.1970', // it's my birthday
+            defaultTime:'10:00',
+            timepickerScrollbar:false
+        });
+    </script>
+
+
+    <script>
+
+    {% for milestone in milestone_due_list %}
+        $.datetimepicker.setLocale('ch');
+        $('#duetime{{ milestone.id }}').datetimepicker({value:'{{ milestone.due }}',step:10});
+
+        $('#default_duetime{{ milestone.id }}').datetimepicker({
+            formatTime:'H:i',
+            formatDate:'d.m.Y',
+            // defaultDate:'8.12.1986', // it's my birthday
+            defaultDate:'+03.01.1970', // it's my birthday
+            defaultTime:'10:00',
+            timepickerScrollbar:false
+        });
+    {% endfor %}
+
+    </script>
+
+
+    <script>
+
+    $(document).ready(function () {
+
+        $('.edit-row').click(function () {
+            //alert($(this).html())
+            $(this).parent().parent().hide();
+            $(this).parent().parent().next().show();
+        });
+        $('.cancel-row').click(function () {
+            //alert($(this).html())
+            $(this).parent().parent().hide();
+            $(this).parent().parent().prev().show();
+        });
+        $('.save-row').click(function () {
+            $(this).next().click();
+        });
+        $('.remove-row').click(function () {
+            $(this).next().submit();
+        })
+
+
+    })
+
+    </script>
+{% endblock %}

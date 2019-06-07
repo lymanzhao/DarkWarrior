@@ -1,0 +1,18 @@
+#coding:utf8
+
+from django.conf.urls import url
+
+from manage_l_views import *
+
+urlpatterns = [
+    url(r'^(?P<project_id>\d+)/manage_l/$',manage),
+    url(r'^(?P<project_id>\d+)/manage_l/user/$',user),
+    url(r'^(?P<project_id>\d+)/manage_l/user/add/$',user_add),
+    url(r'^(?P<project_id>\d+)/manage_l/user/(?P<user_id>\d+)/$',user_edit),
+    url(r'^(?P<project_id>\d+)/manage_l/group/$',group),
+    url(r'^(?P<project_id>\d+)/manage_l/group/(?P<group_id>\d+)/$',group_edit),
+    url(r'^(?P<project_id>\d+)/manage_l/group/(?P<group_id>\d+)/delete/$',group_delete),
+    url(r'^(?P<project_id>\d+)/manage_l/group/add/$',group_add),
+
+
+]

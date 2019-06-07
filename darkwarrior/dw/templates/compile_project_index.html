@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block head_js %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'ckeditor/ckeditor.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card-box">
+                            <h4 class="header-title m-t-0 m-b-30">编辑项目首页</h4>
+                            {% for error in error %}
+                                <h2 style="color: red">{{ error }}</h2>
+                            {% endfor %}
+
+                            <form action="" method="post">
+                                <textarea id="elm1" name="content">{{ project_index }}</textarea>
+                                <script type="text/javascript">CKEDITOR.replace('content')</script>
+                                <input type="submit" class="batn btn-purple btn-rounded w-md" value="提交" style="margin-top: 20px">
+                            </form>
+                        </div>
+                    </div><!-- end col -->
+                </div>
+                <!-- End row -->
+{% endblock %}

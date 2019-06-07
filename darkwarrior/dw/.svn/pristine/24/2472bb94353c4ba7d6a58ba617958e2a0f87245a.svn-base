@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% load staticfiles %}
+        <!-- App Favicon -->
+        <link rel="shortcut icon" href="{% static 'assets/images/CGWL-logo.ico' %}">
+
+        <!-- App title -->
+        <title>动量影视有限公司</title>
+
+        <!-- App CSS -->
+        <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/core.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/components.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/icons.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/pages.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/menu.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
+
+        <!-- HTML5 Shiv and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+	<script src="{% static 'assets/js/html5shiv.js' %}"></script>
+        <script src="{% static 'assets/js/respond.min.js' %}"></script>
+        <![endif]-->
+
+        <script src="{% static 'assets/js/modernizr.min.js' %}"></script>
+
+    </head>
+    <body>
+
+        <div class="account-pages"></div>
+        <div class="clearfix"></div>
+        <div class="wrapper-page">
+            <!--
+            <div class="text-center">
+                <a href="/" class="logo"><span>{{ login_left_title }}<span>{{ login_right_title }}</span></span></a>
+                <h5 class="text-muted m-t-0 font-600">请您在下面填写密码</h5>
+            </div>
+            -->
+        	<div class="m-t-40 card-box">
+                <div class="text-center">
+                    <h4 class="text-uppercase font-bold m-b-0">修改密码</h4><br>
+                    {% for i in errors %}
+                        <span style="color: red">{{ i }}</span>
+                    {% endfor %}
+
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal m-t-20" action="" method="post">
+                        
+						<div class="form-group">
+							<div class="col-xs-12">
+								<input class="form-control" type="password" required="" placeholder="新密码" name="new_password1">
+							</div>
+						</div>
+
+                        <div class="form-group">
+							<div class="col-xs-12">
+								<input class="form-control" type="password" required="" placeholder="再输入一次新密码" name="new_password2">
+							</div>
+						</div>
+
+
+						<div class="form-group text-center m-t-40">
+							<div class="col-xs-12">
+								<input class="btn btn-custom btn-bordred btn-block waves-light" type="submit" value="修改">
+							</div>
+						</div>
+
+					</form>
+
+                </div>
+            </div>
+            <!-- end card-box -->
+
+        </div>
+        <!-- end wrapper page -->
+
+
+
+
+    	<script>
+            var resizefunc = [];
+        </script>
+
+        <!-- jQuery  -->
+        <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+        <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'assets/js/detect.js' %}"></script>
+        <script src="{% static 'assets/js/fastclick.js' %}"></script>
+        <script src="{% static 'assets/js/jquery.slimscroll.js' %}"></script>
+        <script src="{% static 'assets/js/jquery.blockUI.js' %}"></script>
+        <script src="{% static 'assets/js/waves.js' %}"></script>
+        <script src="{% static 'assets/js/wow.min.js' %}"></script>
+        <script src="{% static 'assets/js/jquery.nicescroll.js' %}"></script>
+        <script src="{% static 'assets/js/jquery.scrollTo.min.js' %}"></script>
+
+        <!-- App js -->
+        <script src="{% static 'assets/js/jquery.core.js' %}"></script>
+        <script src="{% static 'assets/js/jquery.app.js' %}"></script>
+
+
+
+	</body>
+</html>

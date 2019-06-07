@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% load staticfiles %}                          
+{% block head_js  %}                            
+{{ block.super }}                               
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor.js' %}"></script>
+<link href="{% static 'jquery-Upload/css/fileinput.css' %}" media="all" rel="stylesheet" type="text/css" /> <!--文件上传 -->
+<script type="text/javascript" src="{% static 'search/taskcontent_ajaxsearch.js' %}"></script> <!--ajax 搜索功能js    -->
+<!--图片浏览-->                 
+<link href="{% static 'assets/css/fsgallery.css' %}" rel="stylesheet" />
+                        
+  <style>
+
+    .foldable{border: 1px solid #d1d1d1;background-color:rgba(236, 236, 236, 0.68);height: 40px;cursor:pointer;
+        -moz-border-radius: 3px;-webkit-border-radius: 3px;margin-top: 5px; }
+    .foldable_h4{color: #585a64;font-weight:500;}
+    .new_name{background-color: #ddfaff;}
+    .new_name:hover{background-color: gold;}
+                                
+    </style>                        
+{% endblock %}                  
+
+{% block content %}
+    <div style="border: 1px solid #eef0f1;border-radius:5px;background-color: #fff;padding-left:20px;margin-bottom:18px;">
+            <h1 style="color: red">#{{ content.id }}</h1>
+            {{ content.content|safe }}
+
+
+            <!--上传附件-->
+                <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" id="wiki_attachment">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <div class='row'>
+                                <form class="form-horizontal col-md-12" role="form" id="attachment_block" action=""  method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <input id="file-5" class="file" name="file_url" type="file" multiple data-preview-file-type="any" data-upload-url="/{{ project_id }}/wiki_index/{{ wiki_id }}/wiki_attachment_upload/"
+                                               data-preview-file-icon="" is_archive="true">
+                                    </div>
+
+                                </form>
+                            </div> <!--end upload files -->
+
+                        </div>
+                    </div>
+                </div>
+             <!--上传附件-->
+
+            <div style="height: 30px;margin-top: 30px;margin-bottom: 0px;display:block;margin-right: 15px;">
+                    <div style="display: inline-block;float: right;margin-left: 20px;cursor: pointer;"><a href="delete/" style="color: grey;"><i class="zmdi zmdi-delete" style="font-size: larger;" title="删除"></i></a></div>
+                    <div style="display: inline-block;float: right;margin-left: 20px;cursor: pointer;" data-toggle="modal" data-target="#wiki_attachment"><i class="zmdi zmdi-upload" style="font-size: larger;"></i>附件</div>
+                    <div style="display: inline-block;float: right;margin-left: 20px;cursor: pointer;" d><a href="edit/" style="color: grey;"><i class="zmdi zmdi-edit" ></i>编辑</a></div>
+            </div>
+
+
+    </div>
+
+
+    <!--附件显示-->
+        {% if attachment_images or attachment_files or attachment_videos or task.task_image %}
+            <div class="col-md-8">
+                <div class="card-box" id="attachment_box">
+                    {% for attachment_image in attachment_images %}
+                        <div style="width: 100%;" time="{{ attachment_image.time }}">
+                            <div class="media-left">
+                                <a href="#" >
+                                    {% if attachment_image.author.head_portrait %}
+                                        <img class="media-object img-circle thumb-sm" alt="64x64" src="/media/{{ attachment_image.author.head_portrait }}" >
+                                    {% endif %}
+                                </a>
+                            </div>
+                            <div class="media-body" name='comment_div' >
+                                <span style="color: #337ab7">{{ attachment_image.author }}</span>
+
+                                <div class="container" style="margin-top: 10px;width:100%;">
+                                    <div class="thumbnails"  style="width:100%;height: auto;">
+                                        <!--<a href="/media/{{ attachment_image.url }}">-->
+                                        <a href="/{{ url }}/task/{{ id }}/{{ attachment_image.url }}/wpaint/" id="wpaint">
+                                            <img src="/media/{{ attachment_image.url }}"  style="height:auto;width: 100%;" alt="" >
+                                        </a>
+                                        <p style="text-align: center"><small style="color: #989898">{{ attachment_image.name }}</small></p>
+                                        <span style="margin-top:10px;display: block"><small>{{ attachment_image.time }}</small></span>
+                                        <!--
+                                        <a style="float: right" href="/{{ url }}/wiki_index/{{ wiki_id }}/{{ attachment_image.url }}/wpaint/" id="wpaint">
+                                            <button class="btn btn-inverse waves-effect waves-light m-b-5"><i class="zmdi zmdi-picture-in-picture"></i> <span>标注</span> </button>
+                                        </a>
+                                        -->
+                                    </div>
+                                    <div style="height:25px;margin-bottom: 15px;margin-top: 15px;">
+                                        <a href="/download/media/{{ attachment_image.url }}" style="float:left;padding: 1px 4px;" class="btn-info" >下载</a>
+                                        {% ifequal attachment_image.author.username user_now %}
+                                            <form action="" method="post"style="float:left;margin-left: 30px;" >
+                                                <input type="hidden" value="attachment_remove" name="judge">
+                                                <input type="hidden" value="{{ attachment_image.url }}" name="img_url_delete">
+                                                <input type="submit" value="删除" style="font-color:red;" class="btn-danger" is_archive="true" >
+                                            </form>
+
+                                        {% endifequal %}
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    {% endfor %}
+
+
+                    {% for attachment_file in attachment_files %}
+                        <div style="width: 100%;" time="{{ attachment_file.time }}">
+                            <div class="media-left">
+                                <a href="#">
+                                    {% if attachment_file.author.head_portrait %}
+                                        <img class="media-object img-circle thumb-sm" alt="64x64" src="/media/{{ attachment_file.author.head_portrait }}">
+                                    {% endif %}
+                                </a>
+                            </div>
+                            <div class="media-body" name='comment_div' >
+                                <span  style="color: #337ab7"> {{ attachment_file.author }}</span>
+                                <div style="height:60px; margin-top:5px;margin-left: 15px;">
+                                    <a href="/media/{{ attachment_file.url }}"><p style=""><small style="color: #989898;">{{ attachment_file.name }}</small></p></a>
+                                    <span style="margin-top:10px;display: block"><small>{{ attachment_file.time }}</small></span>
+                                </div>
+                                <div style="height:25px;margin-bottom: 15px;margin-top: 15px;margin-left: 15px;">
+                                    <a href="/download/media/{{ attachment_file.url }}" style="float:left;padding: 1px 4px;" class="btn-info" >下载</a>
+                                    {% ifequal attachment_file.author.username user_now %}
+                                        <form action="" method="post"style="float:left;margin-left: 30px;" >
+                                            <input type="hidden" value="attachment_remove" name="judge">
+                                            <input type="hidden" value="{{ attachment_file.url }}" name="file_url_delete">
+                                            <input type="submit" value="删除"  class="btn-danger" is_archive="true" >
+                                        </form>
+                                    {% endifequal %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    {% for attachment_video in attachment_videos %}
+                        <div style="width: 100%;" time="{{ attachment_video.time }}">
+                            {% for error in screenshot_errors %}
+                                <h3 style="padding-left:30%; color: red">{{ error }}</h3>
+                            {% endfor %}
+                            <div class="media-left">
+                                <a href="#">
+                                    {% if attachment_video.author.head_portrait %}
+                                        <img class="media-object img-circle thumb-sm" alt="64x64" src="/media/{{ attachment_video.author.head_portrait }}">
+                                    {% endif %}
+                                </a>
+                            </div>
+                            <div class="media-body" name='comment_div' >
+                                <span class="col-md-12" style="color: #337ab7">{{ attachment_video.author }}</span>
+                                <video id="video-{{ attachment_video.id }}" class="video-js col-md-12 vjs-default-skin" controls preload="none" poster="http://vjs.zencdn.net/v/oceans.png" data-setup="{}">
+                                    <source src="/media/{{ attachment_video.url }}">
+                                </video>
+
+                                <div style="height:50px;" class="col-md-12">
+                                    <p style="text-align: center"><small style="color: #989898">{{ attachment_video.name }}</small></p>
+
+
+                                    <!-- 视频截屏-->
+                                    <div style="float: right">
+                                        <!--<button id="screenshot-{{ attachment_video.id }}">截屏</button>-->
+                                        <form action="" method="post">
+                                            <input type="hidden" value="screenshot" name="judge">
+                                            <input type="hidden" value="{{ attachment_video.url }}" name="video_src">
+                                            <!--<input type="text" placeholder="请输入截屏备注名称" name="screenshot_note">-->
+                                            <input type="hidden"  value="" id="display-{{ attachment_video.id }}" name="screenshot_time">
+                                            <!--
+                                            <button type="submit"><i class="fa fa-camera" aria-hidden="true"></i></button>
+                                            -->
+                                        </form>
+                                        <script>
+                                            //var ww{{ attachment_video.id }} = document.getElementById('screenshot-{{ attachment_video.id }}');
+                                            var video{{ attachment_video.id }} = document.getElementById('video-{{ attachment_video.id }}');
+                                            function play(){
+                                                video{{ attachment_video.id }}.play();
+                                            }
+
+
+                                            function pause(){
+                                                video{{ attachment_video.id }}.pause();
+                                            }
+                                            video{{ attachment_video.id }}.addEventListener("timeupdate", function(){
+                                                var currentTime{{ attachment_video.id }} = video{{ attachment_video.id }}.currentTime;//获取当前播放时间
+                                                console.log(currentTime{{ attachment_video.id }});//在调试器中打印
+                                                //document.getElementById('display-{{ attachment_video.id }}').innerHTML=currentTime;
+                                                document.getElementById('display-{{ attachment_video.id }}').value=currentTime{{ attachment_video.id }};
+                                                //configureHtmlWriter(currentTime)
+                                            });
+                                            //ww{{ attachment_video.id }}.onclick =  function(){
+
+                                            //alert(document.getElementById('display-{{ attachment_video.id }}').value)
+                                            // }
+
+                                        </script>
+                                    </div>
+
+                                    <!-- 视频截屏-->
+
+                                    <span style="margin-top:10px;"><small>{{ attachment_video.time }}</small></span>
+                                </div>
+                                <div style="height:25px;margin-top: 15px;margin-bottom: 15px;" class="col-md-12">
+                                    <a href="/download/media/{{ attachment_video.url }}"style="float:left;padding: 1px 4px;" class="btn-info" >下载</a>
+                                    {% ifequal attachment_video.author.username user_now %}
+                                        <form action="" method="post" style="float:left;margin-left: 30px;" >
+                                            <input type="hidden" value="attachment_remove" name="judge">
+                                            <input type="hidden" value="{{ attachment_video.url }}" name="video_url_delete">
+                                            <input type="submit" value="删除" style="font-color:red;" class="btn-danger" is_archive="true" >
+                                        </form>
+                                    {% endifequal %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+
+{% endblock %}
+{% block jQuery %}
+
+        {{ block.super }}
+        <!--图片浏览-->
+        <!-- datetime -->
+        <script src="{% static 'datetime/jquery.js' %}"></script>
+        <script src="{% static 'datetime/jquery.datetimepicker.full1.js' %}"></script>
+
+        <!--文件上传-->
+        <script src="{% static 'jquery-Upload/js/fileinput.js' %}" type="text/javascript"></script>
+        <script src="{% static 'jquery-Upload/js/fileinput_locale_zh.js' %}" type="text/javascript"></script>
+
+       
+<script>
+
+
+      $(document).ready(function () {
+            //添加附件备注
+                wiki_id = {{ wiki_id }};
+                project_id = {{ url }};
+                // alert(project_id)
+                $('html').append('<div style="width: 80%;height: 20px;border: 1px solid #0000ff;" id="update_attachment_name" onclick="update_attachment_name()" hidden=""></div>');
+                $('#update_attachment_name').click(function(){
+                    $('.new_name').each(function(e){
+
+                        jQuery.ajax({
+                            type:"POST",
+                            data: {new_name:$(this).val(),old_name:$(this).attr('old_name'),judge:'change_wikiattachment_name',wiki_id:wiki_id,project_id:project_id},
+                            url: "{% url 'change_attachment_name' %}",
+                            cache: false,
+                            dataType: "html",
+                            success: function(result, statues, xml){
+
+                            },
+                            error: function(){
+
+                            }
+                        });
+
+                        if($('.new_name').length-1==e){
+                            setTimeout('location.reload()',500);
+                        }
+
+                    });
+
+
+                });
+            //end-添加附件备注
+      });
+
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+
+{% block Navigation %}
+{% endblock %}
+
+
+
+{% block content %}
+    <div class="row" style="margin-top: -3%">
+        <div class="col-md-12">
+            <div class="panel">
+                <div class="panel-body">
+
+                    <h2 class="m-b-30"><strong>创建项目</strong></h2>
+                    {% for error in error %}
+                        <h3 style="color: red">{{ error }}</h3>
+                    {% endfor %}
+
+
+                    <div class="row">
+                        <div class="col-md-10">
+                            <form class="form-horizontal" role="form" action="" method="post">
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">项目名称</label>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control" placeholder="请输入项目名称" name="project_name" value="{{ name }}">
+
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">项目类型</label>
+                                    <div class="col-md-10">
+                                        <select class="change_sel" name="project_type">
+                                            {% for type in project_types %}
+                                                <option  value="{{ type.id }}">
+                                                    {{ type.name }}
+                                                    {% for project in  type.project_set.all %}
+                                                    ({{ project.project_name }})
+                                                    {% endfor %}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">项目预计完成时间</label>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control"value="" id="datetimepicker"  name="time">
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">项目描述</label>
+                                    <div class="col-md-10">
+                                        <textarea class="form-control" rows="9" name="description">{{ description }}</textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">功能</label>
+                                    <div class="col-md-10">
+                                        <select  class="change_sel"  name="template">
+                                            {% for template in templates %}
+                                                {% if template.name == 'base' %}
+                                                    <option selected value="{{ template.id }}">{{ template.display }}</option>
+                                                {% else %}
+                                                    <option  value="{{ template.id }}">{{ template.display }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div >
+                                    <a href="/" style="">
+                                        <input type="button"  value="取消" style="background-color: #5b69bc;border:none;width: 110px;height:35px;color: white;border-radius:30px;float: right; margin-left: 3px;">
+                                    </a>
+                                    <input type="submit" value="提交"  style="background-color: #5b69bc;border:none;width: 110px;height:35px;color: white;border-radius:30px; float: right;">
+
+                                </div>
+                            </form>
+                        </div><!-- end col -->
+                    </div><!-- end row -->
+                </div>
+            </div>
+        </div>        <!-- end row -->
+    </div>
+
+
+{% endblock %}
+
+{% block material %}
+{% endblock %}
+
+{% block jQuery %}
+    {{ block.super }}
+    <script src="/static/lly/query_select.js" id="query_select"></script><!-- 单选下拉控件-->
+    <script>/*
+     window.onerror = function(errorMsg) {
+     $('#console').html($('#console').html()+'<br>'+errorMsg)
+     }*/
+
+    $.datetimepicker.setLocale('ch');
+    $('#datetimepicker').datetimepicker({value:'{{ now_date }}',step:10});
+
+
+    $('#default_datetimepicker').datetimepicker({
+        formatTime:'H:i',
+        formatDate:'d.m.Y',
+        //defaultDate:'8.12.1986', // it's my birthday
+        defaultDate:'+03.01.1970', // it's my birthday
+        defaultTime:'10:00',
+        timepickerScrollbar:false
+    });
+
+    </script>
+{% endblock %}
+

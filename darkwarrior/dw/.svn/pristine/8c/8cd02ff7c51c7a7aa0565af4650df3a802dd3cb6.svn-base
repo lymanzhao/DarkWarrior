@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <div style="border: 1px solid #eef0f1;border-radius:5px;background-color: #fff;padding-left:18px;padding-top:10px;" >
+        {{ project_index.content|safe }}
+    </div>
+    <div class="row" style="position:relative;bottom: 10%;margin-bottom:10px;margin-top:10px;">
+        <div class="col-sm-4">
+            <a href="/{{ url }}/compile_project_index/">
+                <input type="submit" class="batn btn-purple btn-rounded w-md  " value="编辑项目首页">
+            </a>
+        </div>
+    </div>
+<div class="row">
+       <!-- <h3 class="m-b-30" style="margin-left:10px;"><strong>里程碑</strong></h3>-->
+    {% for milestone in all %}
+
+        <div class="col-md-4">
+            <div class="card-box project-box">
+                <div class="label label-primary">{{ milestone.status }}</div>
+
+                <h4 class="m-t-0 m-b-30" style="color: red">{{ milestone.name }}</h4>
+
+                <p class="text-muted font-13"><small>{{ milestone.description }}</small></p>
+
+                {% if milestone.allnum > 0 %}
+                <ul class="list-inline">
+                    <li>
+                        <h3 class="m-b-5">{{ milestone.allnum }}</h3>
+                        <p class="text-muted">任务</p>
+                    </li>
+                    <li>
+                        <h3 class="m-b-5">{{ milestone.closenum }}</h3>
+                        <p class="text-muted">完成</p>
+                    </li>
+
+                    <li>
+                        <h3 class="m-b-5">{{ milestone.undone }}</h3>
+                        <p class="text-muted">未完成</p>
+                    </li>
+                </ul>
+
+
+                <p class="font-600 m-b-5">进度 <span class="text-primary pull-right">{{ milestone.percent }}%</span></p>
+                <div class="progress progress-bar-primary-alt progress-sm m-b-5">
+                    <div class="progress-bar progress-bar-primary progress-animated wow animated animated"
+                         role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"
+                         style="width: {{ milestone.percent }}%; visibility: visible; animation-name: animationProgress;">
+                    </div><!-- /.progress-bar .progress-bar-danger -->
+                </div><!-- /.progress .no-rounded -->
+                {% else %}
+                    <ul class="list-inline">
+                    <li>
+                        <h3 class="m-b-5">{{ milestone.allnum }}</h3>
+                        <p class="text-muted">任务</p>
+                    </li>
+                    <li>
+                        <h3 class="m-b-5">{{ milestone.closenum }}</h3>
+                        <p class="text-muted">完成</p>
+                    </li>
+
+                    <li>
+                        <h3 class="m-b-5">{{ milestone.undone }}</h3>
+                        <p class="text-muted">未完成</p>
+                    </li>
+                </ul>
+
+
+                <p class="font-600 m-b-5">进度 <span class="text-primary pull-right">0%</span></p>
+                <div class="progress progress-bar-primary-alt progress-sm m-b-5">
+                    <div class="progress-bar progress-bar-primary progress-animated wow animated animated"
+                         role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"
+                         style=" visibility: visible; animation-name: animationProgress;">
+                    </div><!-- /.progress-bar .progress-bar-danger -->
+                </div><!-- /.progress .no-rounded -->
+                {% endif %}
+            </div>
+        </div><!-- end col-->
+
+
+{% endfor %}
+        </div>
+    
+
+
+{% endblock %}

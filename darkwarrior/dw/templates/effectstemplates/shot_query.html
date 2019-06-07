@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block css %}
+    {{ block.super }}
+    <!-- Editatable  Css-->
+    <link rel="stylesheet" href="{% static 'assets/plugins/magnific-popup/dist/magnific-popup.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/plugins/jquery-datatables-editable/datatables.css' %}" />
+
+{% endblock %}
+
+{% block content %}
+    <div id="row_">
+                <div class="row">
+                    <div>
+                        <div class="panel">
+                            <div class="panel-body">
+                                <h4 class="header-title m-t-0 m-b-30">任务分配表</h4>
+
+                                <div class="">
+                                    <table   class="table table-striped" id="datatable-editable" cellSpacing="0" style="table-layout:fixed" cellpadding="1" width="100%" >
+                                        <thead>
+                                            <tr>
+                                                <th rowspan="2" style="text-align: center;width: 3%">序号</th>
+                                                <th rowspan="2" style="text-align: center;width: 8%">镜头号</th>
+                                                <th rowspan="2" style="text-align: center;width: 8%">缩略图</th>
+                                                <th rowspan="2" style="text-align: center;width: 3%">时长(帧)</th>
+                                                <th rowspan="2" style="text-align: center;width: 10%">制作内容描述</th>
+                                                <th colspan="2" style="text-align: center;width: 7%">抠像</th>
+
+                                                <th colspan="2" style="text-align: center;width: 7%">擦除</th>
+
+                                                <th colspan="2" style="text-align: center;width: 7%">跟踪</th>
+
+                                                <th colspan="2" style="text-align: center;width: 7%">绘景</th>
+
+                                                <th colspan="2" style="text-align: center;width: 7%">特效</th>
+
+                                                <th colspan="2" style="text-align: center;width: 7%">场景</th>
+
+                                                <th colspan="2" style="text-align: center;width: 7%">动画</th>
+
+                                                <th colspan="2" style="text-align: center;width: 7%">概念</th>
+
+                                                <th colspan="2" style="text-align: center;width: 7%">合成</th>
+
+                                                <th rowspan="2" style="text-align: center;width: 5%">备注</th>
+                                                <!--<th rowspan="2" style="text-align: center">动作</th>-->
+                                            </tr>
+                                            <tr>
+                                                <th style="text-align: center">等级</th>
+                                                <th style="text-align: center">人员</th>
+                                                <th style="text-align: center">等级</th>
+                                                <th style="text-align: center">人员</th>
+                                                <th style="text-align: center">等级</th>
+                                                <th style="text-align: center">人员</th>
+                                                <th style="text-align: center">等级</th>
+                                                <th style="text-align: center">人员</th>
+                                                <th style="text-align: center">等级</th>
+                                                <th style="text-align: center">人员</th>
+                                                <th style="text-align: center">等级</th>
+                                                <th style="text-align: center">人员</th>
+                                                <th style="text-align: center">等级</th>
+                                                <th style="text-align: center">人员</th>
+                                                <th style="text-align: center">等级</th>
+                                                <th style="text-align: center">人员</th>
+                                                <th style="text-align: center">等级</th>
+                                                <th style="text-align: center">人员</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for task in task_all %}
+                                                <tr class="gradeX">
+                                                    <td><a style="color: red;" href="/{{ url }}/effects/task/{{ task.task.id }}/"><small>{{ task.task.display_id }}</small></a></td>
+                                                    <td><small>{{ task.task.summary }}</small></td>
+                                                    <td style="vertical-align: middle;text-align: center;">{% if task.task_image %} <img src="/media/{{ task.task_image }}" width="100%">{% else %}无缩略图{% endif %}</td>
+                                                    <td>{{ task.task.time_length }}</td>
+                                                    <td style="text-overflow:ellipsis;overflow:hidden;white-space: nowrap" title="{{ task.task.description|safe }}"><small >{{ task.task.description|safe }}</small></td>
+                                                    <td>{{ task.key.grade }}</td>
+                                                    <td>{{ task.key.owner }}</td>
+                                                    <td>{{ task.erase.grade }}</td>
+                                                    <td>{{ task.erase.owner }}</td>
+                                                    <td>{{ task.track.grade }}</td>
+                                                    <td>{{ task.track.owner }}</td>
+                                                    <td>{{ task.picture.grade }}</td>
+                                                    <td>{{ task.picture.owner }}</td>
+                                                    <td>{{ task.effects.grade }}</td>
+                                                    <td>{{ task.effects.owner }}</td>
+                                                    <td>{{ task.scene.grade }}</td>
+                                                    <td>{{ task.scene.owner }}</td>
+                                                    <td>{{ task.cartoon.grade }}</td>
+                                                    <td>{{ task.cartoon.owner }}</td>
+                                                    <td>{{ task.concept.grade }}</td>
+                                                    <td>{{ task.concept.owner }}</td>
+                                                    <td>{{ task.synthesis.grade }}</td>
+                                                    <td>{{ task.synthesis.owner }}</td>
+                                                    <td>{{ task.task.notes }}</td>
+                                                    <!--<td class="actions">
+                                                        <a href="#" class="hidden on-editing save-row"><i class="fa fa-save"></i></a>
+                                                        <a href="#" class="hidden on-editing cancel-row"><i class="fa fa-times"></i></a>
+                                                        <a href="#" class="on-default edit-row"><i class="fa fa-pencil"></i></a>
+                                                        <a href="#" class="on-default remove-row"><i class="fa fa-trash-o"></i></a>
+                                                    </td>-->
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- end: panel body -->
+
+                        </div> <!-- end panel -->
+                    </div> <!-- end col-->
+                </div>
+                <!-- end row -->
+
+    </div>
+{% endblock %}
+
+{% block jQuery %}
+    {{ block.super }}
+
+    <!-- Editable js -->
+    <script src="{% static 'assets/plugins/magnific-popup/dist/jquery.magnific-popup.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/jquery-datatables-editable/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.bootstrap.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/mindmup-editabletable.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/numeric-input-example.js' %}"></script>
+
+    <!-- init -->
+    <script src="{% static 'assets/pages/datatables.editable.init.js' %}"></script>
+    <script>
+
+    $(document).ready(function () {
+
+         if(parseInt($(window).width())<=1280){
+                  $('#row_').css('width',parseInt($(window).width())*2.4)
+              }
+              else{
+                  $('#row_').css('width',parseInt($(window).width())*1.5)
+              }
+
+         $(window).resize(function () {
+
+              if(parseInt($(window).width())<=1280){
+                  $('#row_').css('width',parseInt($(window).width())*2.4)
+              }
+              else{
+                  $('#row_').css('width',parseInt($(window).width())*1.5)
+              }
+
+             });
+    })
+
+
+
+    </script>
+
+{% endblock %}
+{% block footer %}
+{% endblock %}

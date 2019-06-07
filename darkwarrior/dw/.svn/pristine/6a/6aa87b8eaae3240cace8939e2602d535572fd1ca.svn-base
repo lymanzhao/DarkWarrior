@@ -1,0 +1,89 @@
+.fs_gallery {
+    background: rgba(0,0,0, 0.6);
+    position:absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+}
+.fs_gallery_close {
+    position: absolute;
+    top: 10%;
+    right: 20px;
+    width: 25px;
+    height: 25px;
+    color: #ccc;
+    font-size: 34px;
+    line-height: 23px;
+    text-align: center;
+    cursor: pointer;
+    z-index: 1002;
+}
+.fs_gallery_close:before {
+    content: "×";
+}
+.fs_gallery_close:hover {
+    color: #fff;
+}
+
+.fs_gallery_prev, .fs_gallery_next {
+    position: absolute;
+    width: 80px;
+    color: #222;
+    font-size: 30px;
+    cursor: pointer;
+    z-index: 1001;
+}
+.fs_gallery_prev:hover, .fs_gallery_next:hover {
+    background: rgba(0,0,0, 0.1);
+    color: #fff;
+}
+.fs_gallery_prev {
+    left: 0;
+    top: 0;
+    bottom: 0;
+}
+.fs_gallery_next {
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+.fs_gallery_prev:before {
+    content: "‹";
+    position: absolute;
+    height: 30px;
+    margin-top: -30px;
+    top: 35%;
+    left: 35px;
+}
+.fs_gallery_next:before {
+    content: "›";
+    position: absolute;
+    height: 30px;
+    margin-top: -30px;
+    top: 35%;
+    left: 35px;
+}
+
+.fs_gallery_shuft {
+    position: relative;
+    width: 9999999px;
+}
+.fs_gallery_shuft:after {
+    clear: both;
+    content: "";
+    display: block;
+}
+.fs_gallery_shuft_item {
+    float: left;
+    position: relative;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+.fs_gallery_shuft_item img {
+    box-shadow: 0 0 8px rgba(0,0,0, 0.8);
+    position: absolute;
+    top: 70%;
+    left: 50%;
+}

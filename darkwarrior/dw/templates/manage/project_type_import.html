@@ -1,0 +1,70 @@
+{% extends 'manage/manage_base.html' %}
+
+{% load staticfiles %}
+
+{% block css %}
+    {{ block.super }}
+    <!-- form Uploads -->
+    <link href="{% static 'assets/plugins/fileuploads/css/dropify.min.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-box">
+                <h4 class="header-title m-t-0 m-b-30">项目类型导入(必须安装指定格式编写xls文件)</h4>
+
+
+
+                <h4 style="color: red">{{ error }}</h4>
+                <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
+
+                    <input type="file" class="dropify" data-height="300" name="import_file"/>
+                    <div class="row text-right" style="margin-top: 5%">
+                        <input type="submit" class="batn btn-purple btn-rounded w-md  " value="提交">
+                    </div>
+                </form>
+
+                <div style="width: 100%;background: white;" time="{{ example_xls.time }}" class="attachment">
+                    <div class="media-body" name='comment_div' >
+                        <span  style="color: #337ab7">格式</span>
+                        <div style="height:60px; margin-top:5px;">
+                            <a href="/media/{{ example_xls.url }}"><p style=""><small style="color: #989898;">{{ example_xls.name }}</small></p></a>
+
+                            <a href="/download/media/{{ example_xls.url }}" style="float:left;padding: 1px 4px;" class="btn-info" >下载</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div><!-- end col -->
+    </div>
+    <!-- end row -->
+
+
+
+{% endblock %}
+
+
+{% block jQuery %}
+    {{ block.super }}
+
+    <!-- file uploads js -->
+    <script src="{% static 'assets/plugins/fileuploads/js/dropify.min.js' %}"></script>
+    <script type="text/javascript">
+        $('.dropify').dropify({
+            messages: {
+                'default': '拖放一个文件或者点击这里',
+                'replace': '拖拽或单击替换',
+                'remove': '删除',
+                'error': 'Ooops, something wrong appended.'
+            },
+            error: {
+                'fileSize': 'The file size is too big (1M max).'
+            }
+        });
+    </script>
+{% endblock %}

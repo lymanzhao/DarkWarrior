@@ -1,0 +1,333 @@
+#coding:utf-8
+from django.shortcuts import render,render_to_response,HttpResponseRedirect,HttpResponse
+from models import *
+import re,os
+from datetime import datetime
+from datetime import timedelta
+import time
+#from django.contrib.auth.decorators import login_required
+from darkwarrior.settings import MEDIA_ROOT,EMAIL_HOST_USER
+from django.contrib.auth.hashers import make_password,check_password
+from django.core.mail import send_mail
+from django.utils.http import urlsafe_base64_decode,urlsafe_base64_encode
+from django.contrib.auth.tokens import default_token_generator
+from decorator import *
+import subprocess
+from django.core.paginator import Paginator
+import random,base64
+import uuid
+from task_content_views import create_task,movetask
+import calendar
+from permissions import user_permissions
+import base64
+from views import catch_kanban_Thumbnails,dynamic_loading_kanban,count_task_progress,data_filter
+
+@checkCdkey
+@login_required
+@views_permission
+def index_gantt(request, *args, **kwargs):  # 看版
+    user = kwargs['user']
+    staff_user = kwargs['staff_user']
+    user_now = request.session.get('USERNAME', False)
+    user_head_portrait = User.objects.get(username=user_now).head_portrait
+
+    gantt_links = Gantt_links.objects.all()  # 甘特图关联
+
+    index = True
+
+    gantt_tasks = Taskorder.objects.all()
+    task_num = gantt_tasks.count()
+    if task_num == 0:
+        height_num = 100
+    elif task_num < 5:
+        height_num = task_num * 100
+    elif 5 <= task_num <= 10:
+        height_num = task_num * 60
+    elif 10 < task_num <= 50:
+        height_num = task_num * 50
+    elif 10 < task_num <= 100:
+        height_num = task_num * 40
+    else:
+        height_num = task_num * 35.1
+
+    # for start_task in start_tasks:
+    #     now_start_time = time.mktime(
+    #         time.strptime(str(Taskorder.objects.get(id=start_task.id).start_date).split('+')[0].split('.')[0],
+    #                       "%Y-%m-%d %H:%M:%S"))
+    #     now_time = time.time()
+    #     progress_timestamip = now_time - now_start_time
+    #     use_time = progress_timestamip / 86400
+    #     if start_task.duration == 0:
+    #         start_task.duration = 1
+    #     progress = use_time / start_task.duration
+    #     Taskorder.objects.filter(id=start_task.id).update(progress=progress)
+    #
+    # gantt_css = Project.objects.get(id=1).gantt_skin
+    # gantt_css_url = 'codebase/skins/' + Project.objects.get(id=1).gantt_skin
+    # for gantt_object in Gantt_type.objects.filter(owner_project=1):  # 设置甘特图颜色 liuluyang 2016/7/25
+    #     Taskorder.objects.filter(type=gantt_object.type, owner_project=1).update(
+    #         color=gantt_object.gantt_color, textColor=gantt_object.gantt_textColor,
+    #         progressColor='rgba(0,0,0,' + str(int(gantt_object.gantt_progressColor) * 0.01) + ')'
+    #     )
+    # gantt_task_height = Project.objects.get(id=1).gantt_task_height  # 设置甘特图高度
+    # gantt_row_height = Project.objects.get(id=1).gantt_row_height
+
+    # 创建任务单
+
+
+
+    start_date_Array = time.strptime(str(datetime.now()).split('.')[0], '%Y-%m-%d %H:%M:%S')
+    now_date = time.strftime("%Y/%m/%d %H:%M", start_date_Array)
+
+    # if request.method == 'GET':
+    #     self = request.GET.get('self')
+    #     if self == 'self':
+    #         get_form = """
+    #                          <form method="get" action=""   hidden='hidden'>
+    #                         <input type="submit" value="查看全部" id="all">
+    #                         </form>
+    #                         <a style='cursor:pointer;font-size:20px;' id='all_a' name='premise'><i class="fa fa-users" aria-hidden="true"></i></a>
+    #                         <script>
+    #                         document.getElementById('all_a').onclick = function(){
+    #                             document.getElementById('all').click();
+    #                          };
+    #                         </script>
+    #                          """
+    #
+    #         gantt_tasks_creator = Taskorder.objects.filter(owner_project=url, creator=staff_user)
+    #         gantt_tasks_owner = Taskorder.objects.filter(owner_project=url, owner__contains=user)
+    #         gantt_tasks_reporter = Taskorder.objects.filter(owner_project=url, reporter=user)
+    #         set_list = list(set(list(gantt_tasks_creator) + list(gantt_tasks_owner) + list(gantt_tasks_reporter)))
+    #         for task_object in set_list:
+    #             if task_object.parent != 0:
+    #                 try:
+    #                     task_parent = Taskorder.objects.get(id=task_object.parent_id)
+    #                     if task_parent not in set_list:
+    #                         set_list.append(task_parent)
+    #                 except:
+    #                     pass
+    #         task_num = len(set_list)
+    #         gantt_tasks = set_list
+    #         if gantt_row_height:
+    #             if task_num == 0:
+    #                 height_num = 100
+    #             elif task_num < 5:
+    #                 if gantt_row_height <= 100:
+    #                     height_num = task_num * 100
+    #                 else:
+    #                     height_num = task_num * gantt_row_height
+    #             elif 5 <= task_num <= 10:
+    #                 if gantt_row_height <= 60:
+    #                     height_num = task_num * 60
+    #                 else:
+    #                     height_num = task_num * gantt_row_height
+    #             elif 10 < task_num <= 50:
+    #                 if gantt_row_height <= 50:
+    #                     height_num = task_num * 50
+    #                 else:
+    #                     height_num = task_num * gantt_row_height
+    #             else:
+    #                 if gantt_row_height <= 40:
+    #                     height_num = task_num * 40
+    #                 else:
+    #                     height_num = task_num * gantt_row_height
+    #         else:
+    #             if task_num == 0:
+    #                 height_num = 100
+    #             elif task_num < 5:
+    #                 height_num = task_num * 100
+    #             elif 5 <= task_num <= 10:
+    #                 height_num = task_num * 60
+    #             elif 10 < task_num <= 50:
+    #                 height_num = task_num * 50
+    #             else:
+    #                 height_num = task_num * 40
+    #         return render_to_response('HRmanage/HR_gantt.html', locals())
+    #
+    #
+    #     else:
+    #         get_form = '''
+    #                           <form method="get" action=""  hidden='hidden' >
+    #                          <input type="text" value="self" name="self" >
+    #                          <input type="submit" value="查看属于的我" id='self'>
+    #                          </form>
+    #                            <a style='cursor:pointer;font-size:20px;"' id='self_a' name='premise'><i class="fa fa-user" aria-hidden="true"></i></a>
+    #                           <script>
+    #                         document.getElementById('self_a').onclick = function(){
+    #                             document.getElementById('self').click();
+    #                          };
+    #                         </script>
+    #                         '''
+    #         gantt_tasks = Taskorder.objects.filter(owner_project=url).order_by('-start_date')
+    #         task_num = Taskorder.objects.filter(owner_project=url).count()
+    #         if gantt_row_height:
+    #             if task_num == 0:
+    #                 height_num = 100
+    #             elif 0 < task_num < 5:
+    #                 if gantt_row_height <= 100:
+    #                     height_num = task_num * 100
+    #                 else:
+    #                     height_num = task_num * gantt_row_height
+    #             elif 5 <= task_num <= 10:
+    #                 if gantt_row_height <= 60:
+    #                     height_num = task_num * 60
+    #                 else:
+    #                     height_num = task_num * gantt_row_height
+    #             elif 10 < task_num <= 50:
+    #                 if gantt_row_height <= 50:
+    #                     height_num = task_num * 50
+    #                 else:
+    #                     height_num = task_num * gantt_row_height
+    #             else:
+    #                 if gantt_row_height <= 40:
+    #                     height_num = task_num * 40
+    #                 else:
+    #                     height_num = task_num * gantt_row_height
+    #         else:
+    #             if task_num == 0:
+    #                 height_num = 100
+    #             elif 0 < task_num < 5:
+    #                 height_num = task_num * 100
+    #             elif 5 <= task_num <= 10:
+    #                 height_num = task_num * 60
+    #             elif 10 < task_num <= 50:
+    #                 height_num = task_num * 50
+    #             else:
+    #                 height_num = task_num * 40
+    #         return render_to_response('HRmanage/HR_gantt.html', locals())
+
+    # errors = []
+    # if request.method == 'POST':
+    #     summary = request.POST.get('summary')
+    #     description = request.POST.get('content')
+    #     task_type = request.POST.get('type')
+    #     milestone = request.POST.get('milestone')
+    #     component = request.POST.get('component')
+    #     priority = request.POST.get('priority')
+    #     owner = request.POST.get('owner')
+    #     version = request.POST.get('version')
+    #     task_image = request.FILES.get('task_image')
+    #
+    #     start_date = request.POST.get('start_date')
+    #     text = request.POST.get('text')
+    #     end_date = request.POST.get('end_date')
+    #     story_point = request.POST.get('story_point')
+    #
+    #     task_parent_id = request.POST.get('parent_id')
+    #
+    #     task_relevance = request.POST.get('relevance')
+    #     task_id = request.POST.get('task_id')
+    #     relevance_type = request.POST.get('relevance_type')
+    #
+    #     if end_date == '':
+    #         end_date = now_date
+    #     if start_date == '':
+    #         start_date = now_date
+    #
+    #     task_start_date = datetime.strptime(start_date, '%Y/%m/%d %H:%M')
+    #     task_end_date = datetime.strptime(end_date, '%Y/%m/%d %H:%M')
+    #
+    #     duration_timestamip = int(time.mktime(time.strptime(end_date, '%Y/%m/%d %H:%M'))) - int(
+    #         time.mktime(time.strptime(start_date, '%Y/%m/%d %H:%M')))
+    #     duration = duration_timestamip / 86400
+    #
+    #     type = Type.objects.get(id=task_type)
+    #     component = Component.objects.get(id=component)
+    #     priority = Priority.objects.get(id=priority)
+    #     version = Versions.objects.get(id=version)
+    #     milestone = Milestone.objects.get(id=milestone)
+    #
+    #     creator = User.objects.get(username=user_now)
+    #     owner_project = Project.objects.get(id=url)
+    #     if task_image is not None:
+    #         image = task_image.name.split('.')[-1]
+    #     else:
+    #         image = None
+    #
+    #     # 检测属主是否存在，只添加存在的属主
+    #     if owner.split(',') is not None and len(owner) > 0:
+    #         task_owners = ''
+    #         for task_owner in owner.split(','):
+    #             if User.objects.filter(username=task_owner):
+    #                 task_owners = task_owners + task_owner + ','
+    #         owner_list = list(task_owners)
+    #         if len(owner_list) > 0:
+    #             owner_list.pop()
+    #         owner = "".join(owner_list)
+    #
+    #     # 获取最后一个显示id
+    #     task_num = Taskorder.objects.filter(owner_project=project_archive).count()
+    #     if task_num == 0:
+    #         display_id = 1
+    #     else:
+    #         display_id = int(
+    #             Taskorder.objects.filter(owner_project=project_archive, parent=0).order_by('-id')[0].display_id) + 1
+    #
+    #     if duration == 0:
+    #         duration = 1
+    #
+    #     if summary is not None and len(summary) > 0:
+    #
+    #         if image == 'tiff':
+    #             errors.append('您上传的图片web不支持显示')
+    #         elif start_date is not None and len(start_date) > 0:
+    #             create_task = Taskorder.objects.create(summary=summary, creator=creator, description=description,
+    #                                                    type=type, milestone=milestone, reporter=user_now,
+    #                                                    component=component, priority=priority, task_image=task_image,
+    #                                                    owner=owner, version=version, parent=task_parent_id,
+    #                                                    status=statuss[0], owner_project=owner_project,
+    #                                                    start_date=task_start_date, end_date=task_end_date,
+    #                                                    duration=duration,
+    #                                                    display_id=display_id, predict_start_date=task_start_date,
+    #                                                    predict_duration=duration, predict_end_date=task_end_date)
+    #
+    #             if story_point is not None and len(story_point) > 0:
+    #                 Taskorder.objects.filter(id=create_task.id).update(storypoint=story_point)
+    #
+    #             id = Taskorder.objects.filter(creator=user_now).order_by('-id')[0].id
+    #
+    #             # 任务单关联
+    #             if task_relevance == 'task_relevance':
+    #                 if task_id is not None and len(task_id) > 0:
+    #                     Gantt_links.objects.create(source=id, target=task_id, type=relevance_type)
+    #
+    #             return HttpResponseRedirect('/%s/HR/gantt' % url, locals())
+    #         else:
+    #             errors.append('请输入起始时间')
+    #             return render_to_response('HRmanage/HR_gantt.html', locals())
+    #     else:
+    #         errors.append('请输入申请概述')
+    #         return render_to_response('HRmanage/HR_gantt.html', locals())
+
+    return render_to_response('index/index_gantt.html', locals())
+
+
+@checkCdkey
+@login_required
+@views_permission
+def index_calendar(request,*args,**kwargs):
+    user_now=request.session.get('USERNAME',False)
+    user_head_portrait=User.objects.get(username=user_now).head_portrait
+    if User.objects.get(username=user_now).is_superuser:
+        admin = True
+
+    index = True
+
+
+    tasks = Taskorder.objects.all()
+
+    calendar=[]
+
+    for task in tasks:
+        start_date=task.start_date
+        end_date=task.end_date
+        summary=task.summary
+        color=task.type.color
+        textColor=task.type.textColor
+        calendar.append({'id':task.id,'text':summary,'start_date':start_date,'end_date':end_date,'color':color,'textColor':textColor})
+
+
+    scheduler_css=Project.objects.get(id=1).scheduler_skin
+    scheduler_css_url='codebase/'+scheduler_css
+
+    return render_to_response('index/index_calendar.html',locals())

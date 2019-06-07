@@ -1,0 +1,118 @@
+{% extends 'manage_l/manage_base.html' %}
+
+{% block content %}
+{% load staticfiles %}
+<body class=" dashboard app-auth">
+{%  load staticfiles %}
+<!-- Container -->
+<div id="container">
+
+
+    <!-- Header -->
+    <div id="header">
+        <div id="branding">
+
+<h1 id="site-name"><a href="/{{ project_id }}/manage_l/">{{ project.project_name }} 后台管理</a></h1>
+
+        </div>
+
+
+        <div id="user-tools">
+
+                欢迎，
+                <strong>{{ staff_user.username }} </strong>.
+
+
+
+                    <a href="/{{ project_id }}">查看站点</a> /
+
+
+
+
+
+
+                <a href="/password_change/">修改密码</a> /
+
+                <a href="/logout/">注销</a>
+
+        </div>
+
+
+
+    </div>
+    <!-- END Header -->
+    
+<div class="breadcrumbs">
+<a href="/{{ project_id }}">首页</a>
+&rsaquo;
+
+认证和授权
+
+</div>
+
+    
+
+    
+        
+    
+
+    <!-- Content -->
+    <div id="content" class="colMS">
+        
+        <h1>认证和授权 管理</h1>
+        
+<div id="content-main">
+
+
+    
+        <div class="app-auth module">
+        <table>
+        <caption>
+            <a href="" class="section" title="在应用程序 认证和授权 中的模型">认证和授权</a>
+        </caption>
+        
+            <tr class="model-user">
+            
+                <th scope="row"><a href="user/">用户</a></th>
+            
+
+            
+
+            
+
+            
+
+            
+            </tr>
+        
+            <tr class="model-group">
+            
+                <th scope="row"><a href="group/">组</a></th>
+            
+
+            
+                <td><a href="group/add/" class="addlink">增加</a></td>
+            
+
+            
+
+            
+            </tr>
+        
+        </table>
+        </div>
+    
+
+</div>
+
+        
+        <br class="clear" />
+    </div>
+    <!-- END Content -->
+
+    <div id="footer"></div>
+</div>
+<!-- END Container -->
+
+</body>
+{% endblock %}

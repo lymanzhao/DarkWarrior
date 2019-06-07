@@ -1,0 +1,39 @@
+{% extends 'manage/manage_base.html' %}
+{% load staticfiles %}
+{% block content %}
+
+    <div class="row" style="margin-bottom: 5%">
+        <div class="col-lg-6">
+            <div class="card-box">
+            <h4 class="header-title m-t-0 m-b-30">设置站点logo</h4>
+
+                {% for error in errors %}
+                    <h5 style="color: red">{{ error }}</h5>
+                {% endfor %}
+
+                <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data" >
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">项目logo</label>
+                        <div class="col-md-10">
+                            <input type="file" class="form-control" name="logo"  value="{{ logo }}">
+
+                           {% if logos %}
+                            <img src="/media/{{logos.0.logo}}" width="100%;" height="auto;">
+                            {% endif %}
+                        </div>
+                    </div>
+
+                 <div class="row text-right" style="margin-top: 5%">
+                        <div class="col-md-12">
+                            <input type="submit" class="batn btn-purple btn-rounded w-md" value="提交" is_archive="True">
+                          <!--  <input type="reset" class="batn btn-purple btn-rounded w-md" value="取消" is_archive="True">-->
+                        </div>
+                 </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

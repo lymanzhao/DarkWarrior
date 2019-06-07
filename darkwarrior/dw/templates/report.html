@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block css %}
+    {{ block.super }}
+    <!-- Editatable  Css-->
+    <link rel="stylesheet" href="{% static 'assets/plugins/magnific-popup/dist/magnific-popup.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/plugins/jquery-datatables-editable/datatables.css' %}" />
+    <style>
+    .sub {color: #ffffff;border:none;background-color: #50b4fa;line-height: 27px;
+            box-shadow: 1px 2px 1px #acb5bc;border-radius:2px;width: 55px;}
+    </style>
+{% endblock %}
+
+{% block content %}
+
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <h4 class="header-title m-t-0 m-b-30">报表1</h4>
+                    <form action="" method="post">
+			            <input type="hidden" value="task_select" name="judge">
+                        <div style="margin-top: 20px;margin-bottom: 30px">
+                            <label for="shu">属主:</label>
+                            <input type="text" id="shu" name="owner_select" {% if  owner_select  %} value="{{ owner_select }}" {% endif %}>
+			                {% for status in statuss %}
+                                <input type="checkbox"  id="status" name="select_status" {% if  status.id in select_conditions  %} checked {% endif %}  value="{{ status.id }}" style="margin-left: 20px">
+                                <label for="status">{{ status.name }}</label>
+                            {% endfor %}
+                            <input type="submit" value="筛选" style="margin-left: 20px" class="sub">
+                        </div>
+                    </form>
+
+
+                    <div class="">
+                        <table class="table table-striped" id="datatable-editable">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center;width:46px; ">序号</th>
+                                    <th style="text-align: center;width:273px;">缩略图</th>
+                                    <th style="text-align: center;width:152px;">名字</th>
+                                    <th style="text-align: center;width:73px;">状态</th>
+                                    <th style="text-align: center;width:73px;">类型</th>
+                                    <th style="text-align: center;width:73px;">里程碑</th>
+                                    <th style="text-align: center;width:73px;">组件</th>
+                                    <th style="text-align: center;">描述</th>
+                                </tr>
+                            </thead>
+
+                            <tbody style="text-align: center">
+                                   {% for task in tasks %}
+                                    <tr >
+                                    <td style="vertical-align: middle;text-align: center;width:46px;"><a href="/{{ url }}/task/{{ task.id }}" style="list-style-type: none;color: red">{{ task.display_id }}</a></td>
+                                    <td style="vertical-align: middle;text-align: center;width: 273px;">{% if task.task_image %} <img src="/media/{{ task.task_image }}" width="150px;">{% else %}无缩略图{% endif %}</td>
+                                    <td style="vertical-align: middle;text-align: center;width:152px;">{{ task.summary }}</td>
+                                    <td style="vertical-align: middle;text-align: center;width:73px;">{{ task.status }}</td>
+                                    <td style="vertical-align: middle;text-align: center;width:73px;">{{ task.type }}</td>
+                                    <td style="vertical-align: middle;text-align: center;width:73px;">{{ task.milestone }}</td>
+                                    <td style="vertical-align: middle;text-align: center;width:73px;">{{ task.component }}</td>
+                                    <td style="vertical-align: middle;"><span>{{ task.description|safe }}</span></td>
+                                    </tr>
+                                   {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+
+{% block jQuery %}
+    {{ block.super }}
+
+    <!-- Editable js -->
+    <script src="{% static 'assets/plugins/magnific-popup/dist/jquery.magnific-popup.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/jquery-datatables-editable/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.bootstrap.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/mindmup-editabletable.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/numeric-input-example.js' %}"></script>
+
+    <!-- init -->
+    <script src="{% static 'assets/pages/datatables.editable.init.js' %}"></script>
+
+{% endblock %}
+

@@ -1,0 +1,288 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block css %}
+    {{ block.super }}
+    <!-- Editatable  Css-->
+    <link rel="stylesheet" href="{% static 'assets/plugins/magnific-popup/dist/magnific-popup.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/plugins/jquery-datatables-editable/datatables.css' %}" />
+
+    <style>
+        .sub {color: #ffffff;border:none;background-color: #50b4fa;line-height: 27px;
+            box-shadow: 1px 2px 1px #acb5bc;border-radius:2px;width: 55px;}
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <h4 class="header-title m-t-0 m-b-30">定制查询</h4>
+                    <form action="" method="post">
+                        <input type="hidden" value="task_select" name="judge">
+                        <div style="margin-top: 20px;margin-bottom: 30px">
+                            <label for="shu">属主:</label>
+                            <input type="text" id="shu" name="owner_select" {% if  select_owner  %} value="{{ select_owner }}" {% endif %}>
+                            {% for status in statuss %}
+                                <input type="checkbox"  id="status" name="select_status" {% if  status.id in select_conditions  %} checked {% endif %}  value="{{ status.id }}" style="margin-left: 20px">
+                                <label for="status">{{ status.name }}</label>
+                            {% endfor %}
+                            <input type="submit" value="筛选" style="margin-left: 20px" class="sub">
+                        </div>
+                    </form>
+
+                    <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                        <input type="hidden" value="task_change" name="judge">
+                        <div class="">
+                            <table class="table table-striped" id="datatable-editable">
+                                <thead>
+                                <tr>
+                                    <th><input style="margin-left: 60%" type="checkbox" id="select_all" name="select_all" value="全选"></th>
+                                    <th style="text-align: center">任务</th>
+                                    <th style="text-align: center">概述</th>
+                                    <th style="text-align: center">状态</th>
+                                    <th style="text-align: center">属主</th>
+                                    <th style="text-align: center">审核人</th>
+                                    <th style="text-align: center">故事点</th>
+                                    <th style="text-align: center">类型</th>
+                                    <th style="text-align: center">优先级</th>
+                                    <th style="text-align: center">里程碑</th>
+                                    <th style="text-align: center">组件</th>
+                                    <th style="text-align: center">版本</th>
+                                </tr>
+                                </thead>
+
+                                <tbody style="text-align: center">
+                                {% for task in condition %}
+                                    <tr>
+                                        <td><input type="checkbox" value="{{ task.id }}" name="id"></td>
+                                        <td><a href="/{{ url }}/task/{{ task.id }}" style="list-style-type: none;color: red">{{ task.display_id }}</a></td>
+                                        <td>{{ task.summary }}</td>
+                                        <td>{{ task.status }}</td>
+                                        <td>{{ task.owner }}</td>
+                                        <td>{{ task.reporter }}</td>
+                                        <td>{{ task.storypoint }}</td>
+                                        <td>{{ task.type }}</td>
+                                        <td>{{ task.priority }}</td>
+                                        <td>{{ task.milestone }}</td>
+                                        <td>{{ task.component }}</td>
+                                        <td>{{ task.version }}</td>
+                                    </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+
+
+                        <input type="button" value="↓修改属性" id="attribute" style="margin-top: 20px;color: #ffffff;border:none;background-color:#99a2a9;line-height: 27px;
+                                                                                        box-shadow: 1px 2px 1px #acb5bc;border-radius:2px;" >
+
+                        <div class="row" style="display:none;" id="button">
+                            <div class="col-lg-8" style="margin-top: 50px;">
+
+                                <div class="form-group">
+                                    <label class="col-md-2">
+                                        <input type="checkbox" name="change_owner" value="task_owner">修改属主
+                                    </label>
+                                    <div class="col-md-10">
+                                        <div class="tags-default">
+                                            <input type="text" value="" data-role="tagsinput" class="form-control" placeholder="请输入属主姓名" name="task_owner"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-md-2">
+                                        <input type="checkbox" name="change_reporter" value="task_reporter">修改审核人
+                                    </label>
+                                    <div class="col-md-10">
+                                        <input type="text"  name="task_reporter" class="form-control" placeholder="请输入审核人姓名">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-md-2">
+                                        <input type="checkbox" name="change_status" value="task_status">修改状态
+                                    </label>
+                                    <div class="col-md-10">
+                                        <select class="form-control input-block" name="task_status">
+                                            {% for status in statuss %}
+                                                <option value="{{ status.id }}">{{ status }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-md-2">
+                                        <input type="checkbox" name="change_type" value="task_type">修改类型
+                                    </label>
+                                    <div class="col-md-10">
+                                        <select class="form-control input-block" name="task_type">
+                                            {% for type in types %}
+                                                <option value="{{ type.id }}">{{ type }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-md-2">
+                                        <input type="checkbox" name="change_priority" value="task_priority">修改优先级
+                                    </label>
+                                    <div class="col-md-10">
+                                        <select class="form-control input-block" name="task_priority">
+                                            {% for priority in prioritys %}
+                                                <option value="{{ priority.id }}">{{ priority }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label class="col-md-2">
+                                        <input type="checkbox" name="change_milestone" value="task_milestone">修改里程碑
+                                    </label>
+                                    <div class="col-md-10">
+                                        <select class="form-control input-block" name="task_milestone">
+                                            {% for milestone in milestones %}
+                                                {% if milestone != task.milestone %}
+                                                    <option value="{{ milestone.id }}">{{ milestone }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label class="col-md-2">
+                                        <input type="checkbox" name="change_component" value="task_component">修改组件
+                                    </label>
+                                    <div class="col-md-10">
+                                        <select class="form-control input-block" name="task_component">
+                                            {% for component in components %}
+                                                {% if component != task.component %}
+                                                    <option value="{{ component.id }}">{{ component }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label class="col-md-2">
+                                        <input type="checkbox" name="change_version" value="task_version">修改版本
+                                    </label>
+                                    <div class="col-md-10">
+                                        <select class="form-control input-block" name="task_version">
+                                            {% for version in versions %}
+                                                {% if version != task.version %}
+                                                    <option value="{{ version.id }}">{{ version }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="text-right m-t-30">
+                                            <button type="submit" class="batn btn-purple btn-rounded w-md" is_archive="true">
+                                                提交修改
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+
+        /* $(document).ready(function(){
+         $('#attribute').click(function(event){
+         $(this).next().slideToggle(300);
+         if($(this).val()=='↓修改属性'){
+         $(this).val('↑修改属性')
+         }
+         else{
+         $(this).val('↓修改属性')
+         }
+         //y = event.clientY;
+         var y = document.documentElement.scrollTop || document.body.scrollTop;
+         $('body,html').animate({scrollTop:y+572},300);
+         //alert(y)
+         })
+         });*/
+
+        var quan = document.getElementById('select_all');
+        var id = document.getElementsByName('id');
+        quan.onclick = function(){
+            for(var i=0 ; i<id.length ; i++)
+            {
+                (quan.checked == true)?id[i].checked=true:id[i].checked=false;
+            }
+        };
+
+        var attribute = document.getElementById('attribute');
+        var button = document.getElementById('button');
+        attribute.onclick = function(){
+            if(button.style.display == 'none'){
+                button.style.display = 'block';
+            }
+            else{
+                button.style.display = 'none';
+            }
+        };
+
+    </script>
+
+
+    {% ifequal project_archive.is_archive True%} <!--项目归档     -->
+
+        <script>
+            $(document).ready(function(){
+                //$('form[method="post"]').hide()
+                //$(':button').css('visibility','hidden');
+                //$(':submit').css('visibility','hidden');
+                $('[is_archive="true"]').css('visibility','hidden');
+            })
+        </script>
+
+    {% endifequal %}
+
+{% endblock %}
+
+
+
+{% block jQuery %}
+    {{ block.super }}
+
+    <!-- Editable js -->
+    <script src="{% static 'assets/plugins/magnific-popup/dist/jquery.magnific-popup.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/jquery-datatables-editable/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.bootstrap.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/mindmup-editabletable.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/numeric-input-example.js' %}"></script>
+
+    <!-- init -->
+    <!-- <script src="{% static 'assets/pages/many_change.js' %}"></script>-->
+
+    <script src="{% static 'assets/pages/datatables.editable.init.js' %}"></script>
+
+
+
+{% endblock %}

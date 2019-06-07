@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+{% block head_js  %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'ckeditor/ckeditor.js' %}"></script>
+    <script type="text/javascript" src="{% static 'search/ajax_search.js' %}"></script>
+{% endblock %}
+
+
+{% block content %}
+    <div class="row" style="margin-top: -50px;">
+    <div class="col-md-12">
+        <div class="panel">
+            <div class="panel-body">
+                <h2 class="m-b-30"><strong>创建任务</strong></h2>
+                {% for error in errors %}
+                    <h4 style="color: red">{{ error }}</h4>
+                {% endfor %}
+                <div class="row">
+                    <div class="col-md-10">
+                        <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">任务概述</label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control" placeholder="请输入任务概述" name="summary" autofocus="autofocus" >
+                                </div>
+                            </div>
+                            <!--
+                            <div class="form-group">
+                                                <label class="col-md-2 control-label">甘特图标签</label>
+                                                <div class="col-md-10">
+                                                    <input type="text" class="form-control" placeholder="请输入甘特图所显示标签名称" name="text" >
+                                                </div>
+                                            </div>
+                            -->
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">任务描述</label>
+                                <div class="col-md-10">
+                                    <textarea id="elm1" name="content">{{ content }}</textarea>
+                                    <script type="text/javascript">CKEDITOR.replace('content')</script>
+
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label" >任务图片</label>
+                                <div class="col-md-10">
+                                    <input type="file" class="form-control"  name="task_image" >
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">任务类型</label>
+                                <div class="col-md-10">
+                                    <select class="change_sel" name="type">
+                                        {% for type in types %}
+                                            <option  {% ifequal type_default type %} selected {% endifequal %} value="{{ type.id }}">{{ type.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">里程碑</label>
+                                <div class="col-md-10">
+                                    <select class="change_sel" name="milestone">
+                                        {% for milestone in milestones %}
+                                            <option {% ifequal milestone_default milestone %} selected {% endifequal %} value="{{ milestone.id }}">{{ milestone.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">组件名称</label>
+                                <div class="col-md-10">
+                                    <select class="change_sel" name="component">
+                                        {% for component in components %}
+                                            <option {% ifequal component_default component %} selected {% endifequal %} value="{{ component.id }}">{{ component.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">优先级</label>
+                                <div class="col-md-10">
+                                    <select class="change_sel" name="priority">
+                                        {% for priority in prioritys %}
+                                            <option {% ifequal priority_default priority %} selected {% endifequal %} value="{{ priority.id }}">{{ priority.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">属主</label>
+                                <div class="col-md-10">
+                                    <div class="tags-default">
+                                        <input type="text" value="" data-role="tagsinput" id="search_text" onkeyup="showHint(this.value)"
+                                               class="form-control" placeholder="请输入属主姓名" name="owner"/>
+                                    </div>
+                                    <!--
+                                                         <input type="text" id="search_text" onkeyup="showHint(this.value)"
+                                                               class="form-control" placeholder="请输入属主名称，可以为空" name="owner"/>-->
+                                    <div id="txtHint" ></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">版本</label>
+                                <div class="col-md-10">
+                                    <select class="change_sel" name="version">
+                                        {% for version in versions %}
+                                            <option {% ifequal version_default version %} selected {% endifequal %} value="{{ version.id }}">{{ version.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-2 control-label" >任务起始时间</label>
+                                <div class="col-md-10">
+                                    <input type="text" value="" class="form-control" name="start_date" id="datetimepicker"/>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label class="col-md-2 control-label" >任务结束时间</label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control" value="" name="end_date" id="datetimepicker1"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-2 control-label" >故事点</label>
+                                <div class="col-md-10">
+                                    <input type="text" placeholder="文本输入框只能输入数字（整数或浮点数）" onkeyup="this.value=this.value.replace(/^\.|^0\d{1,}|\.{2,}|[^.\d]|\..*\./g,'');" onblur="this.value=this.value.replace(/\.$/g,'');" class="form-control" value="" name="story_point" />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">
+                                    <input type="checkbox" name="relevance" value="task_relevance">前后关联
+                                </label>
+                                <div class="col-md-10">
+                                    <input class=" form-control input-block" placeholder="请输入要关联的任务id，并且选择关联类型,默认为①尾-->②头" type="number" name="task_id">
+                                    <select class="change_sel" name="relevance_type">
+                                        <option value="3">①头-->②尾</option>
+                                        <option value="2">①尾-->②尾</option>
+                                        <option value="1">①头-->②头</option>
+                                        <option value="0">①尾-->②头</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-left: 90%;margin-top: 5%">
+                                <div class="col-sm-4">
+                                    <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5" is_archive="true">提交 </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div><!-- end col -->
+                </div>
+
+            </div>    <!-- end row -->
+        </div>
+    </div>
+
+
+{% endblock %}
+{% block jQuery %}
+    {{ block.super }}
+    <script src="/static/lly/query_select.js" id="query_select"></script><!-- 单选下拉控件-->
+    <script>/*
+     window.onerror = function(errorMsg) {
+     $('#console').html($('#console').html()+'<br>'+errorMsg)
+     }*/
+
+    $.datetimepicker.setLocale('ch');
+    $('#datetimepicker').datetimepicker({value:'{{ now_date }}',step:10});
+
+
+    $('#default_datetimepicker').datetimepicker({
+        formatTime:'H:i',
+        formatDate:'d.m.Y',
+        //defaultDate:'8.12.1986', // it's my birthday
+        defaultDate:'+03.01.1970', // it's my birthday
+        defaultTime:'10:00',
+        timepickerScrollbar:false
+    });
+
+    </script>
+
+    <script>/*
+     window.onerror = function(errorMsg) {
+     $('#console').html($('#console').html()+'<br>'+errorMsg)
+     }*/
+
+    $.datetimepicker.setLocale('ch');
+    $('#datetimepicker1').datetimepicker({value:'{{ now_date }}',step:10});
+
+
+    $('#default_datetimepicker1').datetimepicker({
+        formatTime:'H:i',
+        formatDate:'d.m.Y',
+        //defaultDate:'8.12.1986', // it's my birthday
+        defaultDate:'+03.01.1970', // it's my birthday
+        defaultTime:'10:00',
+        timepickerScrollbar:false
+    });
+
+    </script>
+
+{% endblock %}

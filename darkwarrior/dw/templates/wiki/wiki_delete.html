@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+                     
+                       
+   
+ <form class="form-horizontal" role="form" action="" method="post">
+
+   <div style="display:block;margin-bottom:15px;">                                   
+   <strong>您确定删除维基“{{ wiki.title }}”？ <span style="color: reded;"> {{error}} </span></strong>
+   </div>
+   
+   <input type="submit" class="batn btn-purple btn-rounded w-md  " value="确定" is_archive="true">
+<a href="../">
+   <input type="button" class="batn btn-purple btn-rounded w-md  " value="取消" is_archive="true">
+</a>                                               
+                                        
+                                      
+ </form>
+                              
+
+
+
+
+
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block content %}
+	<p>{{ ss }}</p>
+    ------------------------------------------
+    <p>{{ checkHostname  }}</p>
+        {{ checkMac }}
+	{{ myname }}<br>
+    {{ CDKEY }}
+
+{{tasks}}
+{{index_list}}
+
+    {{ session }}
+
+
+
+    <div style="border:0px solid darkgrey;width: 200px;background: white;">
+        <div style="border:1px solid rebeccapurple;z-index: 99;background: #17171a;color: #ffffff;position: relative;top: auto;height: 40px;" id="1">111111111</div>
+        <div style="border:1px solid rebeccapurple;position: relative;top: -40px;background: #a6a6a6;color: black;height: 40px;" class="sel">222222222</div>
+        <div style="border:1px solid rebeccapurple;position: relative;top: -80px;background: #a6a6a6;color: black;height: 40px;" class="sel">333333333</div>
+
+    </div>
+
+    <script>
+    $(document).ready(function () {
+        $('#1').click(function () {
+            //alert(1)
+            //$('.sel').each(function () {
+                //alert(1)
+                //alert($(this).index())
+                //setTimeout(show($(this)),1000*parseInt($(this).index()));
+                //alert(1000*parseInt($(this).index()))
+                //show($(this))
+
+            //})
+            setTimeout("$('.sel').eq(1).animate({top:0},100)",100);
+            setTimeout("$('.sel').eq(0).animate({top:0},100)",200);
+
+            //alert($('.sel').eq(0).html())
+        });
+
+        function show(t) {
+            //alert(t.index())
+            t.animate({top:0},100)
+        }
+    })
+
+    </script>
+
+{% endblock %}

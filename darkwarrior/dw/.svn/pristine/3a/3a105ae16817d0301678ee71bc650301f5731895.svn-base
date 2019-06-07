@@ -1,0 +1,86 @@
+{% extends 'manage/manage_base.html' %}
+{% load staticfiles %}
+
+{% block css %}
+    {{ block.super }}
+    <!-- Editatable  Css-->
+    <link rel="stylesheet" href="{% static 'assets/plugins/magnific-popup/dist/magnific-popup.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/plugins/jquery-datatables-editable/datatables.css' %}" />
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <h4 class="header-title m-t-0 m-b-30">任务组件</h4>
+
+                    <a href="/{{ url }}/manage/add_task_component/">
+                        <div class="row" style="margin-bottom: 2%">
+                            <div class="col-md-12">
+                                <div class="text-left">
+                                    <button  class="batn btn-purple btn-rounded w-md">
+                                        添加任务组件
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <table class="table table-striped" id="datatable-editable">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center">ID</th>
+                                <th style="text-align: center">名称</th>
+                                <th style="text-align: center">组件描述</th>
+                                <th style="text-align: center">默认</th>
+                            </tr>
+                        </thead>
+
+                        <tbody style="text-align: center">
+                            {% for task_component in task_components %}
+                                <tr>
+                                    <td><a href="/{{ url }}/manage/task_component/{{ task_component.id }}/" style="list-style-type: none;color: red">{{ task_component.id }}</a></td>
+                                    <td>{{ task_component.name }}</td>
+                                    <td>{{ task_component.description }}</td>
+                                    <td>
+                                        <div class="radio radio-info">
+                                            <form action="" method="post">
+                                                <input type="radio" name="task_component_default_id" onclick="task_component_default{{ task_component.id }}()" id="radio{{ task_component.id }}" value="{{ task_component.id }}" {% ifequal task_component.default True %} checked {% endifequal %}>
+                                                <label for="radio{{ task_component.id }}">
+                                                </label>
+                                                <input type="submit" id="submit{{ task_component.id }}" style="display: none">
+                                            </form>
+                                            <script>
+                                                var default_submit{{ task_component.id }} = document.getElementById('submit{{ task_component.id }}');
+                                                function task_component_default{{ task_component.id }}() {
+                                                    default_submit{{ task_component.id }}.click()
+                                                }
+                                            </script>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block jQuery %}
+    {{ block.super }}
+
+    <!-- Editable js -->
+    <script src="{% static 'assets/plugins/magnific-popup/dist/jquery.magnific-popup.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/jquery-datatables-editable/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.bootstrap.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/mindmup-editabletable.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/numeric-input-example.js' %}"></script>
+
+    <!-- init -->
+    <script src="{% static 'assets/pages/datatables.editable.init.js' %}"></script>
+
+{% endblock %}

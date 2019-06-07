@@ -1,0 +1,437 @@
+{% extends 'manage/manage_base.html' %}
+{% load staticfiles %}
+
+{% block css %}
+    {{ block.super }}
+    <script src="{% static 'jQuery.js' %}"></script>
+    <script src="{% static 'ajax/ajax_post_get.js' %}"></script>
+    <script src="{% static 'lly/query_select.js' %}" id="query_select"></script><!-- 单选下拉控件-->
+    <style>
+        *{padding: 0;margin:0;}
+        .tree{color:grey;margin-left:35px;border:0px solid gainsboro;font-size:22px;}
+        .dir_name{line-height: 30px;height:30px;border:0px solid #EAEAEA;font-size:21px;border-radius:2px;padding:2px;display: inline-block;}
+        .add_dir{cursor: default;margin-left: 35px;font-weight: lighter;}
+        .delete_dir{cursor: default;margin-left: 25px;font-weight: lighter;}
+		#box_action{margin-top:50px;}
+		.action{margin-left:35px;cursor:pointer;margin-top:5px;width:80px;background-color:#63B8FF;color:#fff;height:25px;text-align:center;line-height:25px;border-radius:1px;}
+		#container{width:50%;height:50%;border:1px solid grey;background-color: white;border-radius:10px;margin-left: 20%;}
+    </style>
+{% endblock %}
+
+{% block content %}
+
+
+    <div id='container'>
+
+	<div id='box_tree'>
+
+		<div class="tree">
+            <i class="fa fa-folder-o"></i>
+			<p class="dir_name"  contenteditable='true'>father</p>
+			<span class="add_dir">+</span>
+			<span class="delete_dir">-</span>
+			<div class="tree" last="true">
+                <i class="fa fa-folder-o"></i>
+				<p class="dir_name" contenteditable='true'>child1</p>
+				<span class="add_dir">+</span>
+				<span class="delete_dir">-</span>
+			</div>
+			<div class="tree">
+                <i class="fa fa-folder-o"></i>
+				<p class="dir_name" contenteditable='true'>child2</p>
+				<span class="add_dir">+</span>
+				<span class="delete_dir">-</span>
+				<div class="tree" last="true">
+                    <i class="fa fa-folder-o"></i>
+					<p class="dir_name" contenteditable='true'>new1</p>
+					<span class="add_dir">+</span>
+					<span class="delete_dir">-</span>
+				</div>
+			</div>
+            <!--
+			<div class="tree">
+                <i class="fa fa-folder-o"></i>
+				<p class="dir_name" contenteditable='true'>child_3</p>
+				<span class="add_dir">+</span>
+				<span class="delete_dir">-</span>
+				<div class="tree" id="md" last="true">
+                    <i class="fa fa-folder-o"></i>
+					<p class="dir_name" contenteditable='true'>new_2</p>
+					<span class="add_dir">+</span>
+					<span class="delete_dir">-</span>
+				</div>
+			</div>
+			-->
+
+		</div>
+
+	</div>
+
+	<div id='box_action'>
+		<div id='add_root' class='action'>根目录<i class="zmdi zmdi-plus"></i></div>
+		<div id="ok" class='action'>完成</div>
+	</div>
+
+</div>
+
+<form method="post" action="" hidden>
+    <input type="text" id="all_path" name="all_path">
+     <input type="submit" id="sub_path">
+</form>
+    <ul class="list-inline task-dates m-b-0 m-t-30">
+
+        <li>
+            <h5 class="font-600 m-b-5 text-muted">组件 <i data-toggle="modal" data-target="#task-component" class="fa fa-edit" style="margin-left: 15px;cursor: pointer;color:#c0c0c0;" title="修改任务"></i></h5>
+            <p><small class="text-muted">{{ task.component }}</small></p>
+        </li>
+    </ul>
+<!-- 组件 -->
+<div class="modal fade" id="task-component" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" >
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">创建文件夹</h4>
+            </div>
+            <div class="modal-body" >
+                <form class="form-horizontal" role="form" action="" method="get" enctype="multipart/form-data">
+                    <div class="col-md-12" style="margin-bottom: 5%">
+                        <div class="form-group col-md-8">
+                            <input type="hidden" value="create_file" name="judge">
+                            <label class="col-md-2 control-label"><small>起始文件夹</small></label>
+                            <div class="col-md-10">
+                                <input type="text" id="start_file_address" class="form-control" readonly value="/"  name="start_file_address">
+                                <a href="#" onclick="selectFile()">选择文件夹</a>
+                                <div id="file">
+
+                                </div>
+                                <script type="text/javascript">
+                                       function selectFile(){
+                                            var file_root = '/var/centralStorage';
+                                            var objS = document.getElementById("start_file_address");
+                                            var start_file_address = objS.value;
+                                            var Ajax = new AjaxClass();         // 创建AJAX对象
+                                            Ajax.Method = "GET";               // 设置请求方式为POST
+                                            Ajax.Url = "/{{ url }}/manage/file_select/?file_path="+file_root+start_file_address.toString();           // URL为default.asp
+                                            Ajax.Async = true;                  // 是否异步
+                                            //Ajax.Arg = "type_id="+grade.toString();               // POST的参数
+    {#                                        Ajax.Loading = function(){          //等待函数#}
+    {#                                            document.write("loading...");#}
+    {#                                        };#}
+                                            Ajax.CallBack = function(str)       // 回调函数
+                                            {
+                                                //var object = JSON.parse(str);
+                                                var object = eval('(' + str + ')');
+                                                $('#file').children().remove();
+                                                for (var i in object){
+                                                    $('#file').append(
+                                                        '<div style="cursor:pointer;" onclick="clickFile(this)">'+object[i].file_name+'</div>'
+                                                    );
+                                                }
+
+                                                //document.write(str);
+                                            };
+                                            Ajax.Send();
+                                           }
+                                       function clickFile(obj){
+                                            var file_root = '/var/centralStorage';
+                                            var objS = document.getElementById("start_file_address");
+                                            document.getElementById("start_file_address").value = objS.value+obj.innerText+'/';
+                                            var start_file_address = objS.value;
+                                            var Ajax = new AjaxClass();         // 创建AJAX对象
+                                            Ajax.Method = "GET";               // 设置请求方式为POST
+                                            Ajax.Url = "/{{ url }}/manage/file_select/?file_path="+file_root+start_file_address.toString();           // URL为default.asp
+                                            Ajax.Async = true;                  // 是否异步
+                                            //Ajax.Arg = "type_id="+grade.toString();               // POST的参数
+    {#                                        Ajax.Loading = function(){          //等待函数#}
+    {#                                            document.write("loading...");#}
+    {#                                        };#}
+                                            Ajax.CallBack = function(str)       // 回调函数
+                                            {
+
+                                                //var object = JSON.parse(str);
+                                                var object = eval('(' + str + ')');
+                                                $('#file').children().remove();
+                                                for (var i in object){
+                                                    $('#file').append(
+                                                        '<div herf="#" style="cursor:pointer;" onclick="clickFile(this)">'+object[i].file_name+'</div>'
+                                                    );
+                                                }
+
+                                                //document.write(str);
+                                            };
+                                            Ajax.Send();
+                                           }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group col-md-8">
+                            <label class="col-md-2 control-label"><small>文件夹类型</small></label>
+
+                            <div class="col-md-10">
+                                <select id="pid" class="form-control" onchange="gradeChange()" >
+                                    {% for file_type in file_types %}
+                                        <option value="{{ file_type.id }}">{{ file_type.type_name }}</option>
+                                    {% endfor %}
+                                </select>
+
+
+                                <script type="text/javascript">
+                                       function gradeChange(){
+                                        var objS = document.getElementById("pid");
+                                        var type_id = objS.options[objS.selectedIndex].value;
+
+                                        var Ajax = new AjaxClass();         // 创建AJAX对象
+                                        Ajax.Method = "GET";               // 设置请求方式为POST
+                                        Ajax.Url = "/{{ url }}/manage/file_type/?type_id="+type_id.toString();           // URL为default.asp
+                                        Ajax.Async = true;                  // 是否异步
+                                        //Ajax.Arg = "type_id="+grade.toString();               // POST的参数
+{#                                        Ajax.Loading = function(){          //等待函数#}
+{#                                            document.write("loading...");#}
+{#                                        };#}
+                                        Ajax.CallBack = function(str)       // 回调函数
+                                        {
+                                            //var object = JSON.parse(str);
+                                            var object = eval('(' + str + ')');
+                                            $('#file_name').children().remove();
+                                            for (var i in object){
+                                                $('#file_name').append(
+                                                    '<option value="'+object[i].type_name+'_'+'">'+object[i].type_name+'_'+'</option>'
+                                                );
+                                            }
+
+                                            //document.write(str.parseJSON());
+                                        };
+                                        Ajax.Send();
+                                       }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group col-md-8">
+                            <label class="col-md-2 control-label">文件名</label>
+                            <div class="col-md-10">
+                                <select id="file_name" class="form-control" name="file_name_start">
+                                    {% for file_name in file_names %}
+                                        <option value="{{ file_name.file_name }}_">{{ file_name.file_name }}_</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label class="col-md-2 control-label"><i class="fa fa-plus" aria-hidden="true"></i></label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" placeholder="请输入数字字母下划线" value="" name="file_name_last">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-right m-t-30">
+                        <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5">创建</button>
+                    </div>
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- 组件 -->
+
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+<script>
+
+//num = $('.tree').length;
+    //alert(num)
+
+    $(document).ready(function () {
+        //alert(1)
+        //name = $('div:eq(0)');
+        //alert(name.attr('class'))
+        //$('.tree').each(function () {
+            //($(this).text())
+        //})
+        //alert($('#md').parents())
+
+     $('#ok').click(function () {
+
+
+
+        all_path = '';
+        put_path = true;
+		//alert($("[last='true']").length)
+        $("[last='true']").each(function () {
+            //alert($(this).text())
+            last_obj=$(this);
+            last_name = last_obj.children('.dir_name').text();
+            last_name=last_name.replace(/(^\s*)|(\s*$)/g,"");
+            if(last_name.length==0){
+                alert('有文件夹或文件的名称为空！!');
+                put_path = false;
+                return false
+            }
+            var reg = new RegExp("[\u4E00-\u9FFF]+",'g');
+            if(reg.test(last_name)){
+                alert('文件夹或文件的名称不能有中文!');
+                put_path = false;
+                return false;
+            }
+            path = '/'+last_name;
+            //alert(last_obj.children('.dir_name').text().replace(/(^\s*)|(\s*$)/g,"").length);
+            last_obj.parents().each(function () {
+                //alert(path)
+                if($(this).attr('class')=='tree'){
+                    //alert($(this).children('.dir_name').text())
+                    bf_path = $(this).children('.dir_name').text();
+                    bf_path=bf_path.replace(/(^\s*)|(\s*$)/g,"");
+                    if(bf_path.length==0){
+                        alert('有文件夹或文件的名称为空！');
+                        put_path = false;
+                        return false
+                    }
+                    var reg = new RegExp("[\u4E00-\u9FFF]+",'g');
+                    if(reg.test(bf_path)){
+                        alert('文件夹或文件的名称不能有中文!');
+                        put_path = false;
+                        return false;
+                    }
+                    path='/'+bf_path+path;
+                    //alert(path)
+                    //alert(path)
+                }
+
+            });
+            all_path = path+'|'+all_path;
+            //alert(all_path) //输出路径字符串
+
+        });
+		//alert(all_path) //输出全部路径字符串
+         if(put_path){
+
+             //$('#container').append(all_path)
+             $('#all_path').val(all_path);
+             $('#sub_path').click();
+         }
+
+
+     });
+        function add_dir(t){
+
+            t.parent().append(
+                '<div class="tree" id="md" last="true">'+
+                '<i class="fa fa-folder-o"></i>'+
+                '<p class="dir_name" contenteditable="true">new</p>'+
+                '<span class="add_dir">+</span>'+
+                '<span class="delete_dir">-</span>'+
+                '</div> '
+
+            );
+            t.parent().attr('last','false');
+        }
+
+        function delete_dir(t){
+
+            brothers = t.parent().siblings('.tree').length;
+            //t.parent().attr('last','false');
+            //alert(brothers)
+            if(brothers==0){
+                //alert('d')
+                t.parent().parent().attr('last','true');
+                t.parent().remove();
+            }
+            else{
+                t.parent().remove();
+            }
+        }
+
+        $('.add_dir').click(function () {
+            //alert('add')
+            add_dir($(this));
+            return false
+        });
+
+        $(".tree").delegate(".add_dir","click",function(){
+            add_dir($(this));
+            return false
+        });
+
+        $('.delete_dir').click(function () {
+            delete_dir($(this));
+            return false
+        });
+        $(".tree").delegate(".delete_dir","click",function(){
+            delete_dir($(this));
+            return false
+        });
+		$('#add_root').click(function(){
+			//alert(1)
+			$('#box_tree').append(
+				'<div class="tree" id="md" last="true">'+
+                '<i class="fa fa-folder-o"></i>'+
+                '<p class="dir_name" contenteditable="true">root</p>'+
+                '<span class="add_dir">+</span>'+
+                '<span class="delete_dir">-</span>'+
+                '</div> '
+			);
+			$('#box_tree').attr('last','false');
+		});
+
+		$("#box_tree").delegate(".add_dir","click",function(){
+            add_dir($(this));
+            return false
+        });
+		$("#box_tree").delegate(".delete_dir","click",function(){
+            delete_dir($(this));
+            return false
+        });
+
+        //$('.dir_name').click(function () {
+           //alert(1)
+            //setInterval("listen_dirname()",1000);
+        //});
+
+        function listen_dirname() {
+            $("[last='true']").each(function () {
+                if($(this).children('.dir_name').text().indexOf('.')>0){
+                    //alert($(this).text())
+                    $(this).children('.add_dir').remove();
+                    $(this).children('i').attr('class','fa fa-file-o')
+                }
+                else{
+
+                    if($(this).children('.add_dir').length>0){
+                        return true
+                    }
+                    else{
+                        $(this).children('.dir_name').after(
+                             '<span class="add_dir">+</span>'
+                        );
+                        $(this).children('i').attr('class','fa fa-folder-o')
+                    }
+                }
+            });
+        }
+        $('#container').click(function () {
+            listen_dirname()
+        });
+        //listen_dirname()
+        /*
+        path = '/'+$('#md').children('.dir_name').text();
+        $('#md').parents().each(function () {
+            //alert(path)
+            if($(this).attr('class')=='tree'){
+                //alert($(this).children('.dir_name').text())
+                bf_path = $(this).children('.dir_name').text();
+                path='/'+bf_path+path;
+                //alert(path)
+                //alert(path)
+            }
+
+        })
+        */
+    })
+</script>
+
+{% endblock %}

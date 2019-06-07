@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block css %}
+    {{ block.super }}
+    <!-- Editatable  Css-->
+    <!-- DataTables -->
+    <link href="{% static 'assets/plugins/datatables/jquery.dataTables.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'assets/plugins/datatables/buttons.bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'assets/plugins/datatables/fixedHeader.bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'assets/plugins/datatables/responsive.bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'assets/plugins/datatables/scroller.bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+
+
+    <link href="{% static 'assets/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.css' %}" rel="stylesheet" />
+    <style>
+
+        .sub {color: #ffffff;border:none;background-color: #50b4fa;line-height: 27px;
+            box-shadow: 1px 2px 1px #acb5bc;border-radius:2px;width: 55px;}
+    </style>
+    <script src="{% static 'assets/js/modernizr.min.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'ckeditor/ckeditor.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'datetime/jquery.datetimepicker.css' %}"/>
+    <link href="{% static 'assets/plugins/bootstrap-daterangepicker/daterangepicker.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-box table-responsive">
+               <h4 class="header-title m-t-0 m-b-30" style="padding-bottom: 4% ">
+                    <form role="search" class="navbar-left app-search pull-left hidden-xs">
+                        <div style="border:0px solid red;">
+                            {% for department in sort_list %}
+                                <div class="radio radio-success radio-single" style="display: inline-block;">
+                                    <input type="radio"   value="{{ department.select_id }}" name="department_name"
+                                           {% ifequal department_name  department.select_id %}checked="checked"{% else %}{% endifequal %} id="{{ department.select_id }}" hidden="hidden">
+                                </div>
+                                <label style="cursor:pointer;" for="{{ department.select_id }}">{{ department.name_cn }}</label>
+                            {% endfor %}
+                        </div>
+                        <input type="submit" value="submit" id="search_kanban" hidden="hidden">
+                        <script>
+                            $(document).ready(function () {
+                                $('label').each(function () {
+                                    if($('#'+$(this).attr('for')).attr('checked')=='checked'){
+                                        $(this).css('color','#71b6f9');
+                                    }
+                                });
+                                $('.radio').click(function () {
+                                    $(this).next().css('color','#71b6f9');
+                                    $('#search_kanban').click()
+                                })
+                            })
+                        </script>
+
+                        <div class="form-group" style="padding-top: 1.5%;padding-bottom: 2%">
+                            <div class="col-md-4">
+                                <div class="input-daterange input-group col-md-10" id="date-range">
+                                    <input type="text" value="" class="form-control" name="start" />
+                                    <span class="input-group-addon bg-primary b-0 text-white">to</span>
+                                    <input type="text" value="" class="form-control" name="end" />
+                                </div>
+
+                            </div>
+                            <input type="submit" value="筛选"  class="sub">
+                        </div>
+                    </form>
+
+
+                </h4>
+
+                <table id="datatable-buttons" class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th style="text-align: center;">姓名</th>
+                        <th style="text-align: center;">实到(天)</th>
+                        <th style="text-align: center;">公休(天)</th>
+                        {% for type in types %}
+                            <th style="text-align: center;">{{ type.name }}(天)</th>
+                        {% endfor %}
+                        <th style="text-align: center;">旷工（天）</th>
+                        <th style="text-align: center;">迟到（分）</th>
+                        <th style="text-align: center;">忘打卡（次）</th>
+                        <th style="text-align: center;">缺勤(天)</th>
+                        <th style="text-align: center;">备注</th>
+                        <th style="text-align: center;">实际出勤</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for content_list in contents_list %}
+                        <tr >
+                            <td style="vertical-align: middle;text-align: center;">{% for content in content_list %}{% if forloop.first %}{{ content.user }}{% endif %}{% endfor %}</td>
+                            <td style="vertical-align: middle;text-align: center;"></td>
+                            <td style="vertical-align: middle;text-align: center;"></td>
+                            {% for content in content_list %}
+                                <td style="vertical-align: middle;text-align: center;">{{ content.number }}</td>
+                            {% endfor %}
+                            <td style="vertical-align: middle;text-align: center;"></td>
+                            <td style="vertical-align: middle;text-align: center;"></td>
+                            <td style="vertical-align: middle;text-align: center;"></td>
+                            <td style="vertical-align: middle;text-align: center;"></td>
+                            <td style="vertical-align: middle;text-align: center;"></td>
+                            <td style="vertical-align: middle;text-align: center;"></td>
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+                <span><small style="color: red">默认显示当月数据。</small></span>
+            </div>
+        </div><!-- end col -->
+    </div>
+    <!-- end row -->
+
+
+{% endblock %}
+
+
+{% block jQuery %}
+    {{ block.super }}
+
+
+
+    <!-- Datatables-->
+    <script src="{% static 'report_excel/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.bootstrap.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/buttons.bootstrap.min.js' %}"></script>
+
+    <script src="{% static 'assets/plugins/datatables/jszip.min.js' %}"></script>  <!-- excel-->
+    <!--<script src="{% static 'assets/plugins/datatables/pdfmake.min.js' %}"></script>-->  <!-- pdf -->
+    <!--<script src="{% static 'assets/plugins/datatables/vfs_fonts.js' %}"></script>-->    <!-- pdf -->
+    <script src="{% static 'report_excel/buttons.html5.js' %}"></script>
+
+    <script src="{% static 'assets/plugins/datatables/buttons.print.min.js' %}"></script>   <!-- print -->
+
+    <script src="{% static 'assets/plugins/datatables/dataTables.fixedHeader.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.keyTable.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/responsive.bootstrap.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.scroller.min.js' %}"></script>
+
+    <!-- Datatable init js -->
+    <script src="{% static 'assets/pages/datatables.init.js' %}"></script>
+
+    <script src="{% static 'datetime/jquery.datetimepicker.full.js' %}"></script>
+
+    <script src="{% static 'assets/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js' %}"></script>
+
+    <script src="{% static 'assets/plugins/bootstrap-daterangepicker/daterangepicker.js' %}"></script>
+    <script src="{% static 'assets/plugins/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#datatable').dataTable();
+            $('#datatable-keytable').DataTable( { keys: true } );
+            $('#datatable-responsive').DataTable();
+            $('#datatable-scroller').DataTable( { ajax: "{% static 'assets/plugins/datatables/json/scroller-demo.json' %}", deferRender: true, scrollY: 380, scrollCollapse: true, scroller: true } );
+            var table = $('#datatable-fixed-header').DataTable( { fixedHeader: true } );
+        } );
+        TableManageButtons.init();
+
+    </script>
+
+    <script>/*
+     window.onerror = function(errorMsg) {
+     $('#console').html($('#console').html()+'<br>'+errorMsg)
+     }*/
+
+    $.datetimepicker.setLocale('ch');
+
+    jQuery('#date-range').datepicker({
+        toggleActive: true
+    });
+    </script>
+{% endblock %}
+

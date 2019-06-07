@@ -1,0 +1,57 @@
+{% extends 'manage/manage_base.html' %}
+{% load staticfiles %}
+{% block head_js %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'ckeditor/ckeditor.js' %}"></script>
+    <script type="text/javascript" src="{% static 'jQuery.js' %}"></script>  <!--jq压缩文件-->
+
+
+{% endblock %}
+
+{% block content %}
+
+            <div style="border: 1px solid #eef0f1;border-radius:5px;background-color: #fff;padding-left:18px;padding-top:10px;font-size: 16px;" id="show_index">
+
+            {{ project_index|safe }}
+    	    </div>
+            <div style="cursor: pointer;float: right;" id="edit_button">编辑</div>
+
+
+            <div class="row" id="edit" hidden="hidden">
+                <div class="col-sm-12">
+                    <div class="card-box">
+                        <!--
+                        <h4 class="header-title m-t-0 m-b-30">编辑首页</h4>
+                        -->
+                        {% for error in error %}
+                            <h2 style="color: red">{{ error }}</h2>
+                        {% endfor %}
+
+                        <form action="" method="post">
+                            <textarea id="elm1" name="content">{{ project_index }}</textarea>
+                            <script type="text/javascript">CKEDITOR.replace('content')</script>
+                            <input type="submit" class="batn btn-purple btn-rounded w-md" value="提交" style="margin-top: 20px;position: absolute;right: 114px;">
+                            <input type="button" class="batn btn-purple btn-rounded w-md" value="取消" style="margin-top: 20px;position: absolute;right: 0px;" id="cancel">
+                        </form>
+                    </div>
+                </div><!-- end col -->
+            </div>
+                <!-- End row -->
+
+
+<script>
+
+    $('#edit_button').click(function () {
+        $('#edit').show();
+        $(this).hide();
+        $('#show_index').hide();
+
+    });
+    $('#cancel').click(function () {
+        $('#edit').hide();
+        $('#show_index').show();
+        $('#edit_button').show();
+    })
+
+</script>
+{% endblock %}

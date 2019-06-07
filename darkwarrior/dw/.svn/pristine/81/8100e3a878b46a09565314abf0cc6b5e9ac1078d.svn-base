@@ -1,0 +1,431 @@
+#coding:utf8
+from django.shortcuts import *
+from models import *
+from decorator import *
+
+
+
+
+
+@checkCdkey
+@is_login
+@views_permission
+def manage(request,*args,**kwargs):        #管理首页
+    user = kwargs['user']
+    staff_user = kwargs['staff_user']
+    project_id = kwargs['project_id']
+    project = kwargs['project']
+
+
+    return render_to_response('manage_l/manage_index.html',locals())
+
+
+@checkCdkey
+@is_login
+@views_permission
+def user(request,*args,**kwargs):       #用户管理
+    user = kwargs['user']
+    staff_user = kwargs['staff_user']
+    project_id = kwargs['project_id']
+    project = kwargs['project']
+    #staff_all_per = kwargs['staff_all_per']
+
+    project_home_permission = Permission.objects.get(project_id = project_id,view_name = 'project_index')  #项目首页权限
+
+
+    ##########################   检索跟本项目相关的所有人员
+    permission_project = Permission.objects.filter(project_id = project_id)
+    project_staff_list = []
+    for i in permission_project:
+        staff_list = i.user_set.all()
+        project_staff_list = list(set(list(staff_list)+project_staff_list))
+
+    for i in permission_project:
+        for j in i.group_set.all():
+            project_staff_list = list(set(list(j.user_set.all())+project_staff_list))
+
+    project_groups = Group.objects.filter(owner_project_id = project_id)
+    for i in project_groups:
+        project_staff_list = list(set(list(i.user_set.all())+project_staff_list))
+    project_staff_list.append(Project.objects.get(id=project_id).creator)
+    project_staff_list = list(set(project_staff_list))
+    all_num = len(project_staff_list)
+    #############################
+    
+    if request.method=="GET":                                                 #搜索功能
+        name = request.GET.get('q')
+        if name is not None:
+            name = name.strip()
+            if len(name)>0:
+                search_user = User.objects.filter(username__contains=name)
+                if search_user:
+                    project_staff_list = [i for i in search_user if i in project_staff_list]
+                    num = len(project_staff_list)
+                    search = '显示搜索结果'
+                else:
+                    project_staff_list = []
+                    num = 0
+                    search = '显示搜索结果'
+        else:
+            name = ''
+    
+    staff_detail = []
+    for i in project_staff_list:
+        staff_id = i.id
+        staff_name = i.username
+        staff_email = i.email
+        staff_position = i.position
+        staff_photo = i.head_portrait
+
+        #staff_active = i.active
+        staff_superuser = i.is_superuser
+        staff_permission = i.user_permission.all()                   #用户个人所有权限
+        ############
+        project_staff_group_list = []                           #用户跟该项目相关的所属小组
+        staff_group = i.group.all()                             #用户所属的所有小组
+        group_permission_all = []
+        for z in staff_group:
+          if len(z.group_permission.filter(project_id = project_id))>0:
+              project_staff_group_list.append(z)
+
+              for j in z.group_permission.all():
+                  group_permission_all.append(j)
+        #print project_staff_group_list,'用户跟该项目相关的所属小组'
+        staff_all_per = list(set(list(staff_permission)+group_permission_all))     #用户跟该项目相关的所有权限
+        ##############
+        if project_home_permission in staff_all_per or i==project.creator or True==i.is_superuser:             #判断用户是否在该项目已激活
+            staff_active = True
+        else:
+            staff_active = False
+        if i==project.creator:                                  #判断是否是项目主管
+            project_director = True
+        else:
+            project_director = False
+        #print staff_permission
+        staff_permission_list=[]                                 #用户跟该项目相关的个人所有权限
+        for s in staff_permission:
+            #print s
+            if s.project_id == project_id:
+                #print s
+                staff_permission_list.append(s)
+
+
+
+
+        staff_detail.append({'staff_id':staff_id,'staff_name':staff_name,'staff_email':staff_email,'staff_position':staff_position,
+                             'staff_photo':staff_photo,'staff_active':staff_active,'staff_superuser':staff_superuser,
+
+                             'staff_permission_list':staff_permission_list,'staff_group':project_staff_group_list,'project_director':project_director })
+    staff_num = len(staff_detail)
+
+    '''
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        add_per = request.POST.get('per')
+        if len(User.objects.filter(username=name))<=0 or len(name.strip())<=0:
+            error = '用户不存在'
+            return render_to_response('manage_l/user.html',locals())
+        else:
+            #per_people = Per_people(name=name,per=add_per)
+            #per_people.save()
+            per = Permission.objects.get(id=add_per)
+            print type(per)
+            staff = User.objects.get(username=name)
+            print type(staff)
+            staff.user_permission.add(per)
+
+            return HttpResponseRedirect('/'+project_id+'/manage_l/user')
+
+    '''
+
+    return render_to_response('manage_l/user.html',locals())
+
+
+@checkCdkey
+@is_login
+@views_permission
+def user_edit(request,*args,**kwargs):       #编辑用户
+    user = kwargs['user']
+    staff_user = kwargs['staff_user']
+    project_id = kwargs['project_id']
+    project = kwargs['project']
+    user_id = kwargs['user_id']
+
+    if User.objects.filter(id=user_id).exists():
+        user = User.objects.get(id=user_id)
+        user_group_project = user.group.filter(owner_project_id = project_id)
+        no_selected_group =[]
+        #print user_group_project
+        for i in Group.objects.filter(owner_project_id = project_id):
+            if i not in user_group_project:
+                no_selected_group.append(i)
+        #print  no_selected_group
+        project_permission = Permission.objects.filter(project_id = project_id)
+        selected_permissions = user.user_permission.filter(project_id = project_id)
+        no_permissions = []
+        for i in project_permission:
+           if i not in selected_permissions:
+               no_permissions.append(i)
+
+        if request.method=="POST":
+            selected_groups = request.POST.getlist('groups')
+            user_permissions = request.POST.getlist('user_permissions')
+            #print user_permissions
+
+            #print selected_groups
+            for i in user_group_project:
+                user.group.remove(i)
+            for i in  selected_permissions:
+                user.user_permission.remove(i)
+            if len(selected_groups)>0:
+                for i in selected_groups:
+                    user.group.add(Group.objects.get(id=i))
+            if len(user_permissions)>0:
+                for i in user_permissions:
+                    user.user_permission.add(Permission.objects.get(id=i))
+
+            return HttpResponseRedirect('/'+project_id+'/manage_l/user/')
+
+
+    else:
+        error = '您所找的项目人员不存在！'
+        return render_to_response('manage_l/action_notice.html',locals())
+
+
+
+    return render_to_response('manage_l/user_edit.html',locals())
+
+@checkCdkey
+@is_login
+@views_permission
+def user_add(request,*args,**kwargs):                 #添加项目人员
+    user = kwargs['user']
+    staff_user = kwargs['staff_user']
+    project_id = kwargs['project_id']
+    project = kwargs['project']
+
+    project_permission = Permission.objects.filter(project_id = project_id)
+    user_all = User.objects.exclude(username='')
+    ##########################   检索跟本项目相关的所有人员
+    permission_project = Permission.objects.filter(project_id = project_id)
+    project_staff_list = []
+    for i in permission_project:
+        staff_list = i.user_set.all()
+        project_staff_list = list(set(list(staff_list)+project_staff_list))
+
+    for i in permission_project:
+        for j in i.group_set.all():
+            project_staff_list = list(set(list(j.user_set.all())+project_staff_list))
+
+    project_groups = Group.objects.filter(owner_project_id = project_id)
+    for i in project_groups:
+        project_staff_list = list(set(list(i.user_set.all())+project_staff_list))
+    #############################
+    waiting_selected = []
+    for i in user_all:
+        if i not in project_staff_list:
+            waiting_selected.append(i)
+
+    if request.method =="POST":
+        member_permissions = request.POST.getlist('member_permissions')
+        selected_members = request.POST.getlist('selected_members')
+        if len(selected_members)>0 and len(member_permissions)>0:
+            for i in selected_members:
+                member = User.objects.get(id=i)
+                for j in member_permissions:
+                    member.user_permission.add(Permission.objects.get(id=j))
+            return HttpResponseRedirect('/'+project_id+'/manage_l/user/')
+        else:
+            error = '两项都为必选项！'
+
+
+
+    return render_to_response('manage_l/user_add.html',locals())
+
+@checkCdkey
+@is_login
+@views_permission
+def group(request,*args,**kwargs):                 #小组管理
+    user = kwargs['user']
+    staff_user = kwargs['staff_user']
+    project_id = kwargs['project_id']
+    project = kwargs['project']
+
+    project_groups = Group.objects.filter(owner_project_id = project_id)
+    all_num = len(project_groups)
+
+    if request.method=="GET":                                                 #搜索功能
+        name = request.GET.get('q')
+        if name is not None:
+            name = name.strip()
+            if len(name)>0:
+                search_group = Group.objects.filter(owner_project_id = project_id,name__contains=name)
+                if search_group:
+                    project_groups = [i for i in search_group if i in project_groups]
+                    num = len(project_groups)
+                    search = '显示搜索结果'
+                else:
+                    project_groups = []
+                    num = 0
+                    search = '显示搜索结果'
+        else:
+            name = ''
+    groups_num = len(project_groups)	  
+    if request.method=="POST":
+        selected_groups = request.POST.getlist('_selected_action')
+        delete_selected = request.POST.get('action')
+
+        selected_groups_sure = request.POST.getlist('selected_groups_sure')
+
+        #print delete_selected
+        if delete_selected=='delete_selected' and len(selected_groups)>0:
+            #print selected_groups
+            notice = '跳转到确定页面'
+            selected_groups_list =[]
+            for i in selected_groups:
+                selected_groups_list.append(Group.objects.get(id=i))
+            num = len(selected_groups_list)
+
+
+        if len(selected_groups_sure)>0:
+            #print selected_groups_sure
+            Group.objects.filter(id__in=selected_groups_sure).delete()
+            return HttpResponseRedirect('/'+project_id+'/manage_l/group/')
+
+
+
+
+
+
+
+
+    return render_to_response('manage_l/group.html',locals())
+
+@checkCdkey
+@is_login
+@views_permission
+def group_edit(request,*args,**kwargs):              #编辑小组
+    user = kwargs['user']
+    staff_user = kwargs['staff_user']
+    project_id = kwargs['project_id']
+    project = kwargs['project']
+    group_id = kwargs['group_id']
+
+    project_permission = Permission.objects.filter(project_id = project_id)
+    group = Group.objects.get(id=group_id)
+    selected_permissions = group.group_permission.all()
+    no_permissions = []
+    for i in project_permission:
+        if i not in selected_permissions:
+            b=no_permissions.append(i)
+    user_all = User.objects.exclude(username='')
+    selected_user = group.user_set.all()
+    no_selected_user  = []
+    for i in user_all:
+        if i not in selected_user:
+            no_selected_user.append(i)
+
+    if request.method =="POST":
+        group_name = request.POST.get('group_name')
+        group_name = group_name.strip()
+        group_permissions = request.POST.getlist('group_permissions')
+        group_members = request.POST.getlist('group_members')
+        #print group_name
+        #print group_permissions
+        if len(group_name)<=0:
+            error_name = '小组名称不能为空！'
+        elif Group.objects.filter(name = group_name).exists() and group_name!=group.name:
+            error_name = '小组名称已存在！'
+        else:
+            for i in selected_permissions:
+                group.group_permission.remove(i)
+            for user in selected_user:
+                user.group.remove(group)
+
+            #print group_name
+            #group_new = Group.objects.create(name = group_name)
+            if len(group_permissions)>0:
+                #print group_permissions
+                for id in group_permissions:
+                    group.group_permission.add(Permission.objects.get(id=id))
+            if len(group_members)>0:
+                for id in group_members:
+                    User.objects.get(id=id).group.add(group)
+            group.name = group_name
+            group.save()
+            return HttpResponseRedirect('/'+project_id+'/manage_l/group/')
+
+
+
+
+    return render_to_response('manage_l/group_edit.html',locals())
+
+@checkCdkey
+@is_login
+@views_permission
+def group_add(request,*args,**kwargs):                  #增加小组
+    user = kwargs['user']
+    staff_user = kwargs['staff_user']
+    project_id = kwargs['project_id']
+    project = kwargs['project']
+
+    project_permission = Permission.objects.filter(project_id = project_id)
+    user_all = User.objects.exclude(username='')
+
+    if request.method =="POST":
+        group_name = request.POST.get('group_name')
+        group_permissions = request.POST.getlist('group_permissions')
+        group_members = request.POST.getlist('group_members')
+        print group_members
+        #print group_name
+        #print group_permissions
+        if len(group_name.strip())<=0:
+            error_name = '小组名称不能为空！'
+        elif Group.objects.filter(name = group_name).exists():
+            error_name = '小组名称已存在！'
+        else:
+            #print group_name
+            group_new = Group.objects.create(name = group_name,owner_project_id = project_id)
+            if len(group_permissions)>0:
+                #print group_permissions
+                for id in group_permissions:
+                    permission = Permission.objects.get(id=id)
+                    group_new.group_permission.add(permission)
+            if len(group_members)>0:
+                for id in group_members:
+                    user = User.objects.get(id=id)
+                    user.group.add(group_new)
+            return HttpResponseRedirect('/'+project_id+'/manage_l/group/')
+
+
+
+
+
+
+    return render_to_response('manage_l/group_add.html',locals())
+
+
+@checkCdkey
+@is_login
+@views_permission
+def group_delete(request,*args,**kwargs):                  #删除小组
+    user = kwargs['user']
+    staff_user = kwargs['staff_user']
+    project_id = kwargs['project_id']
+    project = kwargs['project']
+    group_id = kwargs['group_id']
+
+
+    group_delete = Group.objects.get(id=group_id)
+
+    if request.method =="POST":
+        group_delete.delete()
+        return HttpResponseRedirect('/'+project_id+'/manage_l/group/')
+
+
+
+    return render_to_response('manage_l/group_delete.html',locals())
+
+
+
+

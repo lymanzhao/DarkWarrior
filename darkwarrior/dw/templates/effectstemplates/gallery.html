@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+{% load staticfiles %}                          
+
+
+{% block content %}
+
+                <div style="position: fixed;right:6%;top:120px;z-index:999;border:0px solid red;" id="search_div" >
+                    {% if username_error %}
+                        <div style="font-size:18px;color:#ffffff;margin:0 auto;
+                                 position: fixed;left: 50%;top: 50%;z-index: 99;background:#d3d3da;">用户名不存在!</div>
+                    {% endif %}
+                    {% if sortname_error %}
+                        <div style="font-size:18px;color:#ffffff;margin:0 auto;
+                                 position: fixed;left: 50%;top: 50%;z-index: 99;background:#d3d3da;">数据异常!</div>
+                    {% endif %}
+                    <form action="" method="get" class="navbar-left app-search pull-left hidden-xs" >
+                        <div style="border:0px solid red;">
+                            <input type="text"     value="{% ifnotequal search_content None%}{{ search_content }}{% endifnotequal %}"
+                                   name="search_content" placeholder="关键字" style="border:1px solid gainsboro;line-height: 30px;width: 101%;" class="form-control">
+                            <a onclick="$('#search_gallery').click()" style="cursor:pointer;position: absolute;top: 7px;right: 2px;"><i class="fa fa-search"></i></a>
+                        </div>
+
+                        <input type="submit" value="submit" id="search_gallery" hidden="hidden">
+
+                    </form>
+                    <div id="sort" hidden>sort</div>
+
+                </div>
+
+                <div class="row" style="border:0px solid red;position:fixed;top:100px;z-index: 99;background-color: lightgrey;" id="filter">
+                    <div class="col-lg-12 col-md-12 col-sm-12 " style="border:0px solid #63e4ff;">
+
+                        <div>
+                            <select class="form-control" id="change_filter">
+                                {% for dict in sort_list %}
+                                    <option value="{{ dict.name }}" {% ifequal dict.name 'status'%}selected{% endifequal %} >{{ dict.name_cn }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                        {% for dict in sort_list %}
+                            <div class="portfolioFilter" style="border:0px solid #d46fff;" id="{{ dict.name }}_div" {% ifequal dict.name 'status'%}{% else %}hidden{% endifequal %}><!--{% ifequal dict.name 'status'%}{% else %}hidden{% endifequal %} -->
+                                <a href="#" data-filter="*" class="waves-effect waves-custom current">全部</a>
+                                {% for obj in dict.obj_list %}
+                                <a href="#" data-filter=".{{ obj.name }}" class="waves-effect waves-custom">{{ obj.name }}</a>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row port m-b-20" judge="container">
+                    <div  class='portfolioContainer' style="position: relative;" id="test">
+
+                        {% for dict in all_list %}
+                            {% if dict.task_image %}
+                                <div image = 'true' class="col-sm-6 col-lg-3 col-md-4 {{ dict.task.status }} {{ dict.task.type }} {{ dict.task.priority }} {{ dict.task.version }} {{ dict.task.component }} {{ dict.task.milestone }}" id_="{{ dict.task.id }}">
+                                    <div class="gal-detail thumb">
+
+                                        <a href="/{{ url }}/effects/task/{{ dict.task.id }}"  title="{{ dict.task.summary }}">
+                                            <img src="/media/{{ dict.task_image }}" class="thumb-img" alt="图片丢失">
+                                        </a>
+                                        <h4></h4>
+                                        <p class="text-muted">
+                                            #{{ dict.task.display_id }} {{ dict.task.summary }} {{ dict.task.scene }}场
+                                        </p>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% for image in dict.attachment_image %}
+                                <div image = 'true' class="col-sm-6 col-lg-3 col-md-4 {{ dict.task.status }} {{ dict.task.type }} {{ dict.task.priority }} {{ dict.task.version }} {{ dict.task.component }} {{ dict.task.milestone }}" id_="{{ dict.task.id }}">
+                                    <div class="gal-detail thumb">
+
+                                        <a href="/{{ url }}/effects/task/{{ image.owner.id }}" title="{{ image.name }}">
+                                            <img src="/media/{{ image.url }}" class="thumb-img" alt="图片丢失" >
+                                        </a>
+                                        <h4></h4>
+                                        <p class="text-muted">
+                                            #{{ dict.task.display_id }} {{ dict.task.summary }} {{ dict.task.scene }}场
+
+                                        </p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+
+                        {% endfor %}
+
+
+
+                    </div>
+                </div>
+
+                {% if more_data %}
+                    <div align="center" id="loading_anymore" style="cursor:pointer;" >加载更多</div>
+                {% endif %}
+
+{% endblock %}
+{% block jQuery %}
+
+        {{ block.super }}
+
+
+       <script type="text/javascript" src="{% static 'assets/plugins/magnific-popup/dist/jquery.magnific-popup.min.js' %}"></script>
+       <script type="text/javascript" src="/static/assets/plugins/isotope/dist/isotope.pkgd.min.js" id="gallery_js"></script>
+        <script src="{% static 'assets/js/jquery.core.js' %}"></script>
+       <script src="{% static 'assets/js/jquery.app.js' %}"></script>
+       <script src="/static/lly/query_select.js" id="query_select"></script><!-- 单选下拉控件-->
+
+    <script type="text/javascript">
+            $(window).load(function(){
+                var $container = $('.portfolioContainer');
+                     $container.isotope({
+                        filter: '*',
+                        animationOptions: {
+                            duration: 750,
+                            easing: 'linear',
+                            queue: false
+                        }
+                    });
+
+                $('.portfolioFilter a').click(function(){
+                    $('.portfolioFilter .current').removeClass('current');
+                    $(this).addClass('current');
+
+                    var selector = $(this).attr('data-filter');
+                    $container.isotope({
+                        filter: selector,
+                        animationOptions: {
+                            duration: 750,
+                            easing: 'linear',
+                            queue: false
+                        }
+                    });
+                    return false;
+                });
+            });
+            $(document).ready(function() {
+                $('.image-popup').magnificPopup({
+                    type: 'image',
+                    closeOnContentClick: true,
+                    mainClass: 'mfp-fade',
+                    gallery: {
+                        enabled: true,
+                        navigateByImgClick: true,
+                        preload: [0,1] // Will preload 0 - before current, and 1 after the current image
+                    }
+                });
+
+
+
+                //gallery loading
+                var flag = false;
+                var page_num = 1;
+                $(window).scroll(function() {
+                    if(flag){
+                        return false;
+                    }
+                    if ($(document).scrollTop() >= $(document).height() - $(window).height()-5) {
+                        if($('.current').attr('data-filter')!='*'){
+                            return false
+                        }
+                        page_num +=1;
+                        var tasks_id_all='';
+                        $('[image="true"]').each(function() {
+                            if($(this).attr('id_')!=undefined){
+                                tasks_id_all+=$(this).attr('id_')+',';
+                            }
+
+                        });
+
+                        var search_content  = $('[name="search_content"]').val();
+                        var project_id = '{{ project_archive.id }}';
+                        var xmlhttp;
+
+                        if (window.XMLHttpRequest)
+                        {// code for IE7+, Firefox, Chrome, Opera, Safari
+                            xmlhttp=new XMLHttpRequest();
+                        }
+                        else
+                        {// code for IE6, IE5
+                            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+                        }
+                        xmlhttp.onreadystatechange=function()
+                        {
+                            if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                            {
+                                if(xmlhttp.responseText=='False'){
+                                    $('#loading_anymore').hide();
+                                }
+                                else{
+                                    $('[judge="container"]').last().after(xmlhttp.responseText);
+                                    flag = false;
+                                    $('#loading_anymore').html('加载更多');
+                                    setTimeout("$('#sort').click()",500)
+
+                                }
+                            }
+                        };
+                        xmlhttp.open("GET","/"+project_id+"/effects/loading_gallery/"+tasks_id_all+"/"+page_num+"/?"+'&search_content='+search_content,true);
+                        xmlhttp.send();
+                        flag = true;
+                        $('#loading_anymore').html('正在加载数据。。。。');
+
+                    }
+                });
+                //gallery loading --end
+
+                $('#change_filter').change(function () {
+                    $('.portfolioFilter').hide();
+                    $('#'+$(this).val()+'_div').show();
+                });
+
+
+                $('.waves-effect').click(function () {
+                    var filter_name = $(this).attr('data-filter');
+                    if(filter_name!='*'){
+                        $('[judge="container"]').show();
+                        $('[image="true"]').hide();
+                        $(filter_name).show();
+                        sort();
+                        $('#loading_anymore').hide();
+                        $('.portfolioContainer').each(function () {
+                            if($(this).children().length==$(this).children('div:hidden').length+1){
+                                $(this).parent().hide();
+                            }
+                        });
+                        //$(this).css('background','grey')
+
+                    }
+                    else{
+                        $('[judge="container"]').show();
+                        $('[image="true"]').show();
+                        sort();
+                        $('#loading_anymore').show();
+                    }
+
+                });
+
+                $('#sort').click(function () {
+                    sort();
+                });
+
+                function sort() {
+                    var $container = $('.portfolioContainer');
+                        $container.isotope({
+                            filter: '*',
+                            animationOptions: {
+                                duration: 750,
+                                easing: 'linear',
+                                queue: false
+                            }
+                        });
+
+                }
+
+            });
+
+        </script>
+
+{% endblock %}

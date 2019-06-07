@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block content %}
+    <style type="text/css">
+    .subversion-form-register{
+        display: block;
+        margin-bottom: 10px;
+        margin-top:10px;
+        background-color: #ffffff;
+    }
+    .subversion-form-register-input{
+        border: 1px solid #E3E3E3;
+        border-radius: 4px;
+        padding-left: 5px;
+        width:60%;
+    }
+    .subversion-form-button{
+        margin-left:10px;
+        margin-top: 10px;
+        width:80%;
+    }
+    .subversion-header{
+        background-color:#71b6f9;
+        border: 1px solid #E3E3E3;
+        border-radius: 4px;
+        line-height:38px;
+        font-size: 24px;
+        color:#fff;
+    }
+    .subversion-span{
+        border: 1px solid #E3E3E3;
+        border-radius: 4px;
+        line-height:38px;
+        font-size: 16px;
+        display: block;
+        margin-top: 10px;
+    }
+    </style>
+<div class="col-lg-12" align="center" >
+                    
+                        <div class="card-box" >
+                            <h4 class="subversion-header">注册版本库</h4>
+                            <form method="post" action=" " >
+                                <div>
+                                    <span>{% for error in errors %}{{ error }}{% endfor %}</span>
+                                </div>
+                               <div class="subversion-form-register">
+                                   <input type="text" name="svn_username" maxlength="80" placeholder="用户名" class="subversion-form-register-input">
+                               </div>
+                               <div class="subversion-form-register">
+                                   <input type="password" name="svn_password" maxlength="80" placeholder="密码" class="subversion-form-register-input">
+                               </div>
+                               <div class="subversion-form-register">
+                                   <input type="password" name="svn_password2" maxlength="80" placeholder="确认密码" class="subversion-form-register-input">
+                               </div>
+
+                                <div class="subversion-form-button">
+                                    <input type="submit" value="注册" is_archive="true"> <input type="reset" value="取消" is_archive="true">
+                                </div>
+                            </form>
+                            <span class="subversion-span">注册说明：注册账号用于版本库subversion，提交版本时须用到账号和密码，账号和密码不可修改。</span>
+                        </div>
+                    
+</div>
+
+{% endblock %}

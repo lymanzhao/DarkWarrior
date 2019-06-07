@@ -1,0 +1,145 @@
+{% for comment in comment_all %}
+               <article class="timeline-item alt"  time="{{ comment.comment_parent.time }}" owner="{{ comment.comment_parent.owner }}" _id="{{comment.comment_parent.id  }}">
+                    <div class="timeline-desk">
+                                 <div class="panel">
+                                    <div class="panel-body">
+
+                                     <span class="timeline-icon"><i class="zmdi zmdi-circle"></i></span>
+
+
+                    <div class="media m-b-10"  style="border:1px solid #dddddd;border-radius: 1%;padding: 5px;background-color: #e2faff;"
+                                                 onclick="window.location.href='/{{ url }}/task/{{ comment.owner_task.id }}/'">
+                        <div class="media-left" >
+                            {% if comment.comment_parent.owner.head_portrait %}
+                                <a href="#">
+                                    <img class="media-object img-circle thumb-sm" alt="64x64" src="/media/{{ comment.comment_parent.owner.head_portrait }}">
+                                </a>
+                            {% endif %}
+                        </div>
+
+                        <div class="media-body" name='comment_div' style='border:0px solid red;'>
+                            <p class="font-10 text-muted m-b-0">
+                                <h4   style="border: 0px solid red;text-align: left;"  >
+                                    <small style="border: 0px solid red;">
+                                        <a   style="color: #337ab7">{{ comment.comment_parent.owner }}</a>
+                                        {% ifnotequal  comment.comment_parent.at_people ''%}
+                                          @ {{comment.comment_parent.at_people}}
+                                        {% endifnotequal %}
+
+                                    </small>
+                                    <small>：{{ comment.comment_parent.content }}</small>
+                                </h4>
+                                <div class="col-md-12">
+                                    {% for image in comment.comment_image %}
+                                        <div class="col-md-8" style="text-align: center">
+                                            <a href="/media/{{ image.url }}">
+                                                <img src="/media/{{ image.url }}" class="img-thumbnail" style="max-width: 100%" >
+                                            </a>
+                                        </div>
+                                    {% endfor %}
+
+                                    {% for file in comment.comment_file %}
+                                        <div class="col-md-8" style="text-align: center">
+                                            <a href="/media/{{ file.url }}">
+                                                <p class=" m-b-10">{{ file.name }}</p>
+                                            </a>
+                                        </div>
+                                    {% endfor %}
+
+                                    {% for video in comment.comment_video %}
+                                        <div class="col-md-12" style="text-align: center">
+                                            <video id="video1"  width="100%" height="75%" controls>
+                                                <source src="/media/{{ video.url }}">
+                                            </video>
+                                            <div style="height: 21%">
+                                                <p style="text-align: center"><small style="color: #989898">{{ video.name }}</small></p>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <small>{{ comment.comment_parent.time }}</small>
+
+
+                            </p>
+
+
+
+
+
+                         </div>
+
+                            {% for comment_child in comment.comment_child %}
+                                <div class="media" name='comment_div' style='margin-left:35px;border:0px solid gray;'>
+
+                                    <div class="media-left">
+                                        {% if comment_child.owner.head_portrait %}
+                                            <a href="#">
+                                                <img class="media-object img-circle thumb-sm" alt="64x64" src="/media/{{ comment_child.owner.head_portrait }}">
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                    <div class="media-body">
+                                        <p class="font-13 text-muted m-b-0">
+                                            <h4 class="media-heading" style="text-align: left;">
+                                                <small>
+                                                    <a  style="color: #337ab7">{{ comment_child.owner }}</a>
+                                                    <small>回复</small>
+                                                    <a href="" style="color: #337ab7">{{ comment_child.author }}</a>
+                                                </small>
+                                                <small>：{{ comment_child.content }}</small>
+                                            </h4>
+                                            <small>{{ comment_child.time }}</small>
+
+                                        </p>
+
+
+
+
+                                    </div>
+                                </div>
+                            {% endfor %}
+
+
+                    </div>
+
+
+
+                                             </div>
+                                    </div>
+                               </div>
+                            </article>
+{% endfor %}
+
+
+<script>
+
+    $(document).ready(function(){
+
+        $("article").each(function(){
+
+              if($(this).prev().attr('owner')!=undefined && $(this).prev().attr('owner')==$(this).attr('owner')){
+                $(this).attr('class',$(this).prev().attr('class'));
+                if($(this).attr('class')=='timeline-item alt'){
+                    $(this).find('.panel-body').prepend('<span class="arrow-alt"></span>');
+                }
+                  else if($(this).attr('class')=='timeline-item'){
+                    $(this).find('.panel-body').prepend('<span class="arrow"></span>');
+                }
+              }
+              else{
+                  if($(this).prev().attr('class')=='timeline-item alt'){
+                      $(this).attr('class','timeline-item');
+                      $(this).find('.panel-body').prepend('<span class="arrow"></span>');
+                  }
+                  else if($(this).prev().attr('class')=='timeline-item'){
+                      $(this).attr('class','timeline-item alt');
+                      $(this).find('.panel-body').prepend('<span class="arrow-alt"></span>');
+                  }
+                  else{
+                      $(this).find('.panel-body').prepend('<span class="arrow-alt"></span>');
+                  }
+              }
+        });
+    })
+</script>
+

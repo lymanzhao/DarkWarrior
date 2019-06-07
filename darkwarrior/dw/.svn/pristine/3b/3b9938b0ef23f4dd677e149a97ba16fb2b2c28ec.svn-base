@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+{% block navbar-custom %}
+{% endblock %}
+{% block content %}
+    <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center card-box">
+
+                            <div>
+                                <h3 style="color: red">{{ error }}</h3>
+                                <img src="/media/{{ personal_information.head_portrait }}" class="img-circle thumb-xl img-thumbnail m-b-10" alt="profile-image">
+
+                                <h4 class="media-heading m-b-0">{{ user_now }}</h4>
+
+
+                                <div class="text-left">
+                                    <p class="text-muted font-13"><strong>姓名 :</strong> <span class="m-l-15">{{ personal_information.name }}</span></p>
+
+                                    <p class="text-muted font-13"><strong>职位 :</strong><span class="m-l-15">{{ personal_information.position }}</span></p>
+
+                                    <p class="text-muted font-13"><strong>性别 :</strong> <span class="m-l-15">{{ personal_information.gender }}</span></p>
+
+                                    <p class="text-muted font-13"><strong>家庭住址 :</strong> <span class="m-l-15">{{ personal_information.address }}</span></p>
+
+                                    <p class="text-muted font-13"><strong>邮箱 :</strong> <span class="m-l-15">{{ personal_information.email }}</span></p>
+
+                                    <p class="text-muted font-13"><strong>手机号 :</strong> <span class="m-l-15">{{ personal_information.phone }}</span></p>
+                                </div>
+
+                                <button type="button" class="btn btn-custom btn-rounded waves-effect waves-light" id="information_change">修改个人资料</button>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row" id="settings" style="display: none">
+                                <div class="col-lg-6 ">
+                                    <form class="form-horizontal m-t-20" role="form" action="" method="post" enctype="multipart/form-data">
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">姓名</label>
+                                            <div class="col-md-10">
+                                                <input type="text" class="form-control" placeholder="请输入姓名" name="personal_name" value="{{ personal_information.name }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label" >头像</label>
+                                            <div class="col-md-10">
+                                                <input type="file" class="form-control"  name="head_portrait" >
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">职位</label>
+                                            <div class="col-md-10">
+                                                <input type="text" class="form-control" placeholder="请输入您的职位" name="position" value="{{ personal_information.position }}">
+                                            </div>
+                                        </div>
+										<div class="form-group">
+                                            <label class="col-md-2 control-label">性别</label>
+                                            <div class="col-md-10">
+                                                <input type="text" class="form-control" placeholder="请输入您的性别" name="gender" value="{{ personal_information.gender }}">
+                                            </div>
+                                        </div>
+										<div class="form-group">
+                                            <label class="col-md-2 control-label">家庭住址</label>
+                                            <div class="col-md-10">
+                                                <input type="text" class="form-control" placeholder="请输入您的家庭住址" name="address" value="{{ personal_information.address }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">邮箱</label>
+                                            <div class="col-md-10">
+                                                <input type="text" class="form-control" placeholder="请输入您的邮箱" name="email" value="{{ personal_information.email }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">手机号</label>
+                                            <div class="col-md-10">
+                                                <input type="text" class="form-control" placeholder="请输入您的手机号" name="phone" value="{{ personal_information.phone }}">
+                                            </div>
+                                        </div>
+                                        <div class="row" style="margin-left: 86%;margin-top: 5%">
+                                            <div class="col-sm-4">
+                                                <input type="submit" class="batn btn-purple btn-rounded w-md btn btn-custom btn-bordred btn-block waves-light " value="提交">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div><!-- end col -->
+                    </div>
+    </div>
+{% endblock %}
+
+{% block jQuery %}
+    {{ block.super }}
+<script>
+    var personal_settings = document.getElementById('information_change');
+    var settings = document.getElementById('settings');
+    personal_settings.onclick = function(){
+        if (settings.style.display == 'none'){
+            settings.style.display = 'block';
+        }
+        else{
+            settings.style.display = 'none';
+        }
+    };
+</script>
+{% endblock %}

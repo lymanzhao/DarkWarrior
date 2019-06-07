@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+{% block navbar-custom %}
+{% endblock %}
+
+{% block Navigation %}
+    <!-- Navigation Bar-->
+    <header id="topnav">
+
+
+        <div class="navbar-custom">
+            <div class="container">
+
+                <!-- Navigation Menu-->
+                <ul class="navigation-menu">
+                    <li class="has-submenu">
+                        <a href="/"><i class="fa fa-home" aria-hidden="true"></i></a>
+                    </li>
+
+                </ul>
+                <!-- End navigation menu  -->
+
+                <ul class="nav navbar-nav navbar-right pull-right">
+                    {% if not user_now %}
+                        <li>
+                            <a href="/login/" class="logo">
+                                <span>登录</span>
+                            </a>
+                        </li>
+
+                        <li class="logo">
+                            <a href="/registration/">
+                                <span>注册</span>
+                            </a>
+                        </li>
+                    {% else %}
+
+                        <li class="dropdown user-box">
+                            <a href="" class="dropdown-toggle waves-effect waves-light profile " data-toggle="dropdown" aria-expanded="true">
+                                {% if user_head_portrait %}
+                                    <img src="/media/{{ user_head_portrait }}" alt="user-img" class="img-circle user-img" style="width:37px;height:37px;">
+                                {% else %}
+                                    <img src="{% static 'assets/images/users/user-default.jpg' %}" alt="user-img" class="img-circle user-img" style="width:37px;">
+                                {% endif %}
+                                <div class="user-status away"><i class="zmdi zmdi-dot-circle"></i></div>
+                            </a>
+
+                            <ul class="dropdown-menu">
+                                <li><a href="/personal_log/"><i class="ti-agenda m-r-5"></i><span>个人日志</span></a></li>
+                                <li><a href="/personal_settings"><i class="ti-user m-r-5"></i><span>个人资料</span></a></li>
+                                <!--<li><a href="/{{ url }}/chat_register/"><i class="ti-comments m-r-5"></i><span>聊天用户注册</span></a></li>-->
+                                <li><a href="/password_change/"><i class="ti-lock m-r-5"></i><span>修改密码</span></a></li>
+                                <li><a href="/logout/"><i class="ti-power-off m-r-5"></i><span>注销</span></a></li>
+                            </ul>
+                        </li>
+
+                    {% endif %}
+                </ul>
+
+
+            </div>
+        </div>
+
+
+    </header>
+    <!-- End Navigation Bar-->
+{% endblock %}
+{% block content %}
+    <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center card-box">
+
+                            <div>
+                                <h3 style="color: red">{{ error }}</h3>
+                                <img src="/media/{{ personal_information.head_portrait }}" class="img-circle thumb-xl img-thumbnail m-b-10" alt="profile-image">
+
+                                <h4 class="media-heading m-b-0">{{ user_now }}</h4>
+
+
+                                <div class="text-left">
+                                    <p class="text-muted font-13"><strong>姓名 :</strong> <span class="m-l-15">{{ personal_information.name }}</span></p>
+
+                                    <p class="text-muted font-13"><strong>职位 :</strong><span class="m-l-15">{{ personal_information.position }}</span></p>
+
+                                    <p class="text-muted font-13"><strong>性别 :</strong> <span class="m-l-15">{{ personal_information.gender }}</span></p>
+
+                                    <p class="text-muted font-13"><strong>家庭住址 :</strong> <span class="m-l-15">{{ personal_information.address }}</span></p>
+
+                                    <p class="text-muted font-13"><strong>邮箱 :</strong> <span class="m-l-15">{{ personal_information.email }}</span></p>
+
+                                    <p class="text-muted font-13"><strong>手机号 :</strong> <span class="m-l-15">{{ personal_information.phone }}</span></p>
+                                </div>
+
+                                <button type="button" class="btn btn-custom btn-rounded waves-effect waves-light" id="information_change">修改个人资料</button>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row" id="settings" style="display: none">
+                                <div class="col-lg-6 ">
+                                    <form class="form-horizontal m-t-20" role="form" action="" method="post" enctype="multipart/form-data">
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">姓名</label>
+                                            <div class="col-md-10">
+                                                <input type="text" class="form-control" placeholder="请输入姓名" name="personal_name" value="{{ personal_information.name }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label" >头像</label>
+                                            <div class="col-md-10">
+                                                <input type="file" class="form-control"  name="head_portrait" >
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">职位</label>
+                                            <div class="col-md-10">
+                                                <input type="text" class="form-control" placeholder="请输入您的职位" name="position" value="{{ personal_information.position }}">
+                                            </div>
+                                        </div>
+										<div class="form-group">
+                                            <label class="col-md-2 control-label">性别</label>
+                                            <div class="col-md-10">
+                                                <input type="text" class="form-control" placeholder="请输入您的性别" name="gender" value="{{ personal_information.gender }}">
+                                            </div>
+                                        </div>
+										<div class="form-group">
+                                            <label class="col-md-2 control-label">家庭住址</label>
+                                            <div class="col-md-10">
+                                                <input type="text" class="form-control" placeholder="请输入您的家庭住址" name="address" value="{{ personal_information.address }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">邮箱</label>
+                                            <div class="col-md-10">
+                                                <input type="text" class="form-control" placeholder="请输入您的邮箱" name="email" value="{{ personal_information.email }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">手机号</label>
+                                            <div class="col-md-10">
+                                                <input type="text" class="form-control" placeholder="请输入您的手机号" name="phone" value="{{ personal_information.phone }}">
+                                            </div>
+                                        </div>
+                                        <div class="row" style="margin-left: 86%;margin-top: 5%">
+                                            <div class="col-sm-4">
+                                                <input type="submit" class="batn btn-purple btn-rounded w-md btn btn-custom btn-bordred btn-block waves-light " value="提交">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div><!-- end col -->
+                    </div>
+    </div>
+{% endblock %}
+
+{% block jQuery %}
+    {{ block.super }}
+<script>
+    var personal_settings = document.getElementById('information_change');
+    var settings = document.getElementById('settings');
+    personal_settings.onclick = function(){
+        if (settings.style.display == 'none'){
+            settings.style.display = 'block';
+        }
+        else{
+            settings.style.display = 'none';
+        }
+    };
+</script>
+{% endblock %}

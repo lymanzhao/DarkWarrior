@@ -1,0 +1,220 @@
+{% extends 'manage/manage_base.html' %}
+
+{% load staticfiles %}
+
+{% block css %}
+    {{ block.super }}
+    <!-- Editatable  Css-->
+    <link rel="stylesheet" href="{% static 'assets/plugins/magnific-popup/dist/magnific-popup.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/plugins/jquery-datatables-editable/datatables.css' %}" />
+    <!--拾色器 -->
+    <link rel="stylesheet" href="{% static 'pick-a-color/pick-a-color-1.2.3.min.css'%}">
+    <style>
+    .sub {color: #ffffff;border:none;background-color: #50b4fa;line-height: 27px;
+            box-shadow: 1px 2px 1px #acb5bc;border-radius:2px;}
+    </style>
+{% endblock %}
+
+{% block content %}
+
+
+<div class="">
+<h3>甘特图颜色</h3>
+<br>
+{% if notice %}
+<span style="color:#9b9b9b;">您还没有属于自己的项目类型！</span>
+    <a href="/{{ url }}/manage/add_project_type/">添加</a>
+{% endif %}
+                        <table class="table table-striped" id="datatable-editable">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center">ID</th>
+                                    <th style="text-align: center">任务类型</th>
+                                    <th style="text-align: center">任务栏背景色</th>
+                                    <th style="text-align: center">文本颜色</th>
+                                     <th style="text-align: center">进度条透明度</th>
+                                     <th style="text-align: center">操作</th>
+
+                                </tr>
+                            </thead>
+
+                            <tbody style="text-align: center">
+                                {% for task_type in task_type_list%}
+                                    <tr>
+                                        <form action="" method="post" >
+                                                <td><a href="#" style="list-style-type: none;color: red">{{ task_type.type_id }}</a>
+                                                    <input type="" value="{{ task_type.type_id }}" name="type_id" hidden="hidden"></td>
+                                                <td>{{ task_type.type_name }}</td>
+
+                                                <td>
+                                                    <input type="text"   value="{% if task_type.color%}{{ task_type.color }}{% else %}{{ color_default }}{% endif %}" class="pick-a-color form-control">
+                                                    <input type="text"   value="{% if task_type.color%}{{ task_type.color }}{% else %}{{ color_default }}{% endif %}" name="color" hidden="hidden">
+                                                </td>
+                                                <td>
+                                                    <input type="text"   value="{% if task_type.textColor%}{{ task_type.textColor }}{% else %}#FFFFFF{% endif %}" name="textColor" class="pick-a-color form-control">
+                                                    <input type="text"   value="{% if task_type.textColor%}{{ task_type.textColor }}{% else %}#FFFFFF{% endif %}" name="textColor" hidden="hidden">
+                                                </td>
+                                                <td><input type="range"   value="{% if task_type.progressColor%}{{ task_type.progressColor }}{% else %}38{% endif %}" name="progressColor"
+                                                                                  min="1" max="100" title="{% if task_type.progressColor%}{{ task_type.progressColor }}%{% else %}38%{% endif %}"></td>
+
+
+
+
+
+                                                <td>
+                                                      <input type="text"   value="gantt_color" name="judge" hidden="hidden">
+                                                    <input type="submit" name="change" style="border:#000080;" value="修改" class="sub">
+                                                        <input type="submit" name="reset" style="border:#000080;" value="恢复默认" class="sub">
+                                                </td>
+                                        </form>
+                                    </tr>
+
+
+
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+
+<hr >
+<div class="">
+<h3>甘特图皮肤</h3>
+    <br>
+                        <table class="table table-striped" id="datatable-editable">
+                            <thead>
+                                <tr>
+
+                                    <th style="text-align: center">露台</th>
+                                    <th style="text-align: center">天蓝</th>
+                                    <th style="text-align: center">草甸</th>
+                                     <th style="text-align: center">百老汇</th>
+                                     <th style="text-align: center">操作</th>
+
+                                </tr>
+                            </thead>
+
+                            <tbody style="text-align: center">
+
+                                    <tr>
+                                        <form action="" method="post" >
+
+                                                <td>
+                                                    <div class="radio radio-success radio-single" style="padding-left:20px;">
+                                                    <input type="radio"   value="dhtmlxgantt_terrace.css" name="gantt_skin"
+                                                        {% ifequal gantt_css  'dhtmlxgantt_terrace.css'%}checked="" {% endifequal %} >
+                                                     <label></label>
+                                                     </div>
+                                                </td>
+
+                                                <td>
+                                                    <div class="radio radio-success radio-single" style="padding-left:20px;">
+                                                    <input type="radio"   value="dhtmlxgantt_skyblue.css" name="gantt_skin"
+                                                         {% ifequal gantt_css  'dhtmlxgantt_skyblue.css'%}checked="" {% endifequal %}>
+                                                    <label></label>
+                                                     </div>
+                                                </td>
+                                                <td>
+                                                    <div class="radio radio-success radio-single" style="padding-left:20px;">
+                                                    <input type="radio"   value="dhtmlxgantt_meadow.css" name="gantt_skin"
+                                                         {% ifequal gantt_css  'dhtmlxgantt_meadow.css'%}checked="" {% endifequal %}>
+                                                    <label></label>
+                                                     </div>
+                                                </td>
+                                                <td>
+                                                    <div class="radio radio-success radio-single" style="padding-left:20px;">
+                                                    <input type="radio"   value="dhtmlxgantt_broadway.css" name="gantt_skin"
+                                                         {% ifequal gantt_css  'dhtmlxgantt_broadway.css'%}checked="" {% endifequal %}>
+                                                    <label></label>
+                                                     </div>
+                                                </td>
+
+
+                                                <td>
+                                                    <input type="text"   value="gantt_skin" name="judge" hidden="hidden">
+                                                    <input type="submit"  style="border:#000080;" value="修改" class="sub">
+                                                </td>
+                                        </form>
+                                    </tr>
+
+
+
+
+
+                            </tbody>
+                        </table>
+                    </div>
+
+<hr >
+<div class="">
+<h3>甘特图高度</h3>
+    <br>
+<span style="color:red;">{{ error }}</span>
+                        <table class="table table-striped" id="datatable-editable">
+                            <thead>
+                                <tr>
+
+                                    <th style="text-align: center">甘特图任务高度</th>
+                                    <th style="text-align: center">甘特图任务栏高度</th>
+                                     <th style="text-align: center">操作</th>
+
+                                </tr>
+                            </thead>
+
+                            <tbody style="text-align: center">
+
+                                    <tr>
+                                        <form action="" method="post" >
+
+                                                <td><input type="number"   value="{% if gantt_task_height%}{{ gantt_task_height }}{% else %}28{% endif %}"
+                                                           name="gantt_task_height" required="" ></td>
+
+                                                <td><input type="number"   value="{% if gantt_row_height%}{{ gantt_row_height }}{% else %}38{% endif %}"
+                                                           name="gantt_row_height" required="" ></td>
+
+                                                <td>
+                                                    <input type="text"   value="gantt_height" name="judge" hidden="hidden">
+                                                     <input type="submit" name="change" style="border:#000080;" value="修改" class="sub">
+                                                        <input type="submit" name="reset" style="border:#000080;" value="恢复默认" class="sub">
+                                                </td>
+                                        </form>
+                                    </tr>
+
+
+
+
+
+                            </tbody>
+                        </table>
+                    </div>
+
+ 
+
+{% endblock %}
+
+{% block jQuery %}
+    {{ block.super }}
+
+    <!-- Editable js -->
+    <script src="{% static 'assets/plugins/magnific-popup/dist/jquery.magnific-popup.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/jquery-datatables-editable/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.bootstrap.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/mindmup-editabletable.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/numeric-input-example.js' %}"></script>
+
+    <!-- init -->
+    <script src="{% static 'assets/pages/datatables.editable.init.js' %}"></script>
+    <!--拾色器 -->
+    <script src="{% static 'pick-a-color/tinycolor-0.9.15.min.js' %}"></script>
+    <script src="{% static 'pick-a-color/pick-a-color-1.2.3.min.js' %}"></script>
+
+    <script type="text/javascript">
+    
+    $(document).ready(function () {
+     
+      $(".pick-a-color").pickAColor();
+    });
+
+    </script>
+
+{% endblock %}

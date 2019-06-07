@@ -1,0 +1,32 @@
+{% extends 'global_manage/manage_base.html' %}
+{% load staticfiles %}
+{% block head_js %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'ckeditor/ckeditor.js' %}"></script>
+    <script type="text/javascript" src="{% static 'jQuery.js' %}"></script>  <!--jq压缩文件-->
+
+
+{% endblock %}
+
+{% block content %}
+
+            <div style="border: 1px solid #eef0f1;border-radius:5px;background-color: #fff;padding-left:18px;padding-top:10px;font-size: 16px;" id="show_index">
+                <p><strong>欢迎来到全局管理后台</strong></p>
+                <p><strong>Dark Warrior</strong>项目管理系统一个能大大提高影视动画等创意项目工作效率的工具，简单方便，可以极大的节约时间。</p>
+
+                <p><br />
+                主要功能包括：<br />
+                项目跟踪，电子表格，调度工具，自定义展示属性等工具，可以轻松管理您所有项目；<br />
+                工作审查，调取任何的列表，任务，资产或序列进行比较和注释；<br />
+                插件集成，整合Unreal Engine、Maya、Nuke等影视制作工具；<br />
+                计划和调度，系统有强大的计划工具，甘特图的展现让您可以更容易的管理工作和艺术家可以随时根据突发状况对计划或甘特图进行微调；<br />
+                云服务，采用在线的web访问，无论您在什么地点只要有网络环境就可以进行工作。</p>
+
+                <p>&nbsp;</p>
+
+                <p>&nbsp;</p>
+
+                <p>&nbsp;</p>
+
+    	    </div>
+{% endblock %}

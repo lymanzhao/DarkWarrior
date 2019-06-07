@@ -1,0 +1,443 @@
+{% extends 'manage_l/manage_base.html' %}
+
+{% block content %}
+    {% load staticfiles %}
+<body class=" app-auth model-user change-form">
+
+<!-- Container -->
+<div id="container">
+
+    
+
+    <!-- Header -->
+    <div id="header">
+        <div id="branding">
+
+<h1 id="site-name"><a href="/{{ project_id }}/manage_l/">{{ project.project_name }} 后台管理</a></h1>
+
+        </div>
+
+
+        <div id="user-tools">
+
+                欢迎，
+                <strong>{{ staff_user.username }} </strong>.
+
+
+
+                    <a href="/{{ project_id }}">查看站点</a> /
+
+
+
+
+
+
+                <a href="/password_change/">修改密码</a> /
+
+                <a href="/logout/">注销</a>
+
+        </div>
+
+
+
+    </div>
+    <!-- END Header -->
+    
+<div class="breadcrumbs">
+<a href="/{{ project_id }}">首页</a>&rsaquo; <a href="/{{ project_id }}/manage_l">认证和授权</a>
+&rsaquo; <a href="../">用户</a>
+&rsaquo; {{ user.username }}
+</div>
+
+    
+
+    
+        
+    
+
+    <!-- Content -->
+    <div id="content" class="colM">
+        
+        <h1>修改 用户</h1>
+        <div id="content-main">
+
+<!--
+  <ul class="object-tools">
+    
+    <li>
+        
+        <a href="" class="historylink">历史</a>
+    </li>
+    
+    
+  </ul>
+-->
+
+<form enctype="multipart/form-data" action="" method="post" id="user_form" novalidate><input type='hidden' name='csrfmiddlewaretoken' value='QmptUuEa1WO1rYziKhR8rSCpo3cU9u8L' />
+<div>
+
+
+
+
+
+
+<!--
+  <fieldset class="module aligned ">
+    
+    
+    
+        <div class="form-row field-username">
+            
+            
+                <div>
+                    
+                    
+                        <label class="required" for="id_username">用户名:</label>
+                        
+                            <input class="vTextField" id="id_username" maxlength="30" name="username" type="text" value="admin" />
+                        
+                    
+                    
+                        <p class="help">必填。不多于30个字符。只能用字母、数字和字符 @/./+/-/_ 。</p>
+                    
+                </div>
+            
+        </div>
+    
+        <div class="form-row field-password">
+            
+            
+                <div>
+                    
+                    
+                        <label for="id_password">密码:</label>
+                        
+                            <div id="id_password"><strong>算法</strong>: pbkdf2_sha256 <strong>迭代次数</strong>: 20000 <strong>盐</strong>: Ad7yWL****** <strong>哈希</strong>: SO555w************************************** </div>
+                        
+                    
+                    
+                        <p class="help">原始密码不会存储到数据库，因此没有办法看到这个用户的密码，但您可以使用<a href="password/">这个表单</a>来更改密码。</p>
+                    
+                </div>
+            
+        </div>
+    
+</fieldset>
+-->
+<!--
+  <fieldset class="module aligned ">
+    <h2>个人信息</h2>
+    
+    
+        <div class="form-row field-first_name">
+            
+            
+                <div>
+                    
+                    
+                        <label for="id_first_name">名字:</label>
+                        
+                            <input class="vTextField" id="id_first_name" maxlength="30" name="first_name" type="text" />
+                        
+                    
+                    
+                </div>
+            
+        </div>
+    
+        <div class="form-row field-last_name">
+            
+            
+                <div>
+                    
+                    
+                        <label for="id_last_name">姓氏:</label>
+                        
+                            <input class="vTextField" id="id_last_name" maxlength="30" name="last_name" type="text" />
+                        
+                    
+                    
+                </div>
+            
+        </div>
+    
+        <div class="form-row field-email">
+            
+            
+                <div>
+                    
+                    
+                        <label for="id_email">电子邮件地址:</label>
+                        
+                            <input class="vTextField" id="id_email" maxlength="254" name="email" type="email" value="1@qq.com" />
+                        
+                    
+                    
+                </div>
+            
+        </div>
+    
+</fieldset>
+
+-->
+
+<fieldset class="module aligned ">
+    <h2>个人信息</h2>
+        <div class="form-row field-first_name">
+
+
+                <div>
+
+
+                        <label for="id_first_name">用户名:</label>
+
+                             <input class="vTextField" id="id_first_name" maxlength="30" name="first_name" type="text" readonly value="{{ user.username }}" />
+
+
+
+                </div>
+
+        </div>
+</fieldset>
+
+  <fieldset class="module aligned ">
+    <h2>权限</h2>
+    
+    <!--
+        <div class="form-row field-is_active">
+            
+            
+                <div class="checkbox-row">
+                    
+                    
+                        <input checked="checked" id="id_is_active" name="is_active" type="checkbox" /><label class="vCheckboxLabel" for="id_is_active">有效</label>
+                    
+                    
+                        <p class="help">指明用户是否被认为活跃的。以反选代替删除帐号。</p>
+                    
+                </div>
+            
+        </div>
+    
+        <div class="form-row field-is_staff">
+            
+            
+                <div class="checkbox-row">
+                    
+                    
+                        <input checked="checked" id="id_is_staff" name="is_staff" type="checkbox" /><label class="vCheckboxLabel" for="id_is_staff">职员状态</label>
+                    
+                    
+                        <p class="help">指明用户是否可以登录到这个管理站点。</p>
+                    
+                </div>
+            
+        </div>
+    
+        <div class="form-row field-is_superuser">
+            
+            
+                <div class="checkbox-row">
+                    
+                    
+                        <input checked="checked" id="id_is_superuser" name="is_superuser" type="checkbox" /><label class="vCheckboxLabel" for="id_is_superuser">超级用户状态</label>
+                    
+                    
+                        <p class="help">指明该用户缺省拥有所有权限。</p>
+                    
+                </div>
+            
+        </div>
+-->
+        <div class="form-row field-groups">
+            
+            
+                <div>
+                    
+                    
+                        <label for="id_groups">组:</label>
+                        
+                            
+<div class="related-widget-wrapper">
+    <select multiple="multiple" class="selectfilter" id="id_groups" name="groups">
+
+        {% for selected_group  in user_group_project %}
+                       <option value="{{ selected_group.id }}" selected="selected">{{ selected_group.name }}</option>
+        {% endfor %}
+
+        {% for no_selected_group  in no_selected_group %}
+                       <option value="{{ no_selected_group.id }}" >{{ no_selected_group.name }}</option>
+        {% endfor %}
+</select>
+    <script type="text/javascript">addEvent(window, "load", function(e) {SelectFilter.init("id_groups", "组", 0, "/static/manage/"); });</script>
+
+    
+        
+        
+        <a class="related-widget-wrapper-link add-related" id="add_id_groups"
+            href="/{{ project_id }}/manage_l/group/add/"
+            title="增加另一个 组">
+            <img src="{% static 'manage/img/icon_addlink.gif'%}" width="10" height="10"
+                alt="增加"/>
+        </a>
+        
+        
+    
+</div>
+
+                        
+                    
+                    
+                        <p class="help">该用户归属的组。一个用户将得到其归属的组的所有权限。 按住 ”Control“，或者Mac上的 “Command”，可以选择多个。</p>
+                    
+                </div>
+            
+        </div>
+    
+        <div class="form-row field-user_permissions">
+            
+            
+                <div>
+                    
+                    
+                        <label for="id_user_permissions">用户权限:</label>
+                        
+                            
+<div class="related-widget-wrapper">
+    <select multiple="multiple" class="selectfilter" id="id_user_permissions" name="user_permissions">
+
+   {% for selected_permission  in selected_permissions %}
+                       <option value="{{ selected_permission.id }}" selected="selected">{{ selected_permission.description }}</option>
+        {% endfor %}
+
+        {% for no_permission  in no_permissions %}
+                       <option value="{{ no_permission.id }}" >{{ no_permission.description }}</option>
+        {% endfor %}
+</select><script type="text/javascript">addEvent(window, "load", function(e) {SelectFilter.init("id_user_permissions", "用户权限", 0, "/static/manage/"); });</script>
+
+    
+        
+        
+        
+    
+</div>
+
+                        
+                    
+                    
+                        <p class="help">为该用户声明权限。 按住 ”Control“，或者Mac上的 “Command”，可以选择多个。</p>
+                    
+                </div>
+            
+        </div>
+    
+</fieldset>
+
+<!--
+  <fieldset class="module aligned ">
+    <h2>重要日期</h2>
+    
+    
+        <div class="form-row field-last_login">
+            
+            
+                <div>
+                    
+                    
+                        <label for="id_last_login_0">上次登录:</label>
+                        
+                            <p class="datetime">日期： <input class="vDateField" id="id_last_login_0" name="last_login_0" size="10" type="text" value="2016/06/14" /><br />时间： <input class="vTimeField" id="id_last_login_1" name="last_login_1" size="8" type="text" value="10:34" /></p>
+                        
+                    
+                    
+                </div>
+            
+        </div>
+    
+        <div class="form-row field-date_joined">
+            
+            
+                <div>
+                    
+                    
+                        <label class="required" for="id_date_joined_0">加入日期:</label>
+                        
+                            <p class="datetime">日期： <input class="vDateField" id="id_date_joined_0" name="date_joined_0" size="10" type="text" value="2016/06/06" /><br />时间： <input class="vTimeField" id="id_date_joined_1" name="date_joined_1" size="8" type="text" value="12:06" /></p><input id="initial-id_date_joined_0" name="initial-date_joined_0" type="hidden" value="2016/06/06" /><input id="initial-id_date_joined_1" name="initial-date_joined_1" type="hidden" value="12:06" />
+                        
+                    
+                    
+                </div>
+            
+        </div>
+    
+</fieldset>
+
+-->
+
+
+
+
+
+
+
+
+
+
+
+<div class="submit-row">
+<input type="submit" value="保存" class="default" name="_save" />
+    <a href="../"><input type="button" value="取消" class="default" name="_save" /></a>
+
+
+    
+
+
+
+
+</div>
+
+
+
+    <script type="text/javascript">
+        (function($) {
+            $(document).ready(function() {
+                $('.add-another').click(function(e) {
+                    e.preventDefault();
+                    showAddAnotherPopup(this);
+                });
+                $('.related-lookup').click(function(e) {
+                    e.preventDefault();
+                    showRelatedObjectLookupPopup(this);
+                });
+            
+            });
+        })(django.jQuery);
+    </script>
+
+
+
+
+<script type="text/javascript">
+(function($) {
+    var field;
+
+
+})(django.jQuery);
+</script>
+
+
+</div>
+</form></div>
+
+        
+        <br class="clear" />
+    </div>
+    <!-- END Content -->
+
+    <div id="footer"></div>
+</div>
+<!-- END Container -->
+
+</body>
+{% endblock %}
+

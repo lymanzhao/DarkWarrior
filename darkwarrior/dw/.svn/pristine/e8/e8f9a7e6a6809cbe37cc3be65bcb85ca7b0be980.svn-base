@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+
+<html lang="zh-hans" >
+<head>
+    {% load staticfiles %}
+<title>认证和授权 管理 | Django 站点管理员</title>
+<link rel="stylesheet" type="text/css" href="{% static 'manage/css/base.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'manage/css/dashboard.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'manage/css/changelists.css' %}" />
+    <script type="text/javascript" src="{% static 'manage/adminjsi18n.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'manage/css/forms.css' %}" />
+<!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="/static/admin/css/ie.css" /><![endif]-->
+
+<script type="text/javascript">window.__admin_media_prefix__ = "/static/admin/";</script>
+<script type="text/javascript">window.__admin_utc_offset__ = "28800";</script>
+
+    <script type="text/javascript" src="{% static 'manage/js/core.js' %}"></script>
+<script type="text/javascript" src="{% static 'manage/js/admin/RelatedObjectLookups.js' %}"></script>
+<script type="text/javascript" src="{% static 'manage/js/jquery.js' %}"></script>
+<script type="text/javascript" src="{% static 'manage/js/jquery.init.js' %}"></script>
+<script type="text/javascript" src="{% static 'manage/js/actions.js' %}"></script>
+<script type="text/javascript" src="{% static 'manage/adminjsi18n.js'%}"></script>
+
+<script type="text/javascript" src="{% static 'manage/js/core.js'%}"></script>
+<script type="text/javascript" src="{% static 'manage/js/admin/RelatedObjectLookups.js'%}"></script>
+
+<script type="text/javascript" src="{% static 'manage/js/jquery.js'%}"></script>
+<script type="text/javascript" src="{% static 'manage/js/jquery.init.js'%}"></script>
+<script type="text/javascript" src="{% static 'manage/js/actions.js'%}"></script>
+
+<script type="text/javascript" src="{% static 'manage/js/related-widget-wrapper.js'%}"></script>
+
+<script type="text/javascript" src="{% static 'manage/js/SelectBox.js'%}"></script>
+<script type="text/javascript" src="{% static 'manage/js/SelectFilter2.js'%}"></script>
+<script type="text/javascript">
+(function($) {
+    $(document).ready(function($) {
+        $("tr input.action-select").actions();
+    });
+})(django.jQuery);
+</script>
+    <script type="text/javascript">
+(function($) {
+    $(document).ready(function($) {
+        $("tr input.action-select").actions();
+    });
+})(django.jQuery);
+</script>
+
+
+
+<meta name="robots" content="NONE,NOARCHIVE" />
+</head>
+
+{% block content %}
+
+{% endblock %}
+
+</html>

@@ -1,0 +1,223 @@
+{% extends 'manage_l/manage_base.html' %}
+
+{% block content %}
+{% load staticfiles %}
+<body class=" app-auth model-group change-list">
+
+<!-- Container -->
+<div id="container">
+
+
+    <!-- Header -->
+    <div id="header">
+        <div id="branding">
+
+<h1 id="site-name"><a href="/{{ project_id }}/manage_l/">{{ project.project_name }} 后台管理</a></h1>
+
+        </div>
+
+
+        <div id="user-tools">
+
+                欢迎，
+                <strong>{{ staff_user.username }} </strong>.
+
+
+
+                    <a href="/{{ project_id }}">查看站点</a> /
+
+
+
+
+
+
+                <a href="/password_change/">修改密码</a> /
+
+                <a href="/logout/">注销</a>
+
+        </div>
+
+
+
+    </div>
+    <!-- END Header -->
+    
+<div class="breadcrumbs">
+<a href="/{{ project_id }}">首页</a>
+&rsaquo; <a href="/{{project_id }}/manage_l/">认证和授权</a>
+&rsaquo; 组
+</div>
+
+    
+
+    
+    {% if notice %}
+<div style="margin-left: 40px;margin-top: 40px;">
+<form action="" method="post">
+{% for i in selected_groups %}
+    <input class="action-select" name="selected_groups_sure" type="number" value="{{ i}}" hidden="hidden"/>
+ {% endfor %}
+您确定要删除
+ {% for i in selected_groups_list %}
+       "{{ i.name }}"
+{% endfor %}
+{{ num }}共个小组？
+<br>
+<p></p>
+    <input type="submit" value="是的，确定">
+
+    <a href="./"><input type="button" value="不确定"></a>
+
+
+</form>
+</div>
+
+{% else %}
+
+    <!-- Content -->
+    <div id="content" class="flex">
+        
+        <h1>选择 组 来修改</h1>
+        
+  <div id="content-main">
+    
+      
+        <ul class="object-tools">
+          
+            <li>
+              
+              <a href="add/" class="addlink">
+                增加 组
+              </a>
+            </li>
+          
+        </ul>
+      
+    
+    
+    <div class="module" id="changelist">
+      
+
+<div id="toolbar"><form id="changelist-search" action="" method="get">
+<div><!-- DIV needed for valid HTML -->
+<label for="searchbar"><img src="{% static 'manage/img/icon_searchbox.png'%}" alt="Search" /></label>
+<input type="text" size="40" name="q" value="{{name}}" id="searchbar" />
+<input type="submit" value="搜索" />
+   {% if search %}
+<span class="small quiet">{{ num }} 条结果。 (<a href="?">总共 {{ all_num }}</a>)</span>
+    {% endif %}
+
+</div>
+</form></div>
+<script type="text/javascript">document.getElementById("searchbar").focus();</script>
+
+
+      
+
+
+      
+        
+      
+
+      <form id="changelist-form" action="" method="post" novalidate>
+
+          <input type='hidden' name='csrfmiddlewaretoken' value='QmptUuEa1WO1rYziKhR8rSCpo3cU9u8L' />
+      
+
+      
+          
+<div class="actions">
+    <label>动作
+        <select name="action">
+<option value="" selected="selected">---------</option>
+<option value="delete_selected">删除所选的 组</option>
+       </select>
+    </label>
+
+    <input class="select-across" name="select_across" type="hidden" value="0" />
+    <button type="submit" class="button" title="运行选中的动作" name="index" value="0">执行</button>
+    
+        <script type="text/javascript">var _actions_icnt="{{ groups_num }}";</script>
+        <span class="action-counter">{{ groups_num }} 个中 0 个被选</span>
+        
+    
+</div>
+
+          
+
+
+<div class="results">
+<table id="result_list">
+<thead>
+<tr>
+
+<th scope="col"  class="action-checkbox-column">
+   
+   <div class="text"><span><input type="checkbox" id="action-toggle" /></span></div>
+   <div class="clear"></div>
+</th>
+<th scope="col"  class="column-__str__">
+   
+   <div class="text"><span>组名</span></div>
+   <div class="clear"></div>
+</th>
+
+    <th scope="col"  class="column-__str__">
+
+   <div class="text"><span>创建时间</span></div>
+   <div class="clear"></div>
+</th>
+
+</tr>
+</thead>
+<tbody>
+
+{% for group in project_groups %}
+<tr class="row1">
+
+    <td class="action-checkbox">
+    <input class="action-select" name="_selected_action" type="checkbox" value="{{ group.id }}" />
+    </td>
+
+    <th class="field-__str__">
+        <a href="{{ group.id }}">{{ group.name }}</a>
+    </th>
+
+    <td class="field-date_joined nowrap">{{ group.create_time }}</td>
+</tr>
+
+
+{% endfor %}
+
+
+</tbody>
+</table>
+</div>
+
+
+          
+      
+      
+
+<p class="paginator">
+
+{{ groups_num }} 组
+
+
+</p>
+
+      </form>
+    </div>
+  </div>
+
+        
+        <br class="clear" />
+    </div>
+    <!-- END Content -->
+{% endif %}
+    <div id="footer"></div>
+</div>
+<!-- END Container -->
+
+</body>
+{% endblock %}

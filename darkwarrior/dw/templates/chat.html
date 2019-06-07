@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" media="screen" href="{% static  'converse/css/converse.min.css' %}">
+    <script src="{% static 'converse/js/converse.min.js' %}"></script>
+    <script type="text/javascript" src="{% static "converse/js/converse_functions.js" %}"></script>
+</head>
+<body>
+
+<script>
+
+    require(['converse'], function (converse) {
+        (function () {
+            /* XXX: This function initializes jquery.easing for the https://conversejs.org
+            * website. This code is only useful in the context of the converse.js
+            * website and converse.js itself is NOT dependent on it.
+            */
+
+            var $ = converse.env.jQuery;
+            $.extend( $.easing, {
+                easeInOutExpo: function (x, t, b, c, d) {
+                    if (t==0) return b;
+                    if (t==d) return b+c;
+                    if ((t/=d/2) < 1) return c/2 * Math.pow(2, 10 * (t - 1)) + b;
+                    return c/2 * (-Math.pow(2, -10 * --t) + 2) + b;
+                },
+            });
+
+            $(window).scroll(function() {
+                if ($(".navbar").offset().top > 50) {
+                    $(".navbar-fixed-top").addClass("top-nav-collapse");
+                } else {
+                    $(".navbar-fixed-top").removeClass("top-nav-collapse");
+                }
+            });
+            //jQuery for page scrolling feature - requires jQuery Easing plugin
+            $('.page-scroll a').bind('click', function(event) {
+                var $anchor = $(this);
+                $('html, body').stop().animate({
+                    scrollTop: $($anchor.attr('href')).offset().top
+                }, 700, 'easeInOutExpo');
+                event.preventDefault();
+            });
+        })();
+
+      converse.initialize({
+         bosh_service_url:'http://59.110.45.134:5280/http-bind',
+         keepalive: true,
+         message_carbons: true,
+         play_sounds: true,
+         roster_groups: true,
+         show_controlbox_by_default: true,
+         i18n: locales.zh,
+         auto_login:true,
+         jid:'{{ chatuser_username }}'+'@59.110.45.134' ,
+         password:'{{ chatuser_password }}',
+         auto_join_rooms:[{'jid': '{{ chatroomname }}'+'@conference', 'nick': '{{ chatuser_username }}' }],
+       });
+
+    });
+//获取聊天室名称
+define("tpl!room_panel", [],
+    function () {
+        return function (obj) {
+            var __t, __p = "";
+            Array.prototype.join;
+            with (obj || {}) __p += '<form id="joinchatroomform" class="pure-form pure-form-stacked converse-form add-chatroom" action="" method="post">\n    <fieldset>\n        <label>' + (null == (__t = label_room_name) ? "" : __t) + '</label>\n        <input type="text" name="chatroom" id="chatroomname" value="{{ chatroomname }}"class="new-chatroom-name"  placeholder="' + (null == (__t = label_room_name) ? "" : __t) + '" />\n        ',
+            "hidden" != server_input_type && (__p += "\n            <label" + (null == (__t = server_label_global_attr) ? "" : __t) + ">" + (null == (__t = label_server) ? "" : __t) + "</label>\n        "),
+                __p += '\n        <input type="' + (null == (__t = server_input_type) ? "" : __t) + '" name="server" value="conference"  class="new-chatroom-server" placeholder="' + (null == (__t = label_server) ? "" : __t) + '"/>\n        <input type="submit" class="pure-button button-primary" name="join" value="' + (null == (__t = label_join) ? "" : __t) + '"/>\n        <input type="button" class="pure-button button-secondary" name="show" id="show-rooms" value="' + (null == (__t = label_show_rooms) ? "" : __t) + '"/>\n    </fieldset>\n</form>\n<dl id="available-chatrooms"></dl>\n';
+            return __p
+        }
+    });
+
+
+//登陆界面的用户名密码
+
+define("tpl!login_panel", [],
+function() {
+    return function(obj) {
+        var __t, __p = "";
+        Array.prototype.join;
+        with(obj || {}) __p += '<form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">\n    ',
+        auto_login && (__p += '\n  <span class="spinner login-submit"/>\n    '),
+        __p += "\n    ",
+        auto_login || (__p += "\n  ", authentication == LOGIN && (__p += "\n " +
+                "<label>" + (null == (__t = label_username) ? "": __t) + '</label>\n  ' +
+                ' <input type="text" value="{{ chatuser_username }}" name="jid" placeholder="' + (null == (__t = placeholder_username) ? "": __t) + '">\n ' +
+                ' <label>' + (null == (__t = label_password) ? "": __t) + '</label>\n ' +
+                '<input type="password" value="{{ chatuser_password }}"name="password"  placeholder="' + (null == (__t = placeholder_password) ? "": __t) + '">\n            ' +
+                '<input class="pure-button button-primary" type="submit" value="' + (null == (__t = label_login) ? "": __t) + '">\n            ' +
+                '<span class="conn-feedback"></span>\n        '), __p += "\n        ", authentication == ANONYMOUS && (__p += '\n            ' +
+                '<input type="pure-button button-primary" class="submit login-anon" value="' + (null == (__t = label_anon_login) ? "": __t) + '"/>\n        '), __p += "\n        ", authentication == PREBIND && (__p += "\n            " +
+                "<p>Disconnected.</p>\n        "), __p += "\n    "),
+        __p += "\n</form>\n";
+        return __p
+    }
+});
+ //获取进入房间的昵称
+define("tpl!chatroom_nickname_form", [],
+function() {
+    return function(obj) {
+        var __t, __p = "";
+        Array.prototype.join;
+        with(obj || {}) __p += '<div class="chatroom-form-container">\n    ' +
+                '<form class="pure-form converse-form chatroom-form">\n        ' +
+                '<fieldset>\n            <label>' + (null == (__t = heading) ? "": __t) + '</label>\n ' +
+                '<p class="validation-message">' + (null == (__t = validation_message) ? "": __t) + '</p>\n ' +
+                '<input type="text" required="required" name="nick" class="new-chatroom-nick" placeholder="' + (null == (__t = label_nickname) ? "": __t) + '" value="{{ chatuser_username }}"/>\n  ' +
+                '</fieldset>\n ' +
+                ' <fieldset>\n  ' +
+                '<input type="submit" class="pure-button button-primary" name="join" value="' + (null == (__t = label_join) ? "": __t) + '"/>\n        ' +
+                '</fieldset>\n   ' +
+                ' </form>\n' +
+                '</div>\n';
+        return __p
+    }
+});
+
+</script>
+
+<div id="conversejs">
+    <div class="chatbox" id="controlbox" style="width: 200px; display: block;">
+    </div>
+    <div id="minimized-chats">
+
+    </div>
+</div>
+</body>
+</html>

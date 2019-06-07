@@ -1,0 +1,122 @@
+#c_1
+{
+position:relative;
+animation-name:loading_1;
+animation-duration:0.6s;
+animation-timing-function:linear;
+animation-delay:0s;
+animation-iteration-count:infinite;
+animation-direction:alternate;
+animation-play-state:running;
+
+/* Firefox: */
+-moz-animation-name:loading_1;
+-moz-animation-duration:0.6s;
+-moz-animation-timing-function:linear;
+-moz-animation-delay:0s;
+-moz-animation-iteration-count:infinite;
+-moz-animation-direction:alternate;
+-moz-animation-play-state:running;
+
+/* Safari and Chrome: */
+-webkit-animation-name:loading_1;
+-webkit-animation-duration:0.6s;
+-webkit-animation-timing-function:linear;
+-webkit-animation-delay:0s;
+-webkit-animation-iteration-count:infinite;
+-webkit-animation-direction:alternate;
+-webkit-animation-play-state:running;
+
+/* Opera: */
+-o-animation-name:loading_1;
+-o-animation-duration:0.6s;
+-o-animation-timing-function:linear;
+-o-animation-delay:0s;
+-o-animation-iteration-count:infinite;
+-o-animation-direction:alternate;
+-o-animation-play-state:running;
+}
+
+@keyframes loading_1
+{
+50%   {background: #ff9dcc; left:50px; top:0px;}
+100%  {background: #acb5bc; left:100px; top:0px;}
+}
+@-moz-keyframes loading_1 /* Firefox */
+{
+50%   {background: #ff9dcc; left:50px; top:0px;}
+100%  {background: #acb5bc; left:100px; top:0px;}
+}
+
+@-webkit-keyframes loading_1 /* Safari and Chrome */
+{
+50%   {background: #ff9dcc; left:50px; top:0px;}
+100%  {background: #acb5bc; left:100px; top:0px;}
+}
+
+@-o-keyframes loading_1 /* Opera */
+{
+50%   {background: #ff9dcc; left:50px; top:0px;}
+100%  {background: #acb5bc; left:100px; top:0px;}
+}
+        #c_2
+{
+position:relative;
+animation-name:loading_2;
+animation-duration:1.2s;
+animation-timing-function:linear;
+animation-delay:0s;
+animation-iteration-count:infinite;
+animation-direction:alternate;
+animation-play-state:running;
+
+/* Firefox: */
+-moz-animation-name:loading_2;
+-moz-animation-duration:1.2s;
+-moz-animation-timing-function:linear;
+-moz-animation-delay:0s;
+-moz-animation-iteration-count:infinite;
+-moz-animation-direction:alternate;
+-moz-animation-play-state:running;
+
+/* Safari and Chrome: */
+-webkit-animation-name:loading_2;
+-webkit-animation-duration:1.2s;
+-webkit-animation-timing-function:linear;
+-webkit-animation-delay:0s;
+-webkit-animation-iteration-count:infinite;
+-webkit-animation-direction:alternate;
+-webkit-animation-play-state:running;
+
+/* Opera: */
+-o-animation-name:loading_2;
+-o-animation-duration:1.2s;
+-o-animation-timing-function:linear;
+-o-animation-delay:0s;
+-o-animation-iteration-count:infinite;
+-o-animation-direction:alternate;
+-o-animation-play-state:running;
+}
+
+@keyframes loading_2
+{
+50%   {background: #50b4fa; left:0px; top:0px;}
+100%  {background: #44ff73; left:100px; top:0px;}
+}
+@-moz-keyframes loading_2 /* Firefox */
+{
+50%   {background: #50b4fa; left:0px; top:0px;}
+100%  {background: #44ff73; left:100px; top:0px;}
+}
+
+@-webkit-keyframes loading_2 /* Safari and Chrome */
+{
+50%   {background: #50b4fa; left:0px; top:0px;}
+100%  {background: #44ff73; left:100px; top:0px;}
+}
+
+@-o-keyframes loading_2 /* Opera */
+{
+50%   {background: #50b4fa; left:0px; top:0px;}
+100%  {background: #44ff73; left:100px; top:0px;}
+}

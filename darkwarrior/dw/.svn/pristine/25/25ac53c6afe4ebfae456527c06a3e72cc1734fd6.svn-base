@@ -1,0 +1,69 @@
+{% extends 'manage/manage_base.html' %}
+{% load staticfiles %}
+
+{% block css %}
+    {{ block.super }}
+    <!-- Editatable  Css-->
+    <link rel="stylesheet" href="{% static 'assets/plugins/magnific-popup/dist/magnific-popup.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/plugins/jquery-datatables-editable/datatables.css' %}" />
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <h4 class="header-title m-t-0 m-b-30">任务状态</h4>
+
+                    <a href="/{{ url }}/manage/add_task_status/">
+                        <div class="row" style="margin-bottom: 2%">
+                            <div class="col-md-12">
+                                <div class="text-left">
+                                    <button  class="batn btn-purple btn-rounded w-md">
+                                        添加任务状态
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <table class="table table-striped" id="datatable-editable">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center">ID</th>
+                                <th style="text-align: center">名称</th>
+                                <th style="text-align: center">排序</th>
+                            </tr>
+                        </thead>
+
+                        <tbody style="text-align: center">
+                            {% for task_status in task_statuss %}
+                                <tr>
+                                    <td><a href="/{{ url }}/manage/task_status/{{ task_status.id }}/" style="list-style-type: none;color: red">{{ task_status.id }}</a></td>
+                                    <td>{{ task_status.name }}</td>
+                                    <td>{{ task_status.value }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block jQuery %}
+    {{ block.super }}
+
+    <!-- Editable js -->
+    <script src="{% static 'assets/plugins/magnific-popup/dist/jquery.magnific-popup.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/jquery-datatables-editable/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.bootstrap.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/mindmup-editabletable.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/numeric-input-example.js' %}"></script>
+
+    <!-- init -->
+    <script src="{% static 'assets/pages/datatables.editable.init.js' %}"></script>
+
+{% endblock %}

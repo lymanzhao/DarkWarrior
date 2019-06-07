@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<style>
+      * { padding: 0px; margin: 0px;text-decoration: none; }
+     li {list-style: none;}
+     a{color:#696969;}
+    a:hover{background-color: #989492;color: whitesmoke;}
+
+</style>
+<body>
+
+
+<form  action="" method="get" style="display: none;" >
+
+    <input type="text" value="" name="q" id="search_text" hidden="hidden">
+    <input type="submit" value="搜索" hidden="hidden">
+
+</form>
+
+
+<div style="background-color: #fbfffb;border: 2px solid #f8f8ff;position:absolute;z-index: 20;width:100%;" id="user_div">
+    {% for i in search_list %}
+
+    <a style="cursor:pointer;display:block;padding-left: 10px;line-height: 25px;" name="user" user_name={{ i.username }} onclick="check_user()">{{ i.username }}</a>
+    {% endfor %}
+</div>
+
+
+
+<script>
+/*
+function check_user(){
+    var user = document.getElementsByName('user');
+    var user_len = user.length;
+    var search_text = document.getElementById('search_text');
+
+        for(var i=0;i<user_len;i++)
+        {
+          user[i].index = i;
+
+            user[i].onclick = function(){
+
+                x=this.index;
+                alert(x);
+
+            };
+
+        }
+    }
+*/
+</script>
+</body>
+</html>

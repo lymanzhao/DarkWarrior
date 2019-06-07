@@ -1,0 +1,63 @@
+{% extends 'manage/manage_base.html' %}
+{% load staticfiles %}
+
+
+{% block content %}
+
+
+
+    <div class="row" style="margin-bottom: 5%">
+        <div class="col-lg-6">
+            <div class="card-box">
+
+                <h4 class="header-title m-t-0 m-b-30">修改任务状态</h4>
+
+                {% for error in errors %}
+                    <h5 style="color: red">{{ error }}</h5>
+                {% endfor %}
+
+                <form class="form-horizontal" role="form" action="" method="post">
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">状态名称</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" name="task_status_name"  value="{{ task_status.name }}">
+                        </div>
+                    </div>
+
+                   <div class="form-group">
+                        <label class="col-md-2 control-label">状态排序</label>
+                        <div class="col-md-10">
+                            <input type="number" class="form-control" name="task_status_value"  value="{{ task_status.value }}">
+                        </div>
+                    </div>
+
+
+                    <div class="row text-right" style="margin-top: 5%">
+                        <div class="col-md-12">
+                            <input type="submit" class="batn btn-purple btn-rounded w-md  " value="提交">
+                        </div>
+                    </div>
+
+                </form>
+
+                <form action="" method="post">
+                    <div class="row text-left" style="margin-top: 5%">
+                        <div class="col-md-12">
+                            <input type="hidden" value="{{ task_status_id }}" name="status_id">
+                            <input type="button"  style="color: #ffffff;border:none;background-color: #50b4fa;line-height: 27px;width: 55px;
+                                                                                    box-shadow: 1px 2px 1px #99a2a9;border-radius:2px;"  value="删除" class="show_cover">
+                            <div>
+                                <div hidden="hidden">该操作将会删除“{{ task_status.name }}”任务状态以及该项目中所有与该状态相关的任务，请谨慎操作！</div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div><!-- end col -->
+
+
+    </div>
+
+<script src="{% static 'delete_notice/normal_notice.js' %}"></script>          <!--一般删除提示jQ -->
+{% endblock %}

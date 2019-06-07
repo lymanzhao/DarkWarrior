@@ -1,0 +1,108 @@
+{% extends 'manage_l/manage_base.html' %}
+
+{% block content %}
+{% load staticfiles %}
+<body class=" app-word model-group delete-confirmation">
+
+<!-- Container -->
+<div id="container">
+
+    
+  <!-- Header -->
+    <div id="header">
+        <div id="branding">
+
+<h1 id="site-name"><a href="/{{ project_id }}/manage_l/">{{ project.project_name }} 后台管理</a></h1>
+
+        </div>
+
+
+        <div id="user-tools">
+
+                欢迎，
+                <strong>{{ staff_user.username }} </strong>.
+
+
+
+                    <a href="/{{ project_id }}">查看站点</a> /
+
+
+
+
+
+
+                <a href="/password_change/">修改密码</a> /
+
+                <a href="/logout/">注销</a>
+
+        </div>
+
+
+
+    </div>
+    <!-- END Header -->
+    
+<div class="breadcrumbs">
+<a href="/{{ project_id }}">首页</a>
+&rsaquo; <a href="">{{ project.project_name }}</a>
+&rsaquo; <a href="../../">组</a>
+&rsaquo; <a href="../">{{ group_delete.name }}</a>
+&rsaquo; 删除
+</div>
+
+    
+
+    
+        
+    
+
+    <!-- Content -->
+    <div id="content" class="colM">
+        
+        <h1>你确定吗？</h1>
+        
+
+    <p>你确认想要删除 group "{{ group_delete.name }}"？ 下列所有相关的项目都将被删除：</p>
+<!--
+<h2>概览</h2>
+<ul>
+    
+    <li>Group-permission relationships: 3</li>
+    
+    <li>组: 1</li>
+    
+    <li>User-group relationships: 4</li>
+    
+</ul>
+-->
+    <h2>对象</h2>
+    <ul>	<li>Group: <a href="../">{{ group_delete.name }}</a>
+	<ul>
+        {% for i in group_delete.group_permission.all %}
+		<li>{{ i.description }}</li>
+        {% endfor %}
+
+	</ul>
+	</li></ul>
+    <form action="" method="post"><input type='hidden' name='csrfmiddlewaretoken' value='QmptUuEa1WO1rYziKhR8rSCpo3cU9u8L' />
+    <div>
+    <input type="hidden" name="post" value="yes" />
+    
+    
+    <input type="submit" value="是的，我确定" />
+    <a href="#" onclick="window.history.back(); return false;" class="button cancel-link">不，返回</a>
+    </div>
+    </form>
+
+
+        
+        <br class="clear" />
+    </div>
+    <!-- END Content -->
+
+    <div id="footer"></div>
+</div>
+<!-- END Container -->
+
+</body>
+{% endblock %}

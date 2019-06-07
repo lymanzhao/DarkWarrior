@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block head_js %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'ckeditor/ckeditor.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card-box">
+	<!--		    <h4 class="header-title m-t-0 m-b-30">编辑维基</h4>-->
+                            <span style="color: red;">
+                                {% if error %}{{ error }}{% endif %}
+                             </span>
+                                
+			    
+                            <form action="" method="post">
+                                <input type="text" class="form-control" placeholder="请输入标题" value="{{ wiki_title }}" name="title" style="margin-bottom: 20px">
+                                <textarea id="elm1" name="content">{{ wiki_content }}</textarea>
+                                <script type="text/javascript">CKEDITOR.replace('content')</script>
+                                <input type="submit" class="batn btn-purple btn-rounded w-md" value="提交" style="margin-top: 20px" is_archive="true">
+                            </form>
+                        </div>
+                    </div><!-- end col -->
+                </div>
+                <!-- End row -->
+{% endblock %}
+

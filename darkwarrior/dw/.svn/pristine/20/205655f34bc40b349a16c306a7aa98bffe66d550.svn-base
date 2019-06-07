@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+{% block css %}
+        <link href="{% static 'assets/css/bootstrap.min.css'%}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/core.css'%}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/components.css'%}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/icons.css'%}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/pages.css'%}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/menu.css'%}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/responsive.css'%}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block Navigation %}
+        <!-- Navigation Bar-->
+        <header id="topnav">
+            <div class="topbar-main">
+                <div class="container">
+
+                    <!-- LOGO -->
+                    <div class="topbar-left">
+                        <a href="/" class="logo"><span>动量<span>影视</span></span></a>
+                    </div>
+                    <!-- End Logo container-->
+
+
+                    <div class="menu-extras">
+
+                        <ul class="nav navbar-nav navbar-right pull-right">
+
+                            {% if user_now %}
+                                <li>
+                                <!-- Notification -->
+                                    <div class="notification-box">
+                                        <ul class="list-inline m-b-0">
+                                            <li>
+                                                <a href="javascript:void(0);" class="right-bar-toggle">
+                                                    <i class="zmdi zmdi-notifications-none"></i>
+                                                </a>
+                                                <div class="noti-dot">
+                                                    <span class="dot"></span>
+                                                    <span class="pulse"></span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                <!-- End Notification bar -->
+                                </li>
+
+                                <li class="dropdown user-box">
+                                    <a href="" class="dropdown-toggle waves-effect waves-light profile " data-toggle="dropdown" aria-expanded="true">
+                                        <img src="{% static 'assets/images/users/avatar-1.jpg'%}" alt="user-img" class="img-circle user-img">
+                                        <div class="user-status away"><i class="zmdi zmdi-dot-circle"></i></div>
+                                    </a>
+
+                                    <ul class="dropdown-menu">
+                                        <li><a href="#"><i class="ti-user m-r-5"></i> 个人资料</a></li>
+                                        <li><a href="/password_change/"><i class="ti-lock m-r-5"></i> 修改密码</a></li>
+                                        <li><a href="/logout/"><i class="ti-power-off m-r-5"></i> 注销</a></li>
+                                    </ul>
+                                </li>
+
+
+                            {% else %}
+
+                                <li>
+                                    <a href="/login/" class="logo">
+                                        <span>登录</span>
+                                    </a>
+                                </li>
+
+                                <li class="logo">
+                                    <a href="/registration/">
+                                        <span>注册</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </header>
+        <!-- End Navigation Bar-->
+        {% endblock %}
+
+
+{% block content %}
+
+            <div>
+
+                <h1>你收到这封邮件是因为你请求重置你在网站 127.0.0.1:8000上的用户账户密码。</h1>
+
+                <p style="padding-top: 15px">请访问该页面并选择一个新密码：</p>
+
+                <p style="padding-top: 15px">{% url 'password_reset_confirm' uidb64=uidb64 token=token %}修改密码</p>
+
+                <p style="padding-top: 15px">你的用户名，如果已忘记的话： 李治文</p>
+
+                <p style="padding-top: 15px">感谢使用我们的站点！</p>
+            </div>
+
+{% endblock %}
+
+
+
+{% block jQuery %}
+        <!-- jQuery  -->
+        <script src="{% static 'assets/js/jquery.min.js'%}"></script>
+        <script src="{% static 'assets/js/bootstrap.min.js'%}"></script>
+        <script src="{% static 'assets/js/detect.js'%}"></script>
+        <script src="{% static 'assets/js/fastclick.js'%}"></script>
+        <script src="{% static 'assets/js/jquery.slimscroll.js'%}"></script>
+        <script src="{% static 'assets/js/jquery.blockUI.js'%}"></script>
+        <script src="{% static 'assets/js/waves.js'%}"></script>
+        <script src="{% static 'assets/js/wow.min.js'%}"></script>
+        <script src="{% static 'assets/js/jquery.nicescroll.js'%}"></script>
+        <script src="{% static 'assets/js/jquery.scrollTo.min.js'%}"></script>
+
+
+        <!-- App js -->
+        <script src="{% static 'assets/js/jquery.core.js'%}"></script>
+        <script src="{% static 'assets/js/jquery.app.js'%}"></script>
+
+{% endblock %}

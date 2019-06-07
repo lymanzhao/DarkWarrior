@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block head_js  %}
+    {{ block.super }}
+
+       <link href="{% static 'jQuery.js' %}" rel="stylesheet" />
+
+{% endblock %}
+{% block content %}
+
+    <div class="container">
+
+                <!-- Page-Title -->
+        <!--
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="btn-group pull-right m-t-15">
+                            <button type="button" class="btn btn-custom dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="false">Settings <span class="m-l-5"><i class="fa fa-cog"></i></span></button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">Action</a></li>
+                                <li><a href="#">Another action</a></li>
+                                <li><a href="#">Something else here</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">Separated link</a></li>
+                            </ul>
+                        </div>
+                        <h4 class="page-title">Contacts</h4>
+                    </div>
+                </div>
+        -->
+        
+         
+                <div class="row">
+
+                    {% for staff in staff_detail %}
+                    <div class="col-md-4">
+                        <div class="text-center card-box">
+                            <!--
+                            <div class="dropdown pull-right">
+                                <a href="#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false">
+                                    <i class="zmdi zmdi-more-vert"></i>
+                                </a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#">Edit</a></li>
+                                    <li><a href="#">Delete</a></li>
+                                    <li><a href="#">Block</a></li>
+                                </ul>
+                            </div>
+                            -->
+                            <div>
+                                {% if staff.staff_photo %}
+                                    
+                                       <img src="/media/{{ staff.staff_photo }}" class="img-circle thumb-xl img-thumbnail m-b-10" alt="profile-image">
+                                    
+                                {% else %}
+                                    
+                                       <img src="" class="img-circle thumb-xl img-thumbnail m-b-10" alt="未上传头像">
+                                    
+                                {% endif %}
+                               <!-- 
+                                <p class="text-muted font-13 m-b-30">
+                                    Hi I'm Johnathn Deo,has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type.
+                                </p>
+                               --> 
+                                <div class="text-left">
+                                    <p class="text-muted font-13"><strong>姓名 :</strong> <span class="m-l-15">{{ staff.staff_name }}</span></p>
+
+                                    <p class="text-muted font-13"><strong>手机号 :</strong><span class="m-l-15">{{ staff.staff_phone_number }}</span></p>
+
+                                    <p class="text-muted font-13"><strong>邮箱 :</strong> <span class="m-l-15">{{ staff.staff_email }}</span></p>
+
+                                    <p class="text-muted font-13"><strong>职位 :</strong> <span class="m-l-15">{{ staff.staff_position }}</span></p>
+                                </div>
+                                <div>
+
+                                        <span style="margin-left: 5%;color: #000000;font-size: 14px;">
+                                           <a href="/{{ url }}/member_kanban/{{ staff.staff_id }}/"><i class="zmdi zmdi-collection-item"></i><span> 看板 </span> </a>
+                                        </span>
+                                        <span style="margin-left: 5%;color: #000000;font-size: 14px;">
+                                            <a href="/{{ url }}/member_calendar/{{ staff.staff_id }}/"><i class="zmdi zmdi-calendar "></i><span> 日程</span> </a>
+                                        </span>
+                                        <span style="margin-left: 5%;color: #000000;font-size: 14px;">
+                                            <a href="/{{ url }}/member_gantt/{{ staff.staff_id }}/"><i class="zmdi zmdi-view-list"></i> <span> 甘特图 </span> </a>
+                                        </span>
+                                        <span style="margin-left: 5%;color: #000000;font-size: 14px;">
+                                            <a href="/{{ url }}/member_log/{{ staff.staff_id }}/"><i class="fa fa-history" aria-hidden="true"></i> <span> 日志 </span> </a>
+                                        </span>
+                                        <span style="margin-left: 5%;color: #000000;font-size: 14px;">
+                                            <a href="/{{ url }}/project_members_report/{{ staff.staff_id }}/"><i class="zmdi zmdi-file" aria-hidden="true"></i> <span> 个人报表 </span> </a>
+                                        </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div> <!-- end col -->
+                    {% endfor %}
+
+                </div>
+                <!-- end row -->
+
+
+
+
+
+                <!-- Modal -->
+                <div id="custom-modal" class="modal-demo">
+                    <button type="button" class="close" onclick="Custombox.close();">
+                        <span>&times;</span><span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="custom-modal-title">Add Contact</h4>
+                    <div class="custom-modal-text text-left">
+                        <form role="form">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" class="form-control" id="name" placeholder="Enter name">
+                            </div>
+                            <div class="form-group">
+                                <label for="position">Position</label>
+                                <input type="text" class="form-control" id="position" placeholder="Enter position">
+                            </div>
+                            <div class="form-group">
+                                <label for="company">Company</label>
+                                <input type="text" class="form-control" id="company" placeholder="Enter company">
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Email address</label>
+                                <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+                            </div>
+
+                            <button type="submit" class="btn btn-default waves-effect waves-light">Save</button>
+                            <button type="button" class="btn btn-danger waves-effect waves-light m-l-10">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+
+
+                <!-- Footer
+                <footer class="footer text-right">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                2016 © Adminto.
+                            </div>
+                            <div class="col-xs-6">
+                                <ul class="pull-right list-inline m-b-0">
+                                    <li>
+                                        <a href="#">About</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Help</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Contact</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+                End Footer -->
+
+            </div>
+            <!-- end container -->
+
+{% endblock %}
+
+{% block jQuery %}
+
+        {{ block.super }}
+
+    <script>
+
+    $(document).ready(function(){
+
+
+
+
+    </script>
+
+{% endblock %}

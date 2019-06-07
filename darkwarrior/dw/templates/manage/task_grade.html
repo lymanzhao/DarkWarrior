@@ -1,0 +1,214 @@
+{% extends 'manage/manage_base.html' %}
+
+{% load staticfiles %}
+
+{% block css %}
+    {{ block.super }}
+    <!-- Editatable  Css-->
+    <link rel="stylesheet" href="{% static 'assets/plugins/magnific-popup/dist/magnific-popup.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/plugins/jquery-datatables-editable/datatables.css' %}" />
+    <style>
+        .sub {color: #ffffff;border:none;background-color: #50b4fa;line-height: 27px;
+            box-shadow: 1px 2px 1px #acb5bc;border-radius:2px;}
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!--任务等级 -->
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="m-b-30">
+                    <button id="addToTable" class="btn btn-primary waves-effect waves-light" data-target="#task-status" data-toggle="modal">任务等级 <i class="fa fa-plus" ></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- add任务等级 -->
+        <div class="modal fade" id="task-status" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content" >
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">添加任务等级</h4>
+                    </div>
+                    <div class="modal-body" >
+                        <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <input type="hidden" value="add_task_grade" name="judge">
+                                <label class="col-md-2 control-label">任务等级名称</label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control input-block" value="" name="name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">任务等级说明</label>
+                                <div class="col-md-10">
+                                    <textarea class="form-control" rows="4" name="description"></textarea>
+                                </div>
+                            </div>
+                            <div class="text-right m-t-30">
+                                <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5" name="create" value="create">ok</button> <!--add -->
+                            </div>
+                        </form>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
+        <div class="">
+            <div id="datatable-editable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <p style="color: red;">{{ grade_error }}</p>
+                        <table class="table table-striped dataTable no-footer"  id="datatable-editable" role="grid" aria-describedby="datatable-editable_info">
+                            <thead>
+                            <tr role="row">
+                                <th style="width: 230px;">ID</th>
+                                <th style="width: 300px;">名称</th>
+                                <th style="width: 269px;">说明</th>
+                                <th style="width: 116px;">操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for task_grade in task_grades %}
+
+                                <tr class="" role="row" style="border:0px solid red;">
+                                    <form method="post" action="">
+                                        <input type="hidden" name="judge" value="task_grade">
+                                        <td style="color:red" class="">#{{ task_grade.id }}</td>
+                                        <td>{{ task_grade.name }}</td>
+                                        <td>{{ task_grade.description }}</td>
+                                        <input type="hidden" class="form-control input-block" value="{{ task_grade.id }}" readonly="readonly" name="task_grade_id" >
+                                        <input type="hidden" class="form-control input-block" value="{{ task_grade.name }}" name="task_grade_name" >
+                                        <input type="hidden" class="form-control input-block" value="{{ task_grade.description }}" name="task_grade_description" >
+                                        <td class="actions">
+                                            <a  class="edit-row" style="cursor: pointer;"><i class="fa fa-pencil"></i></a>
+
+                                            <a  class="remove-row" {% if task_grade.name in taskgrade_correlation %}hidden{% endif %} style="cursor: pointer;"><i class="fa fa-trash-o"></i></a>
+                                            <input type="submit" name="delete" value="delete" class="delete" hidden="hidden">
+                                            <!--delete -->
+
+                                        </td>
+                                    </form>
+                                </tr>
+
+                                <tr class="" role="row" hidden="hidden" style="background-color: #f9f9f9;">
+                                    <form method="post" action="">
+                                        <input type="hidden" name="judge" value="task_grade">
+                                        <td><input type="text" class="form-control input-block" value="{{ task_grade.id }}" readonly="readonly" name="task_grade_id"></td>
+                                        <td><input type="text" class="form-control input-block" value="{{ task_grade.name }}" name="task_grade_name"></td>
+                                        <td><input type="text" class="form-control input-block" value="{{ task_grade.description }}" name="task_grade_description"></td>
+                                        <td class="actions">
+                                            <a  class="save-row" style="cursor: pointer;"><i class="fa fa-save"></i></a>
+                                            <input type="submit" name="save" value="save" class="save" hidden="hidden">         <!--save -->
+                                            <a  class="cancel-row" style="cursor: pointer;"><i class="fa fa-times"></i></a>
+                                        </td>
+                                    </form>
+                                </tr>
+
+
+
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!--
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <h4 class="header-title m-t-0 m-b-30">任务等级</h4>
+
+                    <a href="/{{ url }}/manage/task_grade/">
+                        <div class="row" style="margin-bottom: 2%">
+                            <div class="col-md-12">
+                                <div class="text-left">
+                                    <button id="addToTable" class="btn btn-primary waves-effect waves-light">任务等级 <i class="fa fa-plus"></i></button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <table class="table table-striped" id="datatable-editable">
+                        <thead>
+                        <tr>
+                            <th style="text-align: center">ID</th>
+                            <th style="text-align: center">等级名称</th>
+                            <th style="text-align: center">等级说明</th>
+                            <th style="text-align: center">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody style="text-align: center">
+                        {% for task_grade in task_grades  %}
+                            <tr>
+                                <form action="" method="post" >
+                                    <td><a href="#" style="list-style-type: none;color: red">{{ p.id }}</a>
+                                        <input type="text" value="{{ task_grade.id }}" name="task_grade_id" hidden="hidden">
+                                    </td>
+
+                                    <td>
+                                        <input type="text"  value="{{ task_grade.name }}" name="task_grade_name">
+                                    </td>
+                                    <td>
+                                        <input type="text"  value="{{ task_grade.description }}" name="task_grade_description">
+                                    </td>
+
+                                    <td>
+                                        <input type="text" value="grade" name="judge" hidden="hidden">
+                                        <input type="submit" name="change" style="border:#000080;" value="修改" class="sub">
+                                    </td>
+                                </form>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+    -->
+
+{% endblock %}
+
+
+
+{% block jQuery %}
+    {{ block.super }}
+
+    <script>
+
+        $(document).ready(function () {
+
+            $('.edit-row').click(function () {
+                //alert($(this).html())
+                $(this).parent().parent().hide();
+                $(this).parent().parent().next().show();
+            });
+            $('.cancel-row').click(function () {
+                //alert($(this).html())
+                $(this).parent().parent().hide();
+                $(this).parent().parent().prev().show();
+            });
+            $('.save-row').click(function () {
+                $(this).next().click();
+            });
+            $('.remove-row').click(function () {
+                $(this).next().click();
+            })
+
+
+        })
+
+    </script>
+
+{% endblock %}
+

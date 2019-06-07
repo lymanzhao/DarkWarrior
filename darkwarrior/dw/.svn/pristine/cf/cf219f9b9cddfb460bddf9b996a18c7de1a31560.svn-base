@@ -1,0 +1,170 @@
+@charset "UTF-8";/*!
+ * Bootstrap v4.0.0-alpha.2 (http://getbootstrap.com)
+ * Copyright 2011-2015 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ *//*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
+.proj-page-section {
+    padding: 15px 15px 10px;
+    border-top: solid 1px #d8e2e7;
+}
+.proj-page-subtitle.with-del {
+    position: relative;
+    padding-right: 35px;
+}
+
+button {
+    -webkit-border-radius: 0;
+    border-radius: 0;
+	overflow: visible;
+	font-size: 100%;
+    margin: 0;
+    vertical-align: baseline;
+}
+.proj-page-subtitle.with-del .proj-page-del {
+    position: absolute;
+    top: -5px;
+    right: -2px;
+}
+.proj-page .proj-page-del {
+    height: 38px;
+    border: none;
+    background: 0 0;
+    font-size: 1.125rem;
+    color: #919fa9;
+}
+.proj-page .proj-page-del .font-icon {
+    vertical-align: middle;
+}
+.font-icon-trash:before {
+    content: "\24";
+}
+
+button {
+    color: #343434;
+    font-family: 'Proxima Nova',sans-serif;
+    line-height: 1.4;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-font-smoothing: antialiased;
+    -o-font-smoothing: antialiased;
+}
+
+
+.progress-compact-style.progress-with-amount {
+    padding-right: 30px;
+}
+.progress-with-amount {
+    position: relative;
+    padding-right: 40px;
+	width: 60%;
+}
+.progress-compact-style .progress {
+    background-color: #f6f8fa;
+    height: 5px;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    margin: 0 0 .4rem;
+}
+.progress, .progress[value] {
+    color: #00a8ff;
+}
+.progress[value] {
+    -webkit-appearance: none;
+    border: 0;
+    -moz-appearance: none;
+    appearance: none;
+}
+.progress {
+    background-color: #f4f4f4;
+    -webkit-border-radius: .25rem;
+    border-radius: .25rem;
+
+}
+.progress {
+    display: block;
+    width:99%;
+    height: 1rem;
+    margin-bottom: 1rem;
+}
+progress{
+    display: inline-block;
+    vertical-align: baseline;
+}
+
+.progress-compact-style .progress-with-amount-number {
+    font-size: .6875rem;
+    top: -5px;
+
+}
+.progress-with-amount .progress-with-amount-number {
+    position: absolute;
+    right: 0;
+    top: -4px;
+    line-height: 16px;
+    color: #919fa9;
+}
+.form-group {
+    margin-bottom: 1rem;
+}
+.checkbox, .radio {
+    cursor: default;
+}
+.checkbox, {
+    position: relative;
+    margin-bottom: .75rem;
+}
+.checkbox {
+    display: block;
+	margin: 20px 0px;
+}
+.btn.btn-grey {
+    background-color: #dbe4ea;
+    border-color: #dbe4ea;
+    color: #6c7a86;
+    -webkit-transition: none;
+    -o-transition: none;
+    transition: none;
+}
+.proj-page-add-txt {
+    padding: 15px 120px 15px 15px;
+    background: #d8e2e7;
+    position: relative;
+}
+.proj-page-add-txt{
+    border-color: #fff;
+}
+
+.btn {
+   display:inline-block;
+    padding: .375rem 1rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	 border-radius: 3px;
+    border: 1px solid #00a8ff;
+    background: #00a8ff;
+    color: #fff;
+    font-weight: 600;
+
+}
+.proj-page-add-txt .proj-page-del {
+    right: 13px;
+    font-size: 1.125rem;
+    margin-top: 2px;
+}
+.proj-page-add-txt .btn, .proj-page-add-txt .proj-page-del {
+    position: absolute;
+    top: 15px;
+}
+.proj-page .proj-page-del {
+    height: 38px;
+    border: none;
+    background: 0 0;
+    font-size: 1.125rem;
+    color: #919fa9;
+}

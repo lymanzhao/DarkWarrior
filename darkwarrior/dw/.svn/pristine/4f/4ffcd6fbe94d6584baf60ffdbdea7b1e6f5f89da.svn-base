@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width" />
+
+  <title>{{ name }}</title>
+{% load staticfiles %}
+  <!-- filestart -->
+  <link rel="icon" type="image/vnd.microsoft.icon"  href="/media/{{ icon }}" />
+  <link rel="Stylesheet" type="text/css" href="{% static 'wPaint/demo/demo.css' %}" />
+  <script type="text/javascript" src="{% static 'wPaint/lib/jquery.1.10.2.min.js' %}"></script>
+  <!-- fileend -->
+</head>
+<body>
+
+
+  <div id="content">
+
+    <div class="content-box">
+      <!-- jQuery UI -->
+      <script type="text/javascript" src="{% static 'wPaint/lib/jquery.ui.core.1.10.3.min.js' %}"></script>
+      <script type="text/javascript" src="{% static 'wPaint/lib/jquery.ui.widget.1.10.3.min.js' %}"></script>
+      <script type="text/javascript" src="{% static 'wPaint/lib/jquery.ui.mouse.1.10.3.min.js' %}"></script>
+      <script type="text/javascript" src="{% static 'wPaint/lib/jquery.ui.draggable.1.10.3.min.js' %}"></script>
+
+      <!-- wColorPicker -->
+      <link rel="Stylesheet" type="text/css" href="{% static 'wPaint/lib/wColorPicker.min.css' %}" />
+      <script type="text/javascript" src="{% static 'wPaint/lib/wColorPicker.min.js' %}"></script>
+
+      <!-- wPaint -->
+      <link rel="Stylesheet" type="text/css" href="{% static 'wPaint/src/wPaint.css' %}" />
+      <script type="text/javascript" src="{% static 'wPaint/wPaint.min.js' %}"></script>
+      <script type="text/javascript" src="{% static 'wPaint/plugins/main/wPaint.menu.main.min.js' %}"></script>
+      <script type="text/javascript" src="{% static 'wPaint/plugins/text/wPaint.menu.text.min.js' %}"></script>
+      <script type="text/javascript" src="{% static 'wPaint/plugins/shapes/wPaint.menu.main.shapes.min.js' %}"></script>
+      <script type="text/javascript" src="{% static 'wPaint/plugins/file/wPaint.menu.main.file.min.js' %}"></script>
+
+      <div id="wPaint" style="position:relative; width:900px; height:500px; background-color:#7a7a7a; margin:70px auto 20px auto;border:0px solid red;" >
+          <!--<div class="wPaint-modal-fg">
+            <img class="wPaint-modal-img" style="width:900px; height:500px;" src="/media/{{ wpaint_image }}"/>
+          </div>-->
+          <div style="border:0px solid blue;width: 100%;height: 100%;position: absolute;z-index: 999;background: rgba(255,255,255,0.8);" align="center" hidden="hidden" id="upload_div">
+              <p style="margin-top: 30%;font-size: 17px;font-weight: bolder;color:black;">正在上传,请耐心等待......</p>
+          </div>
+      </div>
+
+      <!--<center style="margin-bottom: 50px;">
+        <input type="button" value="toggle menu" onclick="console.log($('#wPaint').wPaint('menuOrientation')); $('#wPaint').wPaint('menuOrientation', $('#wPaint').wPaint('menuOrientation') === 'vertical' ? 'horizontal' : 'vertical');"/>
+      </center>
+
+      <center id="wPaint-img"></center>-->
+
+      <script type="text/javascript">
+        var images = [
+          '/media/{{ wpaint_image }}'
+        ];
+
+
+        function saveImg(image) {
+          var _this = this;
+            $('#upload_div').show();
+            $('.wPaint-menu-holder').hide();
+          $.ajax({
+            type: 'POST',
+            url: '/{{ url }}/task/{{ id }}/update_image/',
+            data: {image: image},
+            //cache: false,
+              //dataType: "html",
+
+            success: function (resp) {
+
+
+              window.location.href ="/{{ url }}/task/{{ id }}/";
+              // internal function for displaying status messages in the canvas
+              _this._displayStatus('图片保持成功');
+              // doesn't have to be json, can be anything
+              // returned from server after upload as long
+              // as it contains the path to the image url
+              // or a base64 encoded png, either will work
+              resp = $.parseJSON(resp);
+
+              // update images array / object or whatever
+              // is being used to keep track of the images
+              // can store path or base64 here (but path is better since it's much smaller)
+              images.push(resp.img);
+
+              // do something with the image
+              $('#wPaint-img').attr('src', image);
+            }
+          });
+
+        }
+
+        function loadImgBg () {
+
+          // internal function for displaying background images modal
+          // where images is an array of images (base64 or url path)
+          // NOTE: that if you can't see the bg image changing it's probably
+          // becasue the foregroud image is not transparent.
+          this._showFileModal('bg', images);
+        }
+        function loadImgFg () {
+
+          // internal function for displaying foreground images modal
+          // where images is an array of images (base64 or url path)
+          this._showFileModal('fg', images);
+            $('.wPaint-modal-img-holder').click();
+            $('.wPaint-modal-close').click();
+        }
+
+        $(document).ready(function () {
+            $('.wPaint-menu-icon-name-loadBg').click();
+        });
+
+        // init wPaint
+        $('#wPaint').wPaint({
+          menuOffsetLeft: 150,
+          menuOffsetTop: -50,
+          saveImg: saveImg,
+          loadImgBg: loadImgBg,
+          loadImgFg: loadImgFg
+        });
+      </script>
+    </div>
+  </div>
+
+</body>
+</html>

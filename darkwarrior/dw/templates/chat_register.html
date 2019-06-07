@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block content %}
+    <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card-box">
+                            <h4 class="header-title m-t-0 m-b-30">聊天用户注册</h4>
+
+                            {% for error in errors %}
+                                <span style="color: red;margin-bottom:20px;">{{ error }}</span>
+                            {% endfor %}
+
+                            <form action="" method="post">
+                                <!--<table>
+                                    <tr>
+                                        <td><lable>用户名</lable></td>
+                                        <td>
+                                            <input type="text"  name="username" placeholder="用户名" value="{{ username }}" >@<input type="text"  name="server" placeholder="" value="192.168.46.135" >
+                                        </td>
+                                    </tr>
+                                </table>-->
+                                <input type="text"  name="username" placeholder="用户名" value="{{ username }}" style="margin-bottom: 20px;display: block;width:40%">
+                                <input type="password"  name="password" placeholder="密码" value="{{ password }}" style="margin-bottom: 20px;display: block;width:40%">
+                                <input type="password"  name="repassword" placeholder="确认密码" value="{{ repassword }}" style="margin-bottom: 20px;display: block;width:40%">
+
+                                <button type="submit" class="btn btn-purple btn-bordred waves-effect w-md waves-light m-b-5" is_archive="true" style="margin-top: 20px" >注册</button>
+                            </form>
+                        </div>
+                    </div><!-- end col -->
+                </div>
+
+{% endblock %}

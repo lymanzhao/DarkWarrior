@@ -1,0 +1,88 @@
+{% extends 'manage/manage_base.html' %}
+{% load staticfiles %}
+
+{% block css %}
+    {{ block.super }}
+    <!-- Editatable  Css-->
+    <link rel="stylesheet" href="{% static 'assets/plugins/magnific-popup/dist/magnific-popup.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/plugins/jquery-datatables-editable/datatables.css' %}" />
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <h4 class="header-title m-t-0 m-b-30">版本</h4>
+
+                    <a href="/{{ url }}/manage/add_task_version/">
+                        <div class="row" style="margin-bottom: 2%">
+                            <div class="col-md-12">
+                                <div class="text-left">
+                                    <button  class="batn btn-purple btn-rounded w-md">
+                                        添加版本
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <table class="table table-striped" id="datatable-editable">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center">ID</th>
+                                <th style="text-align: center">名称</th>
+                                <th style="text-align: center">版本描述</th>
+                                <th style="text-align: center">发布时间</th>
+                                <th style="text-align: center">默认</th>
+                            </tr>
+                        </thead>
+
+                        <tbody style="text-align: center">
+                            {% for task_version in task_versions %}
+                                <tr>
+                                    <td><a href="/{{ url }}/manage/task_version/{{ task_version.id }}/" style="list-style-type: none;color: red">{{ task_version.id }}</a></td>
+                                    <td>{{ task_version.name }}</td>
+                                    <td>{{ task_version.description }}</td>
+                                    <td>{{ task_version.time }}</td>
+                                    <td>
+                                        <div class="radio radio-info">
+                                            <form action="" method="post">
+                                                <input type="radio" name="task_version_default_id" onclick="task_version_default{{ task_version.id }}()" id="radio{{ task_version.id }}" value="{{ task_version.id }}" {% ifequal task_version.default True %} checked {% endifequal %}>
+                                                <label for="radio{{ task_version.id }}">
+                                                </label>
+                                                <input type="submit" id="submit{{ task_version.id }}" style="display: none">
+                                            </form>
+                                            <script>
+                                                var default_submit{{ task_version.id }} = document.getElementById('submit{{ task_version.id }}');
+                                                function task_version_default{{ task_version.id }}() {
+                                                    default_submit{{ task_version.id }}.click()
+                                                }
+                                            </script>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block jQuery %}
+    {{ block.super }}
+
+    <!-- Editable js -->
+    <script src="{% static 'assets/plugins/magnific-popup/dist/jquery.magnific-popup.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/jquery-datatables-editable/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/dataTables.bootstrap.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/mindmup-editabletable.js' %}"></script>
+    <script src="{% static 'assets/plugins/tiny-editable/numeric-input-example.js' %}"></script>
+
+    <!-- init -->
+    <script src="{% static 'assets/pages/datatables.editable.init.js' %}"></script>
+
+{% endblock %}

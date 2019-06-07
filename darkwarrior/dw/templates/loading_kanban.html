@@ -1,0 +1,217 @@
+{% for kanban in kanbans %}
+
+    {% for task in kanban.task %}
+        <li id="{{task.task.id }}"  class="{{ kanban.status.id }}"  type_="{{ task.task.type.value }}" priority="{{ task.task.priority.value }}" time="{{ task.task.end_date }}" ID_="{{ task.task.id }}">
+            <div class="card-box kanban-box">
+
+                <div class="kanban-detail" style="margin-left: 5%;margin-right: 5%">
+
+                    <div class="dropdown pull-right">
+                        <a href="#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false">
+                            <i class="zmdi zmdi-more-vert"></i>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a href="#" onclick="$('#copy_task{{ task.task.id }}').show()">复制到</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="$('#move_task{{ task.task.id }}').show()">移动到</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="copy_task{{ task.task.id }}" style="background-color: rgba(0,0,0,0.3);z-index:9999;position: fixed;top:0;left:0;width: 100%;height: 100%;" {% if error_change_parent %}{% else %}hidden="hidden"{% endif %}>
+                        <div style="width: 500px;height: 320px;background-color:white;border-radius: 4px;position: fixed;left:35%;top:27%;" id="notice_div">
+                            <form method="post" action="">
+                                <div style="width: 70%;border:0px solid #d1d1d1;margin: auto ;padding-top: 50px;" align="center">
+                                    <h3>复制任务</h3>
+                                    <p style="color:red;">{{ error_change_parent }}</p>
+                                    <input type="number" value="{{ url }}" id="copy_project_id{{ task.task.id }}" hidden="hidden">
+                                    <input type="text" name="judge" value="copy_task" hidden="hidden">
+                                    <input type="text" name="task_id" value="{{ task.task.id }}" hidden="hidden">
+                                    <input type="text" class="form-control" placeholder="请输入项目名称关键字"  value="" id="search_copy_project{{ task.task.id }}" onkeyup="show_copy_project{{ task.task.id }}(this.value)">
+                                    <div id="project_copy_list{{ task.task.id }}"></div>
+
+                                </div>
+
+                                <div style="margin-top: 10%">
+                                    <input type="submit" value="确定！" style="background-color: #249cdb;color: white;border:none;height: 40px;width: 100px;font-size: 15px;margin-left:15%;" name="change">
+                                    <input type="button" value="取消" style="background-color: #00b900;color: white;border:none;height: 40px;width: 60px;font-size: 15px;rotation-point: right 50%;" onclick="$('#copy_task{{ task.task.id }}').hide()">
+
+                                </div>
+                            </form>
+
+                            <script>
+                                function show_copy_project{{ task.task.id }}(str)
+                                {
+                                    var xmlhttp;
+                                    var project_id = $('#copy_project_id{{ task.task.id }}').val();
+                                    var flag = false;
+                                    if(flag){
+                                        return false;
+                                    }
+                                    if (str.length==0)
+                                    {
+                                        //document.getElementById("txtReporter").innerHTML="";
+                                        return false;
+                                    }
+                                    if (window.XMLHttpRequest)
+                                    {// code for IE7+, Firefox, Chrome, Opera, Safari
+                                        xmlhttp=new XMLHttpRequest();
+                                    }
+                                    else
+                                    {// code for IE6, IE5
+                                        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+                                    }
+                                    xmlhttp.onreadystatechange=function()
+                                    {
+                                        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                                        {
+
+                                            document.getElementById("project_copy_list{{ task.task.id }}").innerHTML=xmlhttp.responseText;
+                                            //document.getElementById('txtReporter').onclick();
+                                            //alert(str)
+                                            //flag = true;
+                                            //return false
+                                            //alert(xmlhttp.responseText)
+                                            //$('#search_task').after(xmlhttp.responseText)
+
+                                        }
+                                    };
+
+                                    xmlhttp.open("GET","/"+project_id+"/search_project?q="+str,true);
+                                    xmlhttp.send();
+                                    flag = true;
+                                }
+                            </script>
+                        </div>
+                    </div>
+
+                    <div id="move_task{{ task.task.id }}" style="background-color: rgba(0,0,0,0.3);z-index:9999;position: fixed;top:0;left:0;width: 100%;height: 100%;" {% if error_change_parent %}{% else %}hidden="hidden"{% endif %}>
+                        <div style="width: 500px;height: 320px;background-color:white;border-radius: 4px;position: fixed;left:35%;top:27%;" id="notice_div">
+                            <form method="post" action="">
+                                <div style="width: 70%;border:0px solid #d1d1d1;margin: auto ;padding-top: 50px;" align="center">
+                                    <h3>移动任务</h3>
+                                    <p style="color:red;">{{ error_change_parent }}</p>
+                                    <input type="number" value="{{ url }}" id="move_project_id{{ task.task.id }}" hidden="hidden">
+                                    <input type="text" name="judge" value="move_task" hidden="hidden">
+                                    <input type="text" name="task_id" value="{{ task.task.id }}" hidden="hidden">
+                                    <input type="text" class="form-control" placeholder="请输入项目名称关键字"  value="" id="search_move_project" onkeyup="show_move_project{{ task.task.id }}(this.value)">
+                                    <div id="project_move_list{{ task.task.id }}"></div>
+
+                                </div>
+
+                                <div style="margin-top: 10%">
+                                    <input type="submit" value="确定！" style="background-color: #249cdb;color: white;border:none;height: 40px;width: 100px;font-size: 15px;margin-left:15%;" name="change">
+                                    <input type="button" value="取消" style="background-color: #00b900;color: white;border:none;height: 40px;width: 60px;font-size: 15px;rotation-point: right 50%;" onclick="$('#move_task{{ task.task.id }}').hide()">
+
+                                </div>
+                            </form>
+
+                            <script>
+                                function show_move_project{{ task.task.id }}(str)
+                                {
+                                    var xmlhttp;
+                                    var project_id = $('#move_project_id{{ task.task.id }}').val();
+                                    var flag = false;
+                                    if(flag){
+                                        return false;
+                                    }
+                                    if (str.length==0)
+                                    {
+                                        //document.getElementById("txtReporter").innerHTML="";
+                                        return false;
+                                    }
+                                    if (window.XMLHttpRequest)
+                                    {// code for IE7+, Firefox, Chrome, Opera, Safari
+                                        xmlhttp=new XMLHttpRequest();
+                                    }
+                                    else
+                                    {// code for IE6, IE5
+                                        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+                                    }
+                                    xmlhttp.onreadystatechange=function()
+                                    {
+                                        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                                        {
+
+                                            document.getElementById("project_move_list{{ task.task.id }}").innerHTML=xmlhttp.responseText;
+                                            //document.getElementById('txtReporter').onclick();
+                                            //alert(str)
+                                            //flag = true;
+                                            //return false
+                                            //alert(xmlhttp.responseText)
+                                            //$('#search_task').after(xmlhttp.responseText)
+
+                                        }
+                                    };
+
+                                    xmlhttp.open("GET","/"+project_id+"/search_project?q="+str,true);
+                                    xmlhttp.send();
+                                    flag = true;
+                                }
+                            </script>
+                        </div>
+                    </div>
+                    <a href="/{{ url }}/task/{{ task.task.id }}">
+                        <h5><span style="color:#00a8ff;">#{{ task.task.display_id }}</span> ：<span style="font-size: 13px">{{ task.task.summary }}</span></h5>
+                        <p>{% if task.task.owner %}
+                            <span style="font-size: 13px;color:#505458;">{{ task.task.owner }}</span>
+                        {% else %}
+                            <span style="font-size: 13px;color:#505458;" >暂无属主</span>
+                        {% endif %}
+                            <span class="pull-right label {{ task.task.priority }} " style="background-color:{% if task.task.priority.color %}#{{ task.task.priority.color }}{% else %}#ff0000{% endif %};color:{% if task.task.priority.textColor %}#{{ task.task.priority.textColor }}{% else %}#ffffff{% endif %}" >{{ task.task.priority }}</span>
+
+                        </p>
+                        {% if task.task_image %}
+                            <img src="/media/{{ task.task_image }}" style="width: 100%; margin-bottom: 20px;">
+                        {% endif %}
+                    </a>
+                    <p  class="text-muted" style="font-weight: normal;font-size: 14px;">{{ task.task.milestone }}
+                        <span  style="color: #98a6ad;float: right;">{{ task.task.component }}</span>
+                    </p>
+                    <div class="progress progress-bar-success-alt progress-sm m-b-5">
+                        <div class="progress-bar progress-bar-success {{ task.task.type.name }} progress-animated wow animated animated"
+                             role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"
+                             style="width: {{ task.now_progress }}%; visibility: visible; animation-name: animationProgress;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    {% endfor %}
+
+{% endfor %}
+<script>
+    //任务描述 限制30字
+    /*$(document).ready(function(){
+     var desc = document.getElementsByName('description');
+     var desc_len = desc.length;
+     for(i=0;i<desc_len;i++){
+     if(desc[i].innerText.length>=30){
+     desc[i].innerHTML = desc[i].innerText.substr(0,30)+'....'
+     }
+
+     }
+     })*/
+    function update_project(project_id,task_id){
+
+        // var projectId=$('#project{{ project.id }}').val();
+        // var judge=$('#judge{{ project.id }}').val();
+
+        $.ajax({
+            type: 'POST',
+            url: '/{{ url }}/kanban/UpdateTaskForProject/',
+            data: {
+                'projectId': project_id,
+                'taskId': task_id,
+            },
+            //cache: false,
+            //dataType: "html",
+            success: function () {
+                location.href('/{{ url }}/kanban/');
+            },
+
+        });
+
+    }
+</script>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+                <select  class="form-control" name="selected_task">
+                    {% for task in search_list %}
+                    <option value="{{ task.id }}">{{ task.summary}}</option>
+                    {% endfor %}
+                </select>
+</body>
+</html>
